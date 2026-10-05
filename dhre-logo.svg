@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 180" width="420" height="180" role="img" aria-label="Dubai Holding Real Estate">
+  <rect width="420" height="180" fill="white"/>
+  <path d="M 242 18 L 262 42 L 285 8 L 298 18 L 265 58 L 232 28 Z" fill="#E30613"/>
+  <text x="210" y="95" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="62" font-weight="800" letter-spacing="8" fill="#0B1C2E">DUBAI</text>
+  <text x="210" y="132" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="600" letter-spacing="10" fill="#5A6D7E">HOLDING</text>
+  <text x="210" y="162" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="5" fill="#0B1C2E">REAL ESTATE</text>
+</svg>
