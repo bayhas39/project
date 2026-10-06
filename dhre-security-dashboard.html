@@ -867,9 +867,11 @@ const REMOTE = {
     const ac = new AbortController();
     const timer = setTimeout(() => ac.abort(), 15000);
     try {
-      const res = await fetch(this.url() + "?collection=" + encodeURIComponent(col), {
-        signal: ac.signal
-      });
+const separator = this.url().includes("?") ? "&" : "?";
+  const res = await fetch(this.url() + separator + "collection=" + encodeURIComponent(col) + "&_=" + Date.now(), {
+  cache: "no-store",
+  signal: ac.signal
+  });
       const j = await res.json().catch(() => null); // 500 + {"error":"kv 404"} == empty store
       if (!j || !Array.isArray(j.payload)) return {
         ok: true,

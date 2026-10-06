@@ -5,7 +5,7 @@ async function redisCommand(command) {
   const response = await fetch(process.env.KV_REST_API_URL || process.env.REDIS_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.KV_REST_API_TOKEN || process.env.KV_REST_API_READ_ONLY_TOKEN}`,
+      Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(command),
