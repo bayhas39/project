@@ -197,7 +197,7 @@ const postSync = (type, payload) => {
    newer -- that is what makes every account converge on the same data.
    Empty by default: set localStorage "dhre_sync_url" to a working service to
    turn shared sync on. With no URL the dashboard never leaves this browser.     */
-const SYNC_API = "";
+const SYNC_API = "/api/sync";
 const REV_KEY = "__dhre_sync_rev";
 const REMOTE = {
   url(){ return LS.get("dhre_sync_url", null) || SYNC_API; },
