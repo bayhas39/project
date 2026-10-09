@@ -314,7 +314,20 @@ const DetailRow = ({label, value}) => (value===undefined || value===null || valu
     <div className="text-sm text-slate-700 min-w-0 break-words">{value}</div>
   </div>
 );
-const DetailModal = ({title, siteName, badges, rows, description, onClose}) => (
+const stampNow = () => new Date().toISOString().slice(0,16).replace("T"," ");
+/* append a status change to the record's history so it shows up as "Last Change" */
+const markStatus = (list, id, st, by) => list.map(x => x.id===id ? {
+  ...x, status:st,
+  history:[...(x.history||[]), { at:stampNow(), by:by||"Admin", change:`Status ${x.status} → ${st}` }],
+} : x);
+const isSolved = (r) => r.status==="Resolved" || r.status==="Closed";
+const SolveActions = ({record, onStatus}) => {
+  if(!onStatus) return null;
+  return isSolved(record)
+    ? <button onClick={()=>onStatus("Open")} className="px-5 py-2.5 rounded-full border font-bold text-sm hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Reopen</button>
+    : <button onClick={()=>onStatus("Resolved")} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 shadow-sm"><IcCheck size={15}/> Solved</button>;
+};
+const DetailModal = ({title, siteName, badges, rows, description, onClose, actions}) => (
   <Modal title={title} onClose={onClose}>
     {siteName && <p className="text-xs text-slate-500 -mt-1 mb-3 flex items-center gap-1.5"><IcPin size={11}/><span className="truncate">{siteName}</span></p>}
     {badges && <div className="flex items-center gap-2 flex-wrap mb-3">{badges}</div>}
@@ -325,12 +338,13 @@ const DetailModal = ({title, siteName, badges, rows, description, onClose}) => (
         <p className="text-sm text-slate-700 bg-slate-50 border rounded-xl p-3 whitespace-pre-wrap" style={{borderColor:"#eef2f7"}}>{description}</p>
       </div>
     )}
-    <div className="mt-4 flex justify-end">
-      <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm" style={{borderColor:"#e2e8f0"}}>Close</button>
+    <div className="mt-4 flex items-center justify-end gap-2">
+      {actions}
+      <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Close</button>
     </div>
   </Modal>
 );
-const IncidentDetailModal = ({inc, siteName, onClose}) => {
+const IncidentDetailModal = ({inc, siteName, onClose, onStatus}) => {
   const history = inc.history || [];
   const last = history[history.length-1];
   const rows = [
@@ -343,6 +357,7 @@ const IncidentDetailModal = ({inc, siteName, onClose}) => {
   if(last) rows.push({ label:"Last Change", value:`${last.at} — ${last.by}: ${last.change}` });
   return (
     <DetailModal title={inc.title || "Incident"} siteName={inc.siteName || siteName} onClose={onClose} rows={rows} description={inc.description}
+      actions={<SolveActions record={inc} onStatus={onStatus}/>}
       badges={<>
         <Badge status={inc.status}/>
         <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
@@ -350,7 +365,9 @@ const IncidentDetailModal = ({inc, siteName, onClose}) => {
       </>}/>
   );
 };
-const AccidentDetailModal = ({acc, siteName, onClose}) => {
+const AccidentDetailModal = ({acc, siteName, onClose, onStatus}) => {
+  const history = acc.history || [];
+  const last = history[history.length-1];
   const rows = [
     { label:"Date of Accident", value:acc.date },
     { label:"Accident Type", value:acc.type },
@@ -360,8 +377,10 @@ const AccidentDetailModal = ({acc, siteName, onClose}) => {
     { label:"Persons Involved", value:acc.personsInvolved },
     { label:"Reported By", value:acc.reportedBy },
   ];
+  if(last) rows.push({ label:"Last Change", value:`${last.at} — ${last.by}: ${last.change}` });
   return (
     <DetailModal title={acc.title || acc.type || "Accident"} siteName={acc.siteName || siteName} onClose={onClose} rows={rows} description={acc.description}
+      actions={<SolveActions record={acc} onStatus={onStatus}/>}
       badges={<>
         <Badge status={acc.status}/>
         <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${severityCls(acc.severity)}`}>{acc.severity}</span>
@@ -559,7 +578,7 @@ function App(){
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
   if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
-  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
+  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
@@ -719,7 +738,7 @@ const PAGES = ["sites","charts","amc","attention","reports","ai"];
 const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports", ai:"AI Report" };
 const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"AI Report", ai:"Sites" };
 
-function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
+function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const [page, setPage] = useState(()=> LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(()=> fmtTime());
   const [editSite, setEditSite] = useState(null);
@@ -837,7 +856,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage} onEditSite={setEditSite}/>}
+          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} stats={stats} setPage={setPage} onEditSite={setEditSite}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
           {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
           {page==="attention" && <AttentionPage attention={attention} setPage={setPage}/>}
@@ -860,7 +879,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], stats, setPage, onEditSite}){
+function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], setAccidents, stats, setPage, onEditSite}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
   const [viewSite, setViewSite] = useState(null);
@@ -989,7 +1008,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], stat
         </div>
       </div>
 
-      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
     </div>
@@ -1033,11 +1052,25 @@ function SiteCard({site, onOpen, onEdit, onDelete, onReport}){
 }
 
 /* ------------- site details modal ------------- */
-function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
+function SiteDetailModal({site, incidents, setIncidents, accidents=[], setAccidents, setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
   const siteAccidents = accidents.filter(a=>a.siteId===site.id);
   const [detailInc, setDetailInc] = useState(null); const [detailAcc, setDetailAcc] = useState(null);
+
+  /* admin can mark records solved (or reopen) straight from the details panel */
+  const setIncStatus = (st) => {
+    const inc = detailInc; if(!inc || !setIncidents) return;
+    setIncidents(list=> markStatus(list, inc.id, st, "Admin"));
+    setDetailInc(d=> d ? markStatus([d], d.id, st, "Admin")[0] : d);
+    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
+  };
+  const setAccStatus = (st) => {
+    const acc = detailAcc; if(!acc || !setAccidents) return;
+    setAccidents(list=> markStatus(list, acc.id, st, "Admin"));
+    setDetailAcc(d=> d ? markStatus([d], d.id, st, "Admin")[0] : d);
+    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
+  };
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
@@ -1151,8 +1184,8 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
         </div>
       </div>
     </Modal>
-    {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)}/>}
-    {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)}/>}
+    {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)} onStatus={setIncStatus}/>}
+    {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)} onStatus={setAccStatus}/>}
     </>
   );
 }
@@ -1856,6 +1889,22 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
   const problems = problemsOf(site, incidents);
   const probBars = PROB_KEYS.map(k=>({ name:k.short, value:site[k.key]||0, color:k.color }));
 
+  /* mark an incident/accident as solved (or re-open it), logging who did it */
+  const setIncStatus = (st) => {
+    const inc = detailInc; if(!inc) return;
+    const by = auth?.name || "Owner";
+    setIncidents(list=> markStatus(list, inc.id, st, by));
+    setDetailInc(d=> d ? markStatus([d], d.id, st, by)[0] : d);
+    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
+  };
+  const setAccStatus = (st) => {
+    const acc = detailAcc; if(!acc) return;
+    const by = auth?.name || "Owner";
+    setAccidents(list=> markStatus(list, acc.id, st, by));
+    setDetailAcc(d=> d ? markStatus([d], d.id, st, by)[0] : d);
+    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
+  };
+
   const HeaderRight = (
     <>
       <span className="hidden lg:inline text-xs text-sky-200 max-w-[160px] truncate">{site.name} • {site.inspector} • {site.pincode}</span>
@@ -1972,7 +2021,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             <div className="px-3 py-2 border-b bg-red-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#fecaca"}}>
               <span className="flex items-center gap-1.5"><IcAlert size={14}/> Accidents — {siteAccidents.length}</span>
               <div className="flex items-center gap-2">
-                <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+                <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>!isSolved(a)).length} open</span>
                 <button onClick={()=>setNewAccOpen(true)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
               </div>
             </div>
@@ -1997,8 +2046,8 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
       {newAccOpen && <AccidentFormModal sites={[site]} accidents={accidents} setAccidents={setAccidents} preSite={site} onClose={()=>setNewAccOpen(false)}/>}
-      {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)}/>}
-      {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)}/>}
+      {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)} onStatus={setIncStatus}/>}
+      {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)} onStatus={setAccStatus}/>}
       <Toaster/>
     </div>
   );
