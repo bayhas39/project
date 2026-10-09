@@ -106,6 +106,7 @@ const INC_STATUS = [
 ];
 const SEVERITIES = ["Low","Medium","High","Critical"];
 const CATEGORIES = ["Safety","HVAC","Finishing","Electrical","Security","Civil","Plumbing"];
+const ACCIDENT_TYPES = ["Vehicle","Slip / Trip / Fall","Fall from Height","Struck by Object","Equipment / Plant","Fire / Explosion","Electrical","Chemical","Other"];
 const PALETTE = ["#0284c7","#ef4444","#7c3aed","#f59e0b","#0ea5e9","#1e293b","#06b6d4","#10b981"];
 const PROB_KEYS = [
   { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#0284c7" },
@@ -494,7 +495,7 @@ function App(){
   const syncMode = !remoteOn ? "paused" : !hasRemote ? "local" : (syncInfo.ok ? "live" : "offline");
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
-  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
+  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
   return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
 }
 
@@ -773,7 +774,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} stats={stats} setPage={setPage} onEditSite={setEditSite}/>}
+          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage} onEditSite={setEditSite}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
           {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
           {page==="attention" && <AttentionPage attention={attention} setPage={setPage}/>}
@@ -796,7 +797,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage, onEditSite}){
+function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], stats, setPage, onEditSite}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
   const [viewSite, setViewSite] = useState(null);
@@ -925,7 +926,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage, on
         </div>
       </div>
 
-      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
     </div>
@@ -969,9 +970,10 @@ function SiteCard({site, onOpen, onEdit, onDelete, onReport}){
 }
 
 /* ------------- site details modal ------------- */
-function SiteDetailModal({site, incidents, setPage, onClose}){
+function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
+  const siteAccidents = accidents.filter(a=>a.siteId===site.id);
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
@@ -1033,7 +1035,7 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
 
         <div>
           <h4 className="text-sm font-extrabold mb-2">Issues for this site • {problems.length} problems</h4>
-          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • 0 accidents</p>
+          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • {siteAccidents.length} accidents</p>
           {problems.length===0 ? <p className="text-sm text-slate-500 bg-emerald-50 border border-emerald-100 rounded-xl p-3">No problems — all systems online for this site.</p> : (
             <div className="flex flex-wrap gap-2">{problems.map(p=> <span key={p} className="text-xs font-semibold px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">{p}</span>)}</div>
           )}
@@ -1062,8 +1064,23 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
         </div>
 
         <div>
-          <h4 className="text-sm font-extrabold mb-2">Accidents (0)</h4>
-          <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p>
+          <h4 className="text-sm font-extrabold mb-2">Accidents ({siteAccidents.length})</h4>
+          {siteAccidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p> : (
+            <div className="space-y-2">
+              {siteAccidents.map(a=>(
+                <div key={a.id} className="border rounded-xl p-3 bg-red-50" style={{borderColor:"#fecaca"}}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
+                    <Badge status={a.status}/>
+                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(a.severity)}`}>{a.severity}</span>
+                    <span className="ml-auto text-[11px] text-slate-400">{a.date}</span>
+                  </div>
+                  {a.type && <div className="text-[11px] text-slate-500 mt-0.5">{a.type}{a.location?` • ${a.location}`:""}</div>}
+                  {a.description && <p className="text-xs text-slate-500 mt-1">{a.description}</p>}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Modal>
@@ -1619,6 +1636,59 @@ function IncidentFormModal({sites, incidents, setIncidents, existing, preSite, f
   );
 }
 
+/* ------------- accident report modal ------------- */
+function AccidentFormModal({sites, accidents, setAccidents, existing, preSite, onClose}){
+  const isEdit = !!existing;
+  const [form, setForm] = useState(()=> isEdit ? {...existing} : {
+    siteId: preSite?.id || "", siteName: preSite?.name || "", title:"", type:"Vehicle", location:"",
+    severity:"Medium", status:"Open", personsInvolved:"", reportedBy: preSite?.inspector || "",
+    date:new Date().toISOString().slice(0,10), description:"",
+  });
+  const set = (k,v)=>setForm(f=>({...f,[k]:v}));
+  const save = () => {
+    if(!form.siteId || !form.title.trim()){ toast.error("Site and title required"); return; }
+    const site = sites.find(s=>s.id===form.siteId);
+    if(isEdit){
+      setAccidents(list=>list.map(a=> a.id===existing.id ? {...a, ...form} : a));
+      toast.success("Accident updated");
+    } else {
+      setAccidents(list=>[{ ...form, id:uid(), siteName:site?.name||form.siteName }, ...list]);
+      toast.success("Accident reported");
+    }
+    onClose();
+  };
+  return (
+    <Modal title={isEdit ? "Edit Accident Report" : "New Accident Report"} onClose={onClose} wide>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <Field label="Site *">
+          <select value={form.siteId} onChange={e=>set("siteId", e.target.value)} className={inputCls}>
+            <option value="">— select site —</option>
+            {sites.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </Field>
+        <Field label="Date of Accident"><input type="date" value={form.date} onChange={e=>set("date", e.target.value)} className={inputCls}/></Field>
+        <div className="sm:col-span-2"><Field label="Title *">
+          <input value={form.title} onChange={e=>set("title", e.target.value)} placeholder="e.g. Delivery truck hit the gate barrier" className={inputCls}/>
+        </Field></div>
+        <Field label="Accident Type"><select value={form.type} onChange={e=>set("type", e.target.value)} className={inputCls}>{ACCIDENT_TYPES.map(t=><option key={t} value={t}>{t}</option>)}</select></Field>
+        <Field label="Severity"><select value={form.severity} onChange={e=>set("severity", e.target.value)} className={inputCls}>{SEVERITIES.map(s=><option key={s} value={s}>{s}</option>)}</select></Field>
+        <Field label="Status"><select value={form.status} onChange={e=>set("status", e.target.value)} className={inputCls}>{INC_STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}</select></Field>
+        <Field label="Location on Site"><input value={form.location} onChange={e=>set("location", e.target.value)} placeholder="e.g. North gate" className={inputCls}/></Field>
+        <Field label="Persons Involved"><input value={form.personsInvolved} onChange={e=>set("personsInvolved", e.target.value)} placeholder="Names / number of people" className={inputCls}/></Field>
+        <Field label="Reported By"><input value={form.reportedBy} onChange={e=>set("reportedBy", e.target.value)} placeholder="e.g. Ahmed R." className={inputCls}/></Field>
+        <div className="sm:col-span-2"><Field label="Description">
+          <textarea value={form.description} onChange={e=>set("description", e.target.value)} placeholder="What happened? Include time, injuries, damage and witnesses..." rows={3} className={inputCls}/>
+        </Field></div>
+      </div>
+      <p className="text-[11px] text-slate-500 mt-3">Reported accidents appear on this site and on the head-office dashboard</p>
+      <div className="mt-4 flex gap-2 justify-end">
+        <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm" style={{borderColor:"#e2e8f0"}}>Cancel</button>
+        <button onClick={save} className="px-5 py-2.5 rounded-full bg-slate-900 text-white font-bold text-sm hover:bg-slate-800">{isEdit?"Save Changes":"Report Accident"}</button>
+      </div>
+    </Modal>
+  );
+}
+
 /* ================================================================ */
 /*                          AI REPORT                               */
 /* ================================================================ */
@@ -1697,9 +1767,9 @@ function AIReportPage({live}){
 /* ================================================================ */
 /*                        OWNER DASHBOARD                           */
 /* ================================================================ */
-function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
+function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const site = sites.find(s=>s.id===auth.siteId);
-  const [editOpen, setEditOpen] = useState(false); const [newIncOpen, setNewIncOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false); const [newIncOpen, setNewIncOpen] = useState(false); const [newAccOpen, setNewAccOpen] = useState(false);
   if(!site) return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="bg-white rounded-2xl border p-8 text-center max-w-[420px]" style={{borderColor:"#e2e8f0"}}>
@@ -1829,13 +1899,21 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, o
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-red-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#fecaca"}}>
               <span className="flex items-center gap-1.5"><IcAlert size={14}/> Accidents — {siteAccidents.length}</span>
-              <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+                <button onClick={()=>setNewAccOpen(true)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
+              </div>
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteAccidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No accidents for this site.</div> : siteAccidents.map(a=>(
                 <div key={a.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
                   <div className="text-xs font-bold">{a.title||a.type||"Accident"}</div>
-                  <div className="text-xs text-slate-600">{a.description||""}</div>
+                  <div className="text-xs text-slate-600 line-clamp-2">{a.description||""}</div>
+                  <div className="mt-1 flex gap-1 flex-wrap items-center">
+                    {a.type && <span className="px-1.5 py-0.5 rounded-full border bg-white text-[11px] font-bold text-slate-600" style={{borderColor:"#e2e8f0"}}>{a.type}</span>}
+                    <span className={`px-1.5 py-0.5 rounded-full border text-[11px] font-bold ${severityCls(a.severity)}`}>{a.severity}</span>
+                    <span className="ml-auto text-[11px] text-slate-500">{a.status} • {a.date}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1845,6 +1923,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
+      {newAccOpen && <AccidentFormModal sites={[site]} accidents={accidents} setAccidents={setAccidents} preSite={site} onClose={()=>setNewAccOpen(false)}/>}
       <Toaster/>
     </div>
   );
