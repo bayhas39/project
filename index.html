@@ -658,6 +658,7 @@ const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Re
 function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const [page, setPage] = useState(()=> LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(()=> fmtTime());
+  const [editSite, setEditSite] = useState(null);
   useEffect(()=>{ LS.set("dhre_current_page", page); }, [page]);
   useEffect(()=>{ const t=setInterval(()=>setClock(fmtTime()), 5000); return ()=>clearInterval(t); }, []);
   const fileRef = useRef(null);
@@ -728,7 +729,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
       <button onClick={onLogout} className="px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold hover:bg-white/20 flex items-center gap-1.5">
         <IcLogout size={13}/> Logout
       </button>
-      <button onClick={()=>setPage("sites")} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
+      <button onClick={()=>{ setPage("sites"); setEditSite({}); }} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
         <IcPlus size={14}/> Add Site
       </button>
       <button onClick={onExport} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
@@ -772,7 +773,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} stats={stats} setPage={setPage}/>}
+          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} stats={stats} setPage={setPage} onEditSite={setEditSite}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
           {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
           {page==="attention" && <AttentionPage attention={attention} setPage={setPage}/>}
@@ -786,6 +787,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
           </button>
         </p>
       </main>
+      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
       <Toaster/>
     </div>
   );
@@ -794,10 +796,10 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
+function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage, onEditSite}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
-  const [editSite, setEditSite] = useState(null); const [viewSite, setViewSite] = useState(null);
+  const [viewSite, setViewSite] = useState(null);
   const [reportFor, setReportFor] = useState(null);
   const [pinOpen, setPinOpen] = useState(false);
 
@@ -842,7 +844,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
               <button onClick={()=>setView("grid")} className={`w-8 h-8 grid place-items-center rounded-full ${view==="grid"?"bg-white shadow text-slate-900":"text-slate-500"}`}><IcGrid size={16}/></button>
               <button onClick={()=>setView("list")} className={`w-8 h-8 grid place-items-center rounded-full ${view==="list"?"bg-white shadow text-slate-900":"text-slate-500"}`}><IcList size={16}/></button>
             </div>
-            <button onClick={()=>setEditSite({})} className="px-4 py-2.5 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+            <button onClick={()=>onEditSite({})} className="px-4 py-2.5 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
               <IcPlus size={14}/> Add Site
             </button>
           </div>
@@ -853,7 +855,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
       {view==="grid" ? (
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {filtered.map(s=>(
-            <SiteCard key={s.id} site={s} onOpen={()=>setViewSite(s)} onEdit={()=>setEditSite(s)}
+            <SiteCard key={s.id} site={s} onOpen={()=>setViewSite(s)} onEdit={()=>onEditSite(s)}
               onDelete={()=>{ if(window.confirm(`Delete ${s.name}?`)){ setSites(list=>list.filter(x=>x.id!==s.id)); toast.success("Site deleted"); } }}
               onReport={()=>setReportFor(s)}/>
           ))}
@@ -889,7 +891,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
                       <td className="text-center px-3 py-2.5"><span className={health>=90?"text-emerald-600 font-semibold":health>=70?"text-amber-600 font-semibold":"text-red-600 font-semibold"}>{health}%</span></td>
                       <td className="px-3 py-2.5 text-slate-500">{s.inspector}</td>
                       <td className="text-right px-3 py-2.5 whitespace-nowrap">
-                        <button onClick={e=>{e.stopPropagation(); setEditSite(s);}} className="w-8 h-8 rounded-full hover:bg-slate-100 inline-grid place-items-center"><IcEdit size={14}/></button>
+                        <button onClick={e=>{e.stopPropagation(); onEditSite(s);}} className="w-8 h-8 rounded-full hover:bg-slate-100 inline-grid place-items-center"><IcEdit size={14}/></button>
                         <button onClick={e=>{e.stopPropagation(); setViewSite(s);}} className="w-8 h-8 rounded-full hover:bg-slate-100 inline-grid place-items-center"><IcScan size={14}/></button>
                       </td>
                     </tr>
@@ -923,7 +925,6 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
         </div>
       </div>
 
-      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
       {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
