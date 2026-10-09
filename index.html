@@ -306,6 +306,69 @@ const Field = ({label, children}) => (
   <div><label className="text-xs font-bold tracking-widest uppercase text-slate-500">{label}</label>
   <div className="mt-1.5">{children}</div></div>
 );
+
+/* ---------------- read-only record details ---------------- */
+const DetailRow = ({label, value}) => (value===undefined || value===null || value==="") ? null : (
+  <div className="flex gap-3 py-2 border-b last:border-0" style={{borderColor:"#f1f5f9"}}>
+    <div className="w-[120px] shrink-0 text-[11px] font-bold tracking-widest uppercase text-slate-400 pt-0.5">{label}</div>
+    <div className="text-sm text-slate-700 min-w-0 break-words">{value}</div>
+  </div>
+);
+const DetailModal = ({title, siteName, badges, rows, description, onClose}) => (
+  <Modal title={title} onClose={onClose}>
+    {siteName && <p className="text-xs text-slate-500 -mt-1 mb-3 flex items-center gap-1.5"><IcPin size={11}/><span className="truncate">{siteName}</span></p>}
+    {badges && <div className="flex items-center gap-2 flex-wrap mb-3">{badges}</div>}
+    <div className="border rounded-xl px-3" style={{borderColor:"#eef2f7"}}>{rows.map(r=><DetailRow key={r.label} label={r.label} value={r.value}/>)}</div>
+    {description && (
+      <div className="mt-3">
+        <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-1">Full Description</div>
+        <p className="text-sm text-slate-700 bg-slate-50 border rounded-xl p-3 whitespace-pre-wrap" style={{borderColor:"#eef2f7"}}>{description}</p>
+      </div>
+    )}
+    <div className="mt-4 flex justify-end">
+      <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm" style={{borderColor:"#e2e8f0"}}>Close</button>
+    </div>
+  </Modal>
+);
+const IncidentDetailModal = ({inc, siteName, onClose}) => {
+  const history = inc.history || [];
+  const last = history[history.length-1];
+  const rows = [
+    { label:"Date Reported", value:inc.date },
+    { label:"Category", value:inc.category },
+    { label:"Severity", value:inc.severity },
+    { label:"Status", value:inc.status },
+    { label:"Reported By", value:inc.reportedBy },
+  ];
+  if(last) rows.push({ label:"Last Change", value:`${last.at} — ${last.by}: ${last.change}` });
+  return (
+    <DetailModal title={inc.title || "Incident"} siteName={inc.siteName || siteName} onClose={onClose} rows={rows} description={inc.description}
+      badges={<>
+        <Badge status={inc.status}/>
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
+        {inc.category && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">{inc.category}</span>}
+      </>}/>
+  );
+};
+const AccidentDetailModal = ({acc, siteName, onClose}) => {
+  const rows = [
+    { label:"Date of Accident", value:acc.date },
+    { label:"Accident Type", value:acc.type },
+    { label:"Severity", value:acc.severity },
+    { label:"Status", value:acc.status },
+    { label:"Location on Site", value:acc.location },
+    { label:"Persons Involved", value:acc.personsInvolved },
+    { label:"Reported By", value:acc.reportedBy },
+  ];
+  return (
+    <DetailModal title={acc.title || acc.type || "Accident"} siteName={acc.siteName || siteName} onClose={onClose} rows={rows} description={acc.description}
+      badges={<>
+        <Badge status={acc.status}/>
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${severityCls(acc.severity)}`}>{acc.severity}</span>
+        {acc.type && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">{acc.type}</span>}
+      </>}/>
+  );
+};
 const inputCls = "w-full px-4 py-3 rounded-xl border bg-slate-50 focus:bg-white outline-none focus:border-slate-400";
 
 const problemsOf = (s, incidents) => {
@@ -974,9 +1037,11 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
   const siteAccidents = accidents.filter(a=>a.siteId===site.id);
+  const [detailInc, setDetailInc] = useState(null); const [detailAcc, setDetailAcc] = useState(null);
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
+    <>
     <Modal title={site.name} onClose={onClose} wide>
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -1049,7 +1114,7 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
           {siteIncidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No incidents for this site.</p> : (
             <div className="space-y-2">
               {siteIncidents.map(i=>(
-                <div key={i.id} className="border rounded-xl p-3 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                <div key={i.id} onClick={()=>setDetailInc(i)} title="Click for full details" className="border rounded-xl p-3 bg-slate-50 cursor-pointer hover:bg-white hover:border-slate-300 transition" style={{borderColor:"#eef2f7"}}>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm">{i.title}</span>
                     <Badge status={i.status}/>
@@ -1057,6 +1122,7 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
                     <span className="ml-auto text-[11px] text-slate-400">{i.date}</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">{i.description}</p>
+                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
                 </div>
               ))}
             </div>
@@ -1068,7 +1134,7 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
           {siteAccidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p> : (
             <div className="space-y-2">
               {siteAccidents.map(a=>(
-                <div key={a.id} className="border rounded-xl p-3 bg-red-50" style={{borderColor:"#fecaca"}}>
+                <div key={a.id} onClick={()=>setDetailAcc(a)} title="Click for full details" className="border rounded-xl p-3 bg-red-50 cursor-pointer hover:brightness-[0.98] transition" style={{borderColor:"#fecaca"}}>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
                     <Badge status={a.status}/>
@@ -1077,6 +1143,7 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
                   </div>
                   {a.type && <div className="text-[11px] text-slate-500 mt-0.5">{a.type}{a.location?` • ${a.location}`:""}</div>}
                   {a.description && <p className="text-xs text-slate-500 mt-1">{a.description}</p>}
+                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
                 </div>
               ))}
             </div>
@@ -1084,6 +1151,9 @@ function SiteDetailModal({site, incidents, accidents=[], setPage, onClose}){
         </div>
       </div>
     </Modal>
+    {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)}/>}
+    {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)}/>}
+    </>
   );
 }
 
@@ -1770,6 +1840,7 @@ function AIReportPage({live}){
 function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const site = sites.find(s=>s.id===auth.siteId);
   const [editOpen, setEditOpen] = useState(false); const [newIncOpen, setNewIncOpen] = useState(false); const [newAccOpen, setNewAccOpen] = useState(false);
+  const [detailInc, setDetailInc] = useState(null); const [detailAcc, setDetailAcc] = useState(null);
   if(!site) return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="bg-white rounded-2xl border p-8 text-center max-w-[420px]" style={{borderColor:"#e2e8f0"}}>
@@ -1885,13 +1956,14 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteIncidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No incidents for this site.</div> : siteIncidents.map(i=>(
-                <div key={i.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                <div key={i.id} onClick={()=>setDetailInc(i)} title="Click for full details" className="border rounded-xl p-2.5 bg-slate-50 cursor-pointer hover:bg-white hover:border-slate-300 transition" style={{borderColor:"#eef2f7"}}>
                   <div className="text-xs font-bold">{i.title}</div>
                   <div className="text-xs text-slate-600 line-clamp-2">{i.description}</div>
                   <div className="mt-1 flex gap-1">
                     <span className={`px-1.5 py-0.5 rounded-full border text-[11px] font-bold ${severityCls(i.severity)}`}>{i.severity}</span>
                     <span className="ml-auto text-[11px] text-slate-500">{i.status} • {i.date}</span>
                   </div>
+                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
                 </div>
               ))}
             </div>
@@ -1906,7 +1978,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteAccidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No accidents for this site.</div> : siteAccidents.map(a=>(
-                <div key={a.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                <div key={a.id} onClick={()=>setDetailAcc(a)} title="Click for full details" className="border rounded-xl p-2.5 bg-slate-50 cursor-pointer hover:bg-white hover:border-slate-300 transition" style={{borderColor:"#eef2f7"}}>
                   <div className="text-xs font-bold">{a.title||a.type||"Accident"}</div>
                   <div className="text-xs text-slate-600 line-clamp-2">{a.description||""}</div>
                   <div className="mt-1 flex gap-1 flex-wrap items-center">
@@ -1914,6 +1986,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
                     <span className={`px-1.5 py-0.5 rounded-full border text-[11px] font-bold ${severityCls(a.severity)}`}>{a.severity}</span>
                     <span className="ml-auto text-[11px] text-slate-500">{a.status} • {a.date}</span>
                   </div>
+                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
                 </div>
               ))}
             </div>
@@ -1924,6 +1997,8 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
       {newAccOpen && <AccidentFormModal sites={[site]} accidents={accidents} setAccidents={setAccidents} preSite={site} onClose={()=>setNewAccOpen(false)}/>}
+      {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)}/>}
+      {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)}/>}
       <Toaster/>
     </div>
   );
