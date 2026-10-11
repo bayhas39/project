@@ -1,0 +1,19 @@
+# Secrets — never commit. Use .env.example as the template.
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Local agent/tooling state
+.freebuff/
+
+# Local preview helper
+_srv.js
+
+# Logs & OS cruft
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db

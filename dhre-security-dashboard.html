@@ -794,6 +794,23 @@ const LS = {
       return fb;
     }
   },
+  /* Reads a string that may have been stored either JSON-encoded or as a raw
+     value pasted straight into DevTools (localStorage.setItem("dhre_sync_url",
+     "https://...")). get() would silently drop the raw form. */
+  str(k, fb) {
+    try {
+      const v = localStorage.getItem(k);
+      if (v == null) return fb;
+      try {
+        const parsed = JSON.parse(v);
+        return typeof parsed === "string" ? parsed : v;
+      } catch (e) {
+        return v;
+      }
+    } catch (e) {
+      return fb;
+    }
+  },
   set(k, v) {
     try {
       localStorage.setItem(k, JSON.stringify(v));
@@ -847,12 +864,19 @@ const postSync = (type, payload) => {
    this browser already applied, so a pull is ignored unless the server really is
    newer -- that is what makes every account converge on the same data.
    Empty by default: set localStorage "dhre_sync_url" to a working service to
-   turn shared sync on. With no URL the dashboard never leaves this browser.     */
+   turn shared sync on. With no URL the dashboard never leaves this browser.
+   Poll cadence is localStorage "dhre_sync_interval" in ms (default 3000); raise
+   it to spend fewer requests against the sync service's plan.                  */
 const SYNC_API = "";
 const REV_KEY = "__dhre_sync_rev";
+const SYNC_INTERVAL = 3000;
 const REMOTE = {
   url() {
-    return LS.get("dhre_sync_url", null) || SYNC_API;
+    return LS.str("dhre_sync_url", null) || SYNC_API;
+  },
+  interval() {
+    const n = Number(LS.get("dhre_sync_interval", SYNC_INTERVAL));
+    return Number.isFinite(n) && n >= 1000 ? n : SYNC_INTERVAL;
   },
   revs() {
     return LS.get(REV_KEY, {}) || {};
@@ -1279,7 +1303,7 @@ function App() {
       await pull();
     };
     boot();
-    const iv = setInterval(pull, 3000);
+    const iv = setInterval(pull, REMOTE.interval());
     return () => {
       alive = false;
       clearInterval(iv);
@@ -1306,6 +1330,7 @@ function App() {
     sites: sites,
     setSites: setSites,
     incidents: incidents,
+    setIncidents: setIncidents,
     accidents: accidents,
     onLogout: logout
   }, shared));
@@ -1615,6 +1640,46 @@ const NEXT_PAGE = {
   reports: "AI Report",
   ai: "Sites"
 };
+/* ================================================================ */
+/*                        ADMIN ACTIONS                             */
+function AdminTitleBar({ auth, onLogout, onExport, onImport, fileRef }) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-2 shrink-0"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "hidden xl:inline text-xs font-semibold text-slate-500 whitespace-nowrap"
+  }, "Admin • ", auth.name), /*#__PURE__*/React.createElement("button", {
+    onClick: onLogout,
+    className: "px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 border text-xs font-bold hover:bg-slate-200 flex items-center gap-1.5 whitespace-nowrap",
+    style: {
+      borderColor: "#e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement(IcLogout, {
+    size: 13
+  }), " Logout"), /*#__PURE__*/React.createElement("button", {
+    onClick: onExport,
+    className: "px-3 py-1.5 rounded-full bg-white text-slate-900 border text-xs font-bold hover:bg-slate-50 shadow-sm flex items-center gap-1.5 whitespace-nowrap",
+    style: {
+      borderColor: "#e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement(IcDownload, {
+    size: 14
+  }), " Export Data"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => fileRef.current && fileRef.current.click(),
+    className: "px-3 py-1.5 rounded-full bg-white text-slate-900 border text-xs font-bold hover:bg-slate-50 shadow-sm flex items-center gap-1.5 whitespace-nowrap",
+    style: {
+      borderColor: "#e2e8f0"
+    }
+  }, /*#__PURE__*/React.createElement(IcUpload, {
+    size: 14
+  }), " Import Data"), /*#__PURE__*/React.createElement("input", {
+    ref: fileRef,
+    type: "file",
+    accept: "application/json",
+    className: "hidden",
+    onChange: onImport
+  }));
+}
+
 function AdminView({
   auth,
   sites,
@@ -1629,6 +1694,7 @@ function AdminView({
 }) {
   const [page, setPage] = useState(() => LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(() => fmtTime());
+  const [editSite, setEditSite] = useState(null);
   useEffect(() => {
     LS.set("dhre_current_page", page);
   }, [page]);
@@ -1721,35 +1787,6 @@ function AdminView({
     reader.readAsText(file);
     e.target.value = "";
   };
-  const HeaderRight = /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
-    className: "hidden lg:inline text-xs text-sky-200 max-w-[160px] truncate"
-  }, "Admin \u2022 ", auth.name), /*#__PURE__*/React.createElement("button", {
-    onClick: onLogout,
-    className: "px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold hover:bg-white/20 flex items-center gap-1.5"
-  }, /*#__PURE__*/React.createElement(IcLogout, {
-    size: 13
-  }), " Logout"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setPage("sites"),
-    className: "hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow"
-  }, /*#__PURE__*/React.createElement(IcPlus, {
-    size: 14
-  }), " Add Site"), /*#__PURE__*/React.createElement("button", {
-    onClick: onExport,
-    className: "hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow"
-  }, /*#__PURE__*/React.createElement(IcDownload, {
-    size: 14
-  }), " Export Data"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => fileRef.current && fileRef.current.click(),
-    className: "hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow"
-  }, /*#__PURE__*/React.createElement(IcUpload, {
-    size: 14
-  }), " Import Data"), /*#__PURE__*/React.createElement("input", {
-    ref: fileRef,
-    type: "file",
-    accept: "application/json",
-    className: "hidden",
-    onChange: onImportFile
-  }));
   const TABS = [{
     id: "sites",
     icon: IcGrid,
@@ -1782,14 +1819,14 @@ function AdminView({
     syncMode: syncMode,
     onToggleLive: () => setRemoteOn(v => !v),
     lastSync: lastSync || clock,
-    right: HeaderRight
+    right: null
   }, /*#__PURE__*/React.createElement("div", {
     className: "border-t bg-slate-50",
     style: {
       borderColor: "#eef2f7"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "max-w-[1280px] mx-auto px-4 lg:px-6 h-[48px] flex items-center justify-center"
+    className: "max-w-[1600px] mx-auto px-4 lg:px-6 min-h-[48px] py-1.5 flex items-center justify-center gap-2 lg:gap-3 flex-wrap"
   }, /*#__PURE__*/React.createElement("nav", {
     className: "flex p-1 rounded-full bg-white border shadow-sm overflow-auto max-w-full",
     style: {
@@ -1806,7 +1843,13 @@ function AdminView({
     }), " ", t.label, t.count !== undefined && /*#__PURE__*/React.createElement("span", {
       className: "ml-1 px-1.5 py-0.5 rounded-full text-xs bg-red-100 text-red-700"
     }, t.count));
-  }))))), /*#__PURE__*/React.createElement("main", {
+  })), /*#__PURE__*/React.createElement(AdminTitleBar, {
+    auth: auth,
+    onLogout: onLogout,
+    onExport: onExport,
+    onImport: onImportFile,
+    fileRef: fileRef
+  })))), /*#__PURE__*/React.createElement("main", {
     className: "max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8"
   }, /*#__PURE__*/React.createElement("div", {
     key: page,
@@ -1846,7 +1889,12 @@ function AdminView({
   }, "Page: ", PAGE_LABEL[page], " \u2022", /*#__PURE__*/React.createElement("button", {
     onClick: () => setPage(PAGES[(PAGES.indexOf(page) + 1) % PAGES.length]),
     className: "underline font-semibold hover:text-slate-700 ml-1"
-  }, "Go to ", NEXT_PAGE[page], " \u2192"))), /*#__PURE__*/React.createElement(Toaster, null));
+  }, "Go to ", NEXT_PAGE[page], " \u2192"))), editSite !== null && /*#__PURE__*/React.createElement(SiteFormModal, {
+    site: editSite,
+    sites: sites,
+    setSites: setSites,
+    onClose: () => setEditSite(null)
+  }), /*#__PURE__*/React.createElement(Toaster, null));
 }
 
 /* ================================================================ */
@@ -3839,18 +3887,8 @@ function AIReportPage({
 
 /* ================================================================ */
 /*                        OWNER DASHBOARD                           */
-/* ================================================================ */
-function OwnerView({
-  auth,
-  sites,
-  setSites,
-  incidents,
-  accidents,
-  onLogout,
-  setRemoteOn,
-  syncMode,
-  lastSync
-}) {
+/* ================================================================ */function OwnerView({ auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync }) {
+  const [page, setPage] = useState(() => LS.get("dhre_owner_page", "overview"));
   const site = sites.find(s => s.id === auth.siteId);
   const [editOpen, setEditOpen] = useState(false);
   if (!site) return /*#__PURE__*/React.createElement("div", {
@@ -3907,9 +3945,8 @@ function OwnerView({
     className: "truncate"
   }, "My Site Website \u2014 ", site.name, " \u2022 One dashboard \u2022 All things for this site"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setEditOpen(true),
-    className: "ml-auto px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold shrink-0"
-  }, "Edit"))))), /*#__PURE__*/React.createElement("main", {
-    className: "max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8 space-y-4"
+    className: "ml-auto px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold shrink-0"  }, " Edit"))))), /*#__PURE__*/React.createElement("main", {
+    className: "max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8"
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-white rounded-2xl border p-4 flex items-center justify-between gap-3",
     style: {
@@ -4112,7 +4149,17 @@ function OwnerView({
     className: "text-xs font-bold"
   }, a.title || a.type || "Accident"), /*#__PURE__*/React.createElement("div", {
     className: "text-xs text-slate-600"
-  }, a.description || ""))))))), editOpen && /*#__PURE__*/React.createElement(SiteFormModal, {
+  }, a.description || ""))))))), /*#__PURE__*/React.createElement("div", {
+    className: "mt-6"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center gap-1.5 border-b pb-1 text-[11px] font-bold uppercase tracking-widest text-slate-500"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setPage("overview"),
+    className: `px-3 py-1 rounded-full ${page === "overview" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-700"}`
+  }, "Overview"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setPage("reports"),
+    className: `px-3 py-1 rounded-full ${page === "reports" ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-700"}`
+  }, "Reports"))), editOpen && /*#__PURE__*/React.createElement(SiteFormModal, {
     site: site,
     sites: sites,
     setSites: setSites,

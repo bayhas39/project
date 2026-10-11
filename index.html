@@ -106,7 +106,6 @@ const INC_STATUS = [
 ];
 const SEVERITIES = ["Low","Medium","High","Critical"];
 const CATEGORIES = ["Safety","HVAC","Finishing","Electrical","Security","Civil","Plumbing"];
-const ACCIDENT_TYPES = ["Vehicle","Slip / Trip / Fall","Fall from Height","Struck by Object","Equipment / Plant","Fire / Explosion","Electrical","Chemical","Other"];
 const PALETTE = ["#0284c7","#ef4444","#7c3aed","#f59e0b","#0ea5e9","#1e293b","#06b6d4","#10b981"];
 const PROB_KEYS = [
   { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#0284c7" },
@@ -174,6 +173,8 @@ function makeIncidents(){
 const LS = {
   get(k, fb){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fb; }catch(e){ return fb; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  /* Reads a string stored either JSON-encoded or as a raw value pasted into DevTools. */
+  str(k, fb){ try{ const v=localStorage.getItem(k); if(v==null) return fb; try{ const p=JSON.parse(v); return typeof p==="string"?p:v; }catch(e){ return v; } }catch(e){ return fb; } },
 };
 const COLLECTIONS = {
   sites:     { key:"site-inspection-sites-v80", mirror:"site-inspection-sites", label:"Sites" },
@@ -197,11 +198,15 @@ const postSync = (type, payload) => {
    this browser already applied, so a pull is ignored unless the server really is
    newer -- that is what makes every account converge on the same data.
    Empty by default: set localStorage "dhre_sync_url" to a working service to
-   turn shared sync on. With no URL the dashboard never leaves this browser.     */
-const SYNC_API = "/api/sync";
+   turn shared sync on. With no URL the dashboard never leaves this browser.
+   Poll cadence is localStorage "dhre_sync_interval" in ms (default 3000); raise
+   it to spend fewer requests against the sync service's plan.                  */
+const SYNC_API = "";
 const REV_KEY = "__dhre_sync_rev";
+const SYNC_INTERVAL = 3000;
 const REMOTE = {
-  url(){ return LS.get("dhre_sync_url", null) || SYNC_API; },
+  url(){ return LS.str("dhre_sync_url", null) || SYNC_API; },
+  interval(){ const n = Number(LS.get("dhre_sync_interval", SYNC_INTERVAL)); return Number.isFinite(n) && n >= 1000 ? n : SYNC_INTERVAL; },
   revs(){ return LS.get(REV_KEY, {}) || {}; },
   setRev(col, rev){ const r = this.revs(); r[col] = rev; LS.set(REV_KEY, r); },
   /* ok:true = the service answered. payload is non-null only when it is newer. */
@@ -306,88 +311,6 @@ const Field = ({label, children}) => (
   <div><label className="text-xs font-bold tracking-widest uppercase text-slate-500">{label}</label>
   <div className="mt-1.5">{children}</div></div>
 );
-
-/* ---------------- read-only record details ---------------- */
-const DetailRow = ({label, value}) => (value===undefined || value===null || value==="") ? null : (
-  <div className="flex gap-3 py-2 border-b last:border-0" style={{borderColor:"#f1f5f9"}}>
-    <div className="w-[120px] shrink-0 text-[11px] font-bold tracking-widest uppercase text-slate-400 pt-0.5">{label}</div>
-    <div className="text-sm text-slate-700 min-w-0 break-words">{value}</div>
-  </div>
-);
-const stampNow = () => new Date().toISOString().slice(0,16).replace("T"," ");
-/* append a status change to the record's history so it shows up as "Last Change" */
-const markStatus = (list, id, st, by) => list.map(x => x.id===id ? {
-  ...x, status:st,
-  history:[...(x.history||[]), { at:stampNow(), by:by||"Admin", change:`Status ${x.status} → ${st}` }],
-} : x);
-const isSolved = (r) => r.status==="Resolved" || r.status==="Closed";
-const SolveActions = ({record, onStatus}) => {
-  if(!onStatus) return null;
-  return isSolved(record)
-    ? <button onClick={()=>onStatus("Open")} className="px-5 py-2.5 rounded-full border font-bold text-sm hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Reopen</button>
-    : <button onClick={()=>onStatus("Resolved")} className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 shadow-sm"><IcCheck size={15}/> Solved</button>;
-};
-const DetailModal = ({title, siteName, badges, rows, description, onClose, actions}) => (
-  <Modal title={title} onClose={onClose}>
-    {siteName && <p className="text-xs text-slate-500 -mt-1 mb-3 flex items-center gap-1.5"><IcPin size={11}/><span className="truncate">{siteName}</span></p>}
-    {badges && <div className="flex items-center gap-2 flex-wrap mb-3">{badges}</div>}
-    <div className="border rounded-xl px-3" style={{borderColor:"#eef2f7"}}>{rows.map(r=><DetailRow key={r.label} label={r.label} value={r.value}/>)}</div>
-    {description && (
-      <div className="mt-3">
-        <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-1">Full Description</div>
-        <p className="text-sm text-slate-700 bg-slate-50 border rounded-xl p-3 whitespace-pre-wrap" style={{borderColor:"#eef2f7"}}>{description}</p>
-      </div>
-    )}
-    <div className="mt-4 flex items-center justify-end gap-2">
-      {actions}
-      <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Close</button>
-    </div>
-  </Modal>
-);
-const IncidentDetailModal = ({inc, siteName, onClose, onStatus}) => {
-  const history = inc.history || [];
-  const last = history[history.length-1];
-  const rows = [
-    { label:"Date Reported", value:inc.date },
-    { label:"Category", value:inc.category },
-    { label:"Severity", value:inc.severity },
-    { label:"Status", value:inc.status },
-    { label:"Reported By", value:inc.reportedBy },
-  ];
-  if(last) rows.push({ label:"Last Change", value:`${last.at} — ${last.by}: ${last.change}` });
-  return (
-    <DetailModal title={inc.title || "Incident"} siteName={inc.siteName || siteName} onClose={onClose} rows={rows} description={inc.description}
-      actions={<SolveActions record={inc} onStatus={onStatus}/>}
-      badges={<>
-        <Badge status={inc.status}/>
-        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
-        {inc.category && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">{inc.category}</span>}
-      </>}/>
-  );
-};
-const AccidentDetailModal = ({acc, siteName, onClose, onStatus}) => {
-  const history = acc.history || [];
-  const last = history[history.length-1];
-  const rows = [
-    { label:"Date of Accident", value:acc.date },
-    { label:"Accident Type", value:acc.type },
-    { label:"Severity", value:acc.severity },
-    { label:"Status", value:acc.status },
-    { label:"Location on Site", value:acc.location },
-    { label:"Persons Involved", value:acc.personsInvolved },
-    { label:"Reported By", value:acc.reportedBy },
-  ];
-  if(last) rows.push({ label:"Last Change", value:`${last.at} — ${last.by}: ${last.change}` });
-  return (
-    <DetailModal title={acc.title || acc.type || "Accident"} siteName={acc.siteName || siteName} onClose={onClose} rows={rows} description={acc.description}
-      actions={<SolveActions record={acc} onStatus={onStatus}/>}
-      badges={<>
-        <Badge status={acc.status}/>
-        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${severityCls(acc.severity)}`}>{acc.severity}</span>
-        {acc.type && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">{acc.type}</span>}
-      </>}/>
-  );
-};
 const inputCls = "w-full px-4 py-3 rounded-xl border bg-slate-50 focus:bg-white outline-none focus:border-slate-400";
 
 const problemsOf = (s, incidents) => {
@@ -564,7 +487,7 @@ function App(){
     };
 
     boot();
-    const iv = setInterval(pull, 3000);
+    const iv = setInterval(pull, REMOTE.interval());
     return ()=>{ alive = false; clearInterval(iv); };
   }, [remoteOn]);
 
@@ -577,8 +500,8 @@ function App(){
   const syncMode = !remoteOn ? "paused" : !hasRemote ? "local" : (syncInfo.ok ? "live" : "offline");
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
-  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
-  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
+  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
+  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
@@ -738,7 +661,48 @@ const PAGES = ["sites","charts","amc","attention","reports","ai"];
 const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports", ai:"AI Report" };
 const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"AI Report", ai:"Sites" };
 
-function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
+/* ================================================================ */
+/*                        ADMIN ACTIONS                             */
+/*  Admin • <name> | Logout | Export Data | Import Data  */
+/*  Rendered inside the nav strip, right next to the AI Report tab.  */
+/* ================================================================ */
+function AdminTitleBar({ auth, onLogout, onExport, onImport, fileRef }) {
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <span className="hidden xl:inline text-xs font-semibold text-slate-500 whitespace-nowrap">Admin • {auth.name}</span>
+      <button
+        onClick={onLogout}
+        className="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 border text-xs font-bold hover:bg-slate-200 flex items-center gap-1.5 whitespace-nowrap"
+        style={{borderColor:"#e2e8f0"}}
+      >
+        <IcLogout size={13}/> Logout
+      </button>
+      <button
+        onClick={onExport}
+        className="px-3 py-1.5 rounded-full bg-white text-slate-900 border text-xs font-bold hover:bg-slate-50 shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+        style={{borderColor:"#e2e8f0"}}
+      >
+        <IcDownload size={14}/> Export Data
+      </button>
+      <button
+        onClick={() => fileRef.current && fileRef.current.click()}
+        className="px-3 py-1.5 rounded-full bg-white text-slate-900 border text-xs font-bold hover:bg-slate-50 shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+        style={{borderColor:"#e2e8f0"}}
+      >
+        <IcUpload size={14}/> Import Data
+      </button>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="application/json"
+        className="hidden"
+        onChange={onImport}
+      />
+    </div>
+  );
+}
+
+function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const [page, setPage] = useState(()=> LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(()=> fmtTime());
   const [editSite, setEditSite] = useState(null);
@@ -806,25 +770,6 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
     e.target.value = "";
   };
 
-  const HeaderRight = (
-    <>
-      <span className="hidden lg:inline text-xs text-sky-200 max-w-[160px] truncate">Admin • {auth.name}</span>
-      <button onClick={onLogout} className="px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold hover:bg-white/20 flex items-center gap-1.5">
-        <IcLogout size={13}/> Logout
-      </button>
-      <button onClick={()=>{ setPage("sites"); setEditSite({}); }} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
-        <IcPlus size={14}/> Add Site
-      </button>
-      <button onClick={onExport} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
-        <IcDownload size={14}/> Export Data
-      </button>
-      <button onClick={()=>fileRef.current && fileRef.current.click()} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
-        <IcUpload size={14}/> Import Data
-      </button>
-      <input ref={fileRef} type="file" accept="application/json" className="hidden" onChange={onImportFile}/>
-    </>
-  );
-
   const TABS = [
     { id:"sites",     icon:IcGrid,   label:"Sites" },
     { id:"charts",    icon:IcChart,  label:"Charts" },
@@ -836,9 +781,9 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900">
-      <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={HeaderRight}>
+      <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={null}>
         <div className="border-t bg-slate-50" style={{borderColor:"#eef2f7"}}>
-          <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[48px] flex items-center justify-center">
+          <div className="max-w-[1600px] mx-auto px-4 lg:px-6 min-h-[48px] py-1.5 flex items-center justify-center gap-2 lg:gap-3 flex-wrap">
             <nav className="flex p-1 rounded-full bg-white border shadow-sm overflow-auto max-w-full" style={{borderColor:"#e2e8f0"}}>
               {TABS.map(t=>{
                 const Icon = t.icon;
@@ -850,18 +795,25 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
                 );
               })}
             </nav>
+            <AdminTitleBar
+              auth={auth}
+              onLogout={onLogout}
+              onExport={onExport}
+              onImport={onImportFile}
+              fileRef={fileRef}
+            />
           </div>
         </div>
       </Header>
 
       <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} stats={stats} setPage={setPage} onEditSite={setEditSite}/>}
+          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} stats={stats} setPage={setPage}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
           {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
           {page==="attention" && <AttentionPage attention={attention} setPage={setPage}/>}
           {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
-          {page==="ai"        && <AIReportPage live={syncMode==="live"}/>}
+          {page==="ai"        && <AIReportPage live={syncMode==="live"} sites={sites} incidents={incidents} accidents={accidents} auth={auth}/>}
         </div>
         <p className="mt-8 text-center text-xs text-slate-400">
           Page: {PAGE_LABEL[page]} •
@@ -879,10 +831,10 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], setAccidents, stats, setPage, onEditSite}){
+function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
-  const [viewSite, setViewSite] = useState(null);
+  const [editSite, setEditSite] = useState(null); const [viewSite, setViewSite] = useState(null);
   const [reportFor, setReportFor] = useState(null);
   const [pinOpen, setPinOpen] = useState(false);
 
@@ -927,7 +879,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], setA
               <button onClick={()=>setView("grid")} className={`w-8 h-8 grid place-items-center rounded-full ${view==="grid"?"bg-white shadow text-slate-900":"text-slate-500"}`}><IcGrid size={16}/></button>
               <button onClick={()=>setView("list")} className={`w-8 h-8 grid place-items-center rounded-full ${view==="list"?"bg-white shadow text-slate-900":"text-slate-500"}`}><IcList size={16}/></button>
             </div>
-            <button onClick={()=>onEditSite({})} className="px-4 py-2.5 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+            <button onClick={()=>setEditSite({})} className="px-4 py-2.5 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
               <IcPlus size={14}/> Add Site
             </button>
           </div>
@@ -938,7 +890,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], setA
       {view==="grid" ? (
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {filtered.map(s=>(
-            <SiteCard key={s.id} site={s} onOpen={()=>setViewSite(s)} onEdit={()=>onEditSite(s)}
+            <SiteCard key={s.id} site={s} onOpen={()=>setViewSite(s)} onEdit={()=>setEditSite(s)}
               onDelete={()=>{ if(window.confirm(`Delete ${s.name}?`)){ setSites(list=>list.filter(x=>x.id!==s.id)); toast.success("Site deleted"); } }}
               onReport={()=>setReportFor(s)}/>
           ))}
@@ -974,7 +926,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], setA
                       <td className="text-center px-3 py-2.5"><span className={health>=90?"text-emerald-600 font-semibold":health>=70?"text-amber-600 font-semibold":"text-red-600 font-semibold"}>{health}%</span></td>
                       <td className="px-3 py-2.5 text-slate-500">{s.inspector}</td>
                       <td className="text-right px-3 py-2.5 whitespace-nowrap">
-                        <button onClick={e=>{e.stopPropagation(); onEditSite(s);}} className="w-8 h-8 rounded-full hover:bg-slate-100 inline-grid place-items-center"><IcEdit size={14}/></button>
+                        <button onClick={e=>{e.stopPropagation(); setEditSite(s);}} className="w-8 h-8 rounded-full hover:bg-slate-100 inline-grid place-items-center"><IcEdit size={14}/></button>
                         <button onClick={e=>{e.stopPropagation(); setViewSite(s);}} className="w-8 h-8 rounded-full hover:bg-slate-100 inline-grid place-items-center"><IcScan size={14}/></button>
                       </td>
                     </tr>
@@ -1008,7 +960,8 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents=[], setA
         </div>
       </div>
 
-      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
     </div>
@@ -1052,29 +1005,12 @@ function SiteCard({site, onOpen, onEdit, onDelete, onReport}){
 }
 
 /* ------------- site details modal ------------- */
-function SiteDetailModal({site, incidents, setIncidents, accidents=[], setAccidents, setPage, onClose}){
+function SiteDetailModal({site, incidents, setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
-  const siteAccidents = accidents.filter(a=>a.siteId===site.id);
-  const [detailInc, setDetailInc] = useState(null); const [detailAcc, setDetailAcc] = useState(null);
-
-  /* admin can mark records solved (or reopen) straight from the details panel */
-  const setIncStatus = (st) => {
-    const inc = detailInc; if(!inc || !setIncidents) return;
-    setIncidents(list=> markStatus(list, inc.id, st, "Admin"));
-    setDetailInc(d=> d ? markStatus([d], d.id, st, "Admin")[0] : d);
-    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
-  };
-  const setAccStatus = (st) => {
-    const acc = detailAcc; if(!acc || !setAccidents) return;
-    setAccidents(list=> markStatus(list, acc.id, st, "Admin"));
-    setDetailAcc(d=> d ? markStatus([d], d.id, st, "Admin")[0] : d);
-    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
-  };
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
-    <>
     <Modal title={site.name} onClose={onClose} wide>
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
@@ -1133,7 +1069,7 @@ function SiteDetailModal({site, incidents, setIncidents, accidents=[], setAccide
 
         <div>
           <h4 className="text-sm font-extrabold mb-2">Issues for this site • {problems.length} problems</h4>
-          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • {siteAccidents.length} accidents</p>
+          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • 0 accidents</p>
           {problems.length===0 ? <p className="text-sm text-slate-500 bg-emerald-50 border border-emerald-100 rounded-xl p-3">No problems — all systems online for this site.</p> : (
             <div className="flex flex-wrap gap-2">{problems.map(p=> <span key={p} className="text-xs font-semibold px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">{p}</span>)}</div>
           )}
@@ -1147,7 +1083,7 @@ function SiteDetailModal({site, incidents, setIncidents, accidents=[], setAccide
           {siteIncidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No incidents for this site.</p> : (
             <div className="space-y-2">
               {siteIncidents.map(i=>(
-                <div key={i.id} onClick={()=>setDetailInc(i)} title="Click for full details" className="border rounded-xl p-3 bg-slate-50 cursor-pointer hover:bg-white hover:border-slate-300 transition" style={{borderColor:"#eef2f7"}}>
+                <div key={i.id} className="border rounded-xl p-3 bg-slate-50" style={{borderColor:"#eef2f7"}}>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm">{i.title}</span>
                     <Badge status={i.status}/>
@@ -1155,7 +1091,6 @@ function SiteDetailModal({site, incidents, setIncidents, accidents=[], setAccide
                     <span className="ml-auto text-[11px] text-slate-400">{i.date}</span>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">{i.description}</p>
-                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
                 </div>
               ))}
             </div>
@@ -1163,30 +1098,11 @@ function SiteDetailModal({site, incidents, setIncidents, accidents=[], setAccide
         </div>
 
         <div>
-          <h4 className="text-sm font-extrabold mb-2">Accidents ({siteAccidents.length})</h4>
-          {siteAccidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p> : (
-            <div className="space-y-2">
-              {siteAccidents.map(a=>(
-                <div key={a.id} onClick={()=>setDetailAcc(a)} title="Click for full details" className="border rounded-xl p-3 bg-red-50 cursor-pointer hover:brightness-[0.98] transition" style={{borderColor:"#fecaca"}}>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
-                    <Badge status={a.status}/>
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(a.severity)}`}>{a.severity}</span>
-                    <span className="ml-auto text-[11px] text-slate-400">{a.date}</span>
-                  </div>
-                  {a.type && <div className="text-[11px] text-slate-500 mt-0.5">{a.type}{a.location?` • ${a.location}`:""}</div>}
-                  {a.description && <p className="text-xs text-slate-500 mt-1">{a.description}</p>}
-                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
-                </div>
-              ))}
-            </div>
-          )}
+          <h4 className="text-sm font-extrabold mb-2">Accidents (0)</h4>
+          <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p>
         </div>
       </div>
     </Modal>
-    {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)} onStatus={setIncStatus}/>}
-    {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)} onStatus={setAccStatus}/>}
-    </>
   );
 }
 
@@ -1694,7 +1610,7 @@ function IncidentFormModal({sites, incidents, setIncidents, existing, preSite, f
   const isEdit = !!existing;
   const [form, setForm] = useState(()=> isEdit ? {...existing} : {
     siteId: preSite?.id || "", siteName: preSite?.name || "", title:"", description:"",
-    category:"Safety", severity:"Medium", status:"Open", reportedBy: preSite?.inspector || "", date:new Date().toISOString().slice(0,10), history:[],
+    category:"Safety", severity:"Medium", status:"Open", reportedBy:"", date:new Date().toISOString().slice(0,10), history:[],
   });
   const set = (k,v)=>setForm(f=>({...f,[k]:v}));
   const save = () => {
@@ -1739,98 +1655,95 @@ function IncidentFormModal({sites, incidents, setIncidents, existing, preSite, f
   );
 }
 
-/* ------------- accident report modal ------------- */
-function AccidentFormModal({sites, accidents, setAccidents, existing, preSite, onClose}){
-  const isEdit = !!existing;
-  const [form, setForm] = useState(()=> isEdit ? {...existing} : {
-    siteId: preSite?.id || "", siteName: preSite?.name || "", title:"", type:"Vehicle", location:"",
-    severity:"Medium", status:"Open", personsInvolved:"", reportedBy: preSite?.inspector || "",
-    date:new Date().toISOString().slice(0,10), description:"",
-  });
-  const set = (k,v)=>setForm(f=>({...f,[k]:v}));
-  const save = () => {
-    if(!form.siteId || !form.title.trim()){ toast.error("Site and title required"); return; }
-    const site = sites.find(s=>s.id===form.siteId);
-    if(isEdit){
-      setAccidents(list=>list.map(a=> a.id===existing.id ? {...a, ...form} : a));
-      toast.success("Accident updated");
-    } else {
-      setAccidents(list=>[{ ...form, id:uid(), siteName:site?.name||form.siteName }, ...list]);
-      toast.success("Accident reported");
-    }
-    onClose();
-  };
-  return (
-    <Modal title={isEdit ? "Edit Accident Report" : "New Accident Report"} onClose={onClose} wide>
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Site *">
-          <select value={form.siteId} onChange={e=>set("siteId", e.target.value)} className={inputCls}>
-            <option value="">— select site —</option>
-            {sites.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-        </Field>
-        <Field label="Date of Accident"><input type="date" value={form.date} onChange={e=>set("date", e.target.value)} className={inputCls}/></Field>
-        <div className="sm:col-span-2"><Field label="Title *">
-          <input value={form.title} onChange={e=>set("title", e.target.value)} placeholder="e.g. Delivery truck hit the gate barrier" className={inputCls}/>
-        </Field></div>
-        <Field label="Accident Type"><select value={form.type} onChange={e=>set("type", e.target.value)} className={inputCls}>{ACCIDENT_TYPES.map(t=><option key={t} value={t}>{t}</option>)}</select></Field>
-        <Field label="Severity"><select value={form.severity} onChange={e=>set("severity", e.target.value)} className={inputCls}>{SEVERITIES.map(s=><option key={s} value={s}>{s}</option>)}</select></Field>
-        <Field label="Status"><select value={form.status} onChange={e=>set("status", e.target.value)} className={inputCls}>{INC_STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}</select></Field>
-        <Field label="Location on Site"><input value={form.location} onChange={e=>set("location", e.target.value)} placeholder="e.g. North gate" className={inputCls}/></Field>
-        <Field label="Persons Involved"><input value={form.personsInvolved} onChange={e=>set("personsInvolved", e.target.value)} placeholder="Names / number of people" className={inputCls}/></Field>
-        <Field label="Reported By"><input value={form.reportedBy} onChange={e=>set("reportedBy", e.target.value)} placeholder="e.g. Ahmed R." className={inputCls}/></Field>
-        <div className="sm:col-span-2"><Field label="Description">
-          <textarea value={form.description} onChange={e=>set("description", e.target.value)} placeholder="What happened? Include time, injuries, damage and witnesses..." rows={3} className={inputCls}/>
-        </Field></div>
-      </div>
-      <p className="text-[11px] text-slate-500 mt-3">Reported accidents appear on this site and on the head-office dashboard</p>
-      <div className="mt-4 flex gap-2 justify-end">
-        <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm" style={{borderColor:"#e2e8f0"}}>Cancel</button>
-        <button onClick={save} className="px-5 py-2.5 rounded-full bg-slate-900 text-white font-bold text-sm hover:bg-slate-800">{isEdit?"Save Changes":"Report Accident"}</button>
-      </div>
-    </Modal>
-  );
-}
-
 /* ================================================================ */
 /*                          AI REPORT                               */
 /* ================================================================ */
-function AIReportPage({live}){
+function withinRange(date, range){
+  if(!date) return false;
+  const t = new Date(date);
+  if(isNaN(t.getTime())) return false;
+  const now = new Date(); now.setHours(23,59,59,999);
+  if(range==="Day"){ const d=new Date(now); d.setDate(d.getDate()-1); return t>=d; }
+  if(range==="Week"){ const d=new Date(now); d.setDate(d.getDate()-7); return t>=d; }
+  if(range==="Month"){ const d=new Date(now); d.setMonth(d.getMonth()-1); return t>=d; }
+  return true;
+}
+function AIReportPage({live, sites, incidents, accidents, auth}){
   const [range, setRange] = useState("Day");
-  const [synced, setSynced] = useState(()=> fmtTime());
-  const ranges = ["Day","Week","Month","Year"];
-  const insights = [
-    { level:"WARNING", cls:"bg-amber-100 text-amber-700 border-amber-200", text:"Unusual login activity from 192.168.x.x between 02:00-04:00 UTC. 47 failed attempts followed by 1 successful authentication." },
-    { level:"CRITICAL", cls:"bg-red-100 text-red-700 border-red-200", text:"Critical vulnerability CVE-2026-xxxx detected on server node-03. Immediate patching recommended." },
-    { level:"INFO", cls:"bg-sky-100 text-sky-700 border-sky-200", text:"All firewall rules passed integrity check. No unauthorized modifications detected." },
-    { level:"WARNING", cls:"bg-amber-100 text-amber-700 border-amber-200", text:"SSL certificate for api.dhre.io expires in 12 days. Auto-renewal not configured." },
-  ];
-  const stats = [
-    { label:"Events Analyzed", value:"2,847" },
-    { label:"Alerts Triggered", value:"14" },
-    { label:"Critical Issues", value:"3" },
-    { label:"Uptime", value:"99.2%" },
-  ];
+  const [q, setQ] = useState("");
+
+  const isOwner = auth?.role==="owner";
+  const site = isOwner ? (sites.find(s=>s.id===auth.siteId) || sites[0] || null) : null;
+  const siteIds = site ? [site.id] : (sites.map(s=>s.id));
+
+  const siteRows = sites.filter(s=> siteIds.includes(s.id));
+  const siteIncidents = incidents.filter(i=> siteIds.includes(i.siteId) || siteIds.includes(i.siteName===undefined?"":i.siteName));
+  const siteAccidents = accidents.filter(a=> siteIds.includes(a.siteId) || siteIds.includes(a.siteName===undefined?"":a.siteName));
+
+  const incInWindow = siteIncidents.filter(i=> withinRange(i.date, range));
+  const accInWindow = siteAccidents.filter(a=> withinRange(a.date, range));
+
+  const siteOffCam = siteRows.reduce((n,s)=> n + (s.offlineCameras||0), 0);
+  const siteOffAnpr = siteRows.reduce((n,s)=> n + (s.offlineANPR||0), 0);
+  const siteNotWorking = siteRows.reduce((n,s)=> n + (s.notWorkingGate||0) + (s.notWorkingANPR||0) + (s.notWorkingIntercom||0) + (s.notWorkingACS||0), 0);
+
+  const totalCameras = siteRows.reduce((n,s)=> n + (s.totalCameras||0), 0);
+
+  const openInc = siteIncidents.filter(i=> i.status==="Open" || i.status==="In Review");
+  const openAcc = siteAccidents.filter(a=> a.status!=="Closed" && a.status!=="Resolved");
+  const solvedInc = siteIncidents.filter(i=> i.status==="Resolved" || i.status==="Closed");
+  const solvedAcc = siteAccidents.filter(a=> a.status==="Resolved" || a.status==="Closed");
+
+  const problems = [];
+  if(siteOffCam>0) problems.push({ label:`${siteOffCam} offline camera${siteOffCam===1?"":"s"}`, cls:"bg-amber-100 text-amber-800 border-amber-200" });
+  if(siteOffAnpr>0) problems.push({ label:`${siteOffAnpr} offline ANPR`, cls:"bg-amber-100 text-amber-800 border-amber-200" });
+  if(siteNotWorking>0) problems.push({ label:`${siteNotWorking} not-working 장치를 포함`, cls:"bg-amber-100 text-amber-800 border-amber-200" });
+  openInc.forEach(i=> problems.push({ label:i.title, cls:"bg-red-100 text-red-800 border-red-200" }));
+  openAcc.forEach(a=> problems.push({ label:a.title||a.type, cls:"bg-red-100 text-red-800 border-red-200" }));
+
+  /* keyword match over site rows + records */
+  const ql = q.trim().toLowerCase();
+  const matchedSites = ql ? siteRows.filter(s=>
+    ([s.name,s.location,s.type,s.inspector,s.pincode]).some(t=> t && String(t).toLowerCase().includes(ql))
+  ) : siteRows;
+  const matchedInc = ql ? siteIncidents.filter(i=>
+    [i.title,i.description,i.category,i.severity,i.status,i.reportedBy,i.siteName].some(t=> t && String(t).toLowerCase().includes(ql))
+  ) : siteIncidents;
+  const matchedAcc = ql ? siteAccidents.filter(a=>
+    [a.title,a.description,a.type,a.severity,a.status,a.location,a.personsInvolved,a.reportedBy,a.siteName].some(t=> t && String(t).toLowerCase().includes(ql))
+  ) : siteAccidents;
+
+  const showSites = ql ? matchedSites : siteRows;
+  const showInc = ql ? matchedInc : (range==="All"? siteIncidents : incInWindow);
+  const showAcc = ql ? matchedAcc : (range==="All"? siteAccidents : accInWindow);
+
+  const summary = (
+    <div className="text-xs text-slate-500 leading-relaxed">
+      {showSites.length} site(s) · {showInc.length} incident(s) · {showAcc.length} accident(s) · {openInc.length+openAcc.length} open · {solvedInc.length+solvedAcc.length} solved
+      {siteOffCam>0 || siteOffAnpr>0 || siteNotWorking>0 ? ` · ${siteOffCam+siteOffAnpr+siteNotWorking} device issue(s) (offline cameras ${siteOffCam}, offline ANPR ${siteOffAnpr}, not-working ${siteNotWorking})` : ""}
+      {site && <> · this site: {site.name} — {site.location}</>}
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border bg-gradient-to-br from-slate-900 via-slate-900 to-sky-900 p-5 text-white" style={{borderColor:"#0f172a"}}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 grid place-items-center"><IcSparkles size={18}/></div>
           <div>
-            <div className="text-[11px] font-bold tracking-widest uppercase text-sky-200">AI Generated Report</div>
-            <h2 className="text-xl font-extrabold leading-none mt-0.5">Today's Security Summary</h2>
-            <p className="text-xs text-sky-200 mt-1">Intelligent analysis of security events, alerts, and system health</p>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-sky-200">AI Report (real data only)</div>
+            <h2 className="text-xl font-extrabold leading-none mt-0.5">Dashboard Security Summary</h2>
+            <p className="text-xs text-sky-200 mt-1">{isOwner? "Your site report" : "All sites report"} · no random information</p>
           </div>
-          <button onClick={()=>setSynced(fmtTime())} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 border border-white/20 text-xs font-bold hover:bg-white/25">
-            <IcRefresh size={13}/> Refresh
+          <button onClick={()=>setQ("")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 border border-white/20 text-xs font-bold hover:bg-white/25">
+            <IcRefresh size={13}/> Reset
           </button>
         </div>
-        <div className="mt-4 flex items-center gap-3 flex-wrap text-xs text-sky-200">
+        <div className="mt-4 flex items-center gap-3 flex-wrap text-xs text-sky-200 flex-wrap">
           <span className="font-semibold text-white">{new Date().toLocaleDateString([], {weekday:"long", year:"numeric", month:"long", day:"numeric"})}</span>
-          <span>Synced {synced}</span>
-          <span>· {live ? "Auto-refresh enabled" : "Auto-refresh paused"}</span>
+          <span>· {live ? "Auto-sync on" : "Auto-sync paused"}</span>
           <div className="ml-auto flex p-0.5 rounded-full bg-white/10 border border-white/20">
-            {ranges.map(r=>(
+            {["Day","Week","Month","All"].map(r=>(
               <button key={r} onClick={()=>setRange(r)} className={`px-3 py-1 rounded-full text-[11px] font-bold ${range===r?"bg-white text-slate-900":""}`}>{r}</button>
             ))}
           </div>
@@ -1838,31 +1751,79 @@ function AIReportPage({live}){
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-        {stats.map((s,i)=>(
-          <div key={s.label} className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-            <div className="text-3xl font-extrabold">{s.value}</div>
-            <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">{s.label}</div>
-          </div>
-        ))}
+        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
+          <div className="text-3xl font-extrabold">{showSites.length}</div>
+          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Sites</div>
+        </div>
+        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
+          <div className="text-3xl font-extrabold">{openInc.length+openAcc.length}</div>
+          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Open items</div>
+        </div>
+        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
+          <div className="text-3xl font-extrabold">{solvedInc.length+solvedAcc.length}</div>
+          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Solved</div>
+        </div>
+        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
+          <div className="text-3xl font-extrabold">{siteOffCam+siteOffAnpr+siteNotWorking}</div>
+          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Device issue(s)</div>
+        </div>
       </div>
 
-      <Card title="Key Insights" subtitle="AI-detected anomalies and recommendations" icon={IcSparkles}>
-        <div className="space-y-3">
-          {insights.map((it,i)=>(
-            <div key={i} className="flex items-start gap-3 border rounded-xl p-3" style={{borderColor:"#eef2f7"}}>
-              <span className={`shrink-0 text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${it.cls}`}>{it.level}</span>
-              <p className="text-sm text-slate-600">{it.text}</p>
-            </div>
-          ))}
+      {ql ? (
+        <div className="rounded-2xl border bg-amber-50 border-amber-200 p-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold tracking-widest uppercase text-amber-700">Search results for “{q}”</span>
+          </div>
+          <div className="mt-3 space-y-3">
+            {showSites.length===0 ? <div className="text-xs text-slate-500">No sites match “{q}”.</div> :
+              <div className="text-xs text-slate-500">Sites ({showSites.length})</div>}
+            {showSites.map(s=>(
+              <div key={s.id} className="flex items-start gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
+                <span className="font-semibold text-sm">{s.name}</span>
+                <div className="text-xs text-slate-500">{s.location} · {s.type} · {s.inspector} · PIN {s.pincode} · {s.totalCameras} cameras, {s.offlineCameras||0} offline · {s.totalANPR} ANPR, {s.offlineANPR||0} offline</div>
+              </div>
+            ))}
+            {showInc.length===0 && showAcc.length===0 ? null :
+              <div className="text-xs text-slate-500">{showInc.length+showAcc.length} record(s)</div>}
+            {showInc.map(i=>(
+              <div key={i.id} className="flex items-start gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
+                <span className={`text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${severityCls(i.severity)}`}>{i.severity}</span>
+                <span className="font-semibold text-sm">{i.title}</span>
+                <div className="text-xs text-slate-500">{i.siteName||""} · {i.category||i.severity} · {i.status} · reported {i.date||""} by {i.reportedBy||""}</div>
+              </div>
+            ))}
+            {showAcc.map(a=>(
+              <div key={a.id} className="flex items-start gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
+                <span className={`text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${severityCls(a.severity)}`}>{a.severity}</span>
+                <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
+                <div className="text-xs text-slate-500">{a.siteName||""} · {a.type||""} · {a.status} · {a.date||""} by {a.reportedBy||""}</div>
+              </div>
+            ))}
+          </div>
         </div>
-      </Card>
+      ) : (
+        <div>
+          <div className="text-xs text-slate-500 mb-2">{summary}</div>
+          {problems.length===0 ? <div className="text-xs text-slate-500 bg-emerald-50 border border-emerald-100 rounded-xl p-3">No open issues.</div> :
+            <div className="space-y-2">
+              <div className="text-xs font-bold tracking-widest uppercase text-slate-500">Open issues</div>
+              {problems.map((p,i)=>(
+                <div key={i} className="flex items-center gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
+                  <span className={`text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${p.cls}`}>{p.label}</span>
+                </div>
+              ))}
+            </div>
+          }
+        </div>
+      )}
 
-      <Card title="Executive Summary" subtitle="Generated by DHRE AI Security Analyst" icon={IcFileText}>
-        <p className="text-sm text-slate-600 leading-relaxed">
-          Today's security posture shows elevated threat activity during early morning hours. A coordinated brute-force attempt was blocked by rate-limiting rules, though one credential compromise was confirmed. The critical CVE on node-03 requires immediate attention. Overall system resilience remains strong with 99.2% uptime.
-        </p>
-        <p className="text-[11px] text-slate-400 mt-3">DHRE AI Security Analyst · Generated {synced}</p>
-      </Card>
+      <div className="rounded-2xl border bg-slate-50 p-4" style={{borderColor:"#eef2f7"}}>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Ask the report</span>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="e.g. which sites have offline cameras, open incidents this week, accidents" className="flex-1 mt-1 w-full px-4 py-2 rounded-xl border bg-white focus:bg-white outline-none focus:border-slate-400" style={{borderColor:"#e2e8f0"}}/>
+        </div>
+        <div className="mt-2 text-[11px] text-slate-400">Type a question — the report filters real site and incident/accident records. Examples: “offline cameras”, “open incidents”, “accidents”, “Electrical”.</div>
+      </div>
     </div>
   );
 }
@@ -1870,10 +1831,10 @@ function AIReportPage({live}){
 /* ================================================================ */
 /*                        OWNER DASHBOARD                           */
 /* ================================================================ */
-function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
+function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const site = sites.find(s=>s.id===auth.siteId);
-  const [editOpen, setEditOpen] = useState(false); const [newIncOpen, setNewIncOpen] = useState(false); const [newAccOpen, setNewAccOpen] = useState(false);
-  const [detailInc, setDetailInc] = useState(null); const [detailAcc, setDetailAcc] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [page, setPage] = useState(()=> LS.get("dhre_owner_page", "overview")); const [newIncOpen, setNewIncOpen] = useState(false);
   if(!site) return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="bg-white rounded-2xl border p-8 text-center max-w-[420px]" style={{borderColor:"#e2e8f0"}}>
@@ -1888,22 +1849,6 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
   const siteAccidents = accidents.filter(a=> a.siteId===site.id);
   const problems = problemsOf(site, incidents);
   const probBars = PROB_KEYS.map(k=>({ name:k.short, value:site[k.key]||0, color:k.color }));
-
-  /* mark an incident/accident as solved (or re-open it), logging who did it */
-  const setIncStatus = (st) => {
-    const inc = detailInc; if(!inc) return;
-    const by = auth?.name || "Owner";
-    setIncidents(list=> markStatus(list, inc.id, st, by));
-    setDetailInc(d=> d ? markStatus([d], d.id, st, by)[0] : d);
-    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
-  };
-  const setAccStatus = (st) => {
-    const acc = detailAcc; if(!acc) return;
-    const by = auth?.name || "Owner";
-    setAccidents(list=> markStatus(list, acc.id, st, by));
-    setDetailAcc(d=> d ? markStatus([d], d.id, st, by)[0] : d);
-    toast.success(st==="Resolved" ? "Marked as solved" : `Status → ${st}`);
-  };
 
   const HeaderRight = (
     <>
@@ -1922,25 +1867,32 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             <div className="text-xs font-bold tracking-widest uppercase text-sky-700 flex items-center gap-2 w-full">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
               <span className="truncate">My Site Website — {site.name} • One dashboard • All things for this site</span>
-              <button onClick={()=>setEditOpen(true)} className="ml-auto px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold shrink-0">Edit</button>
+              <div className="ml-auto flex gap-1"><button onClick={()=>setPage("reports")} className="px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold hover:bg-slate-800">Reports</button><button onClick={()=>setEditOpen(true)} className="px-3 py-1 rounded-full bg-white/20 text-white text-[11px] font-bold hover:bg-white/30">Edit</button></div>
             </div>
           </div>
         </div>
       </Header>
 
-      <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8 space-y-4">
-        {/* site info card */}
-        <div className="bg-white rounded-2xl border p-4 flex items-center justify-between gap-3" style={{borderColor:"#e2e8f0"}}>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl grid place-items-center text-white bg-blue-500"><IcHome size={18}/></div>
-            <div className="min-w-0">
-              <div className="font-extrabold leading-none truncate">{site.name}</div>
-              <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
-                <IcPin size={11}/>{site.location} • {site.type} • <StatusBadge status={site.status}/> • <span className="font-mono2 font-bold">{site.pincode}</span>
+      <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
+        <div key={page} className="page-fade">
+          {page==="overview" && (
+          <>
+          {/* site info card */}
+          <div className="bg-white rounded-2xl border p-4 flex items-center justify-between gap-3" style={{borderColor:"#e2e8f0"}}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl grid place-items-center text-white bg-blue-500"><IcHome size={18}/></div>
+              <div className="min-w-0">
+                <div className="font-extrabold leading-none truncate">{site.name}</div>
+                <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
+                  <IcPin size={11}/>{site.location} • {site.type} • <StatusBadge status={site.status}/> • <span className="font-mono2 font-bold">{site.pincode}</span>
+                </div>
               </div>
             </div>
+            <span className="hidden sm:inline-flex text-xs px-2 py-1 rounded-full bg-sky-50 border border-sky-200 font-bold text-sky-700">My Site Website — All things in one dashboard</span>
           </div>
-          <span className="hidden sm:inline-flex text-xs px-2 py-1 rounded-full bg-sky-50 border border-sky-200 font-bold text-sky-700">My Site Website — All things in one dashboard</span>
+          </>
+          )}
+          {page==="reports" && <OwnerReportsPage site={site} incidents={siteIncidents} setIncidents={setIncidents} onBack={()=>setPage("overview")}/>}
         </div>
 
         {/* KPIs */}
@@ -2001,18 +1953,20 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-slate-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#eef2f7"}}>
               <span className="flex items-center gap-1.5"><IcFileText size={14}/> Incidents — {siteIncidents.length}</span>
-              <div className="flex items-center gap-2"><span className="text-xs underline text-slate-500">View all →</span><button onClick={()=>setNewIncOpen(true)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button></div>
+              <div className="flex items-center gap-1.5">
+                <button onClick={()=>setPage("reports")} className="text-xs underline text-slate-500">View all →</button>
+                <button onClick={()=>setNewIncOpen(true)} className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
+              </div>
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteIncidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No incidents for this site.</div> : siteIncidents.map(i=>(
-                <div key={i.id} onClick={()=>setDetailInc(i)} title="Click for full details" className="border rounded-xl p-2.5 bg-slate-50 cursor-pointer hover:bg-white hover:border-slate-300 transition" style={{borderColor:"#eef2f7"}}>
+                <div key={i.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
                   <div className="text-xs font-bold">{i.title}</div>
                   <div className="text-xs text-slate-600 line-clamp-2">{i.description}</div>
                   <div className="mt-1 flex gap-1">
                     <span className={`px-1.5 py-0.5 rounded-full border text-[11px] font-bold ${severityCls(i.severity)}`}>{i.severity}</span>
                     <span className="ml-auto text-[11px] text-slate-500">{i.status} • {i.date}</span>
                   </div>
-                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
                 </div>
               ))}
             </div>
@@ -2020,22 +1974,13 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-red-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#fecaca"}}>
               <span className="flex items-center gap-1.5"><IcAlert size={14}/> Accidents — {siteAccidents.length}</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>!isSolved(a)).length} open</span>
-                <button onClick={()=>setNewAccOpen(true)} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
-              </div>
+              <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteAccidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No accidents for this site.</div> : siteAccidents.map(a=>(
-                <div key={a.id} onClick={()=>setDetailAcc(a)} title="Click for full details" className="border rounded-xl p-2.5 bg-slate-50 cursor-pointer hover:bg-white hover:border-slate-300 transition" style={{borderColor:"#eef2f7"}}>
+                <div key={a.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
                   <div className="text-xs font-bold">{a.title||a.type||"Accident"}</div>
-                  <div className="text-xs text-slate-600 line-clamp-2">{a.description||""}</div>
-                  <div className="mt-1 flex gap-1 flex-wrap items-center">
-                    {a.type && <span className="px-1.5 py-0.5 rounded-full border bg-white text-[11px] font-bold text-slate-600" style={{borderColor:"#e2e8f0"}}>{a.type}</span>}
-                    <span className={`px-1.5 py-0.5 rounded-full border text-[11px] font-bold ${severityCls(a.severity)}`}>{a.severity}</span>
-                    <span className="ml-auto text-[11px] text-slate-500">{a.status} • {a.date}</span>
-                  </div>
-                  <div className="mt-1 text-[10px] text-slate-400">Click for full details →</div>
+                  <div className="text-xs text-slate-600">{a.description||""}</div>
                 </div>
               ))}
             </div>
@@ -2045,13 +1990,133 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
 
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
-      {newAccOpen && <AccidentFormModal sites={[site]} accidents={accidents} setAccidents={setAccidents} preSite={site} onClose={()=>setNewAccOpen(false)}/>}
-      {detailInc && <IncidentDetailModal inc={detailInc} siteName={site.name} onClose={()=>setDetailInc(null)} onStatus={setIncStatus}/>}
-      {detailAcc && <AccidentDetailModal acc={detailAcc} siteName={site.name} onClose={()=>setDetailAcc(null)} onStatus={setAccStatus}/>}
+      <div className="mt-6">
+        <div className="flex items-center gap-1.5 border-b pb-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">
+          {TABS_OWNER.map(t=>(
+            <button key={t.id} onClick={()=>setPage(t.id)} className={`px-3 py-1 rounded-full ${page===t.id?"bg-slate-900 text-white":"text-slate-500 hover:text-slate-700"}`}>{t.label}</button>
+          ))}
+        </div>
+      </div>
       <Toaster/>
     </div>
   );
 }
+
+/* ---------------- owner reports page ---------------- */
+function OwnerReportsPage({site, incidents, setIncidents, onBack}){
+  const bySite = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
+  const [q, setQ] = useState(""); const [fSev, setFSev] = useState("All"); const [fStatus, setFStatus] = useState("All");
+  const [newOpen, setNewOpen] = useState(false);
+  const [editInc, setEditInc] = useState(null);
+  const filtered = useMemo(()=> bySite.filter(i=>{
+    const qq=q.trim().toLowerCase();
+    const okQ = !qq || (i.title||"").toLowerCase().includes(qq) || (i.description||"").toLowerCase().includes(qq);
+    const okS = fSev==="All" || i.severity===fSev;
+    const okSt = fStatus==="All" || i.status===fStatus;
+    return okQ && okS && okSt;
+  }), [bySite, q, fSev, fStatus]);
+  const counts = {
+    total: bySite.length,
+    open: bySite.filter(i=>i.status==="Open").length,
+    resolved: bySite.filter(i=>i.status==="Resolved").length,
+    critical: bySite.filter(i=>i.severity==="Critical").length,
+  };
+  const changeStatus = (inc, st) => {
+    setIncidents(list=>list.map(x=> x.id===inc.id ? {...x, status:st, history:[...(x.history||[]), {at:new Date().toISOString().slice(0,16).replace("T"," "), by:"Owner", change:`Status ${x.status} → ${st}`}]} : x));
+    toast.success(`Status → ${st}`);
+  };
+  const del = (inc) => {
+    if(!window.confirm(`Delete incident "${inc.title}"? This cannot be undone.`)) return;
+    setIncidents(list=>list.filter(x=>x.id!==inc.id));
+    toast.success("Incident deleted");
+  };
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <button onClick={onBack} className="px-3 py-1.5 rounded-full bg-white border text-xs font-bold hover:bg-slate-100" style={{borderColor:"#e2e8f0"}}>< IcArrowLeft size={13}/> Back to overview</button>
+        <span className="text-[11px] text-slate-500">Incidents for <b className="font-bold">{site.name}</b></span>
+        <button onClick={()=>setNewOpen(true)} className="ml-auto px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-bold hover:bg-red-700 shadow-sm"><IcPlus size={13}/> New incident</button>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KPI label="Total incidents" value={counts.total} icon={IcFileText} color="bg-slate-900 text-white"/>
+        <button onClick={()=>setPage("reports")} className="text-left"><KPI label="Open" value={counts.open} sub="needs action" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/></button>
+        <KPI label="Resolved" value={counts.resolved} icon={IcCheck} color="bg-emerald-500 text-white"/>
+        <KPI label="Critical" value={counts.critical} icon={IcAlert} color="bg-red-800 text-white"/>
+      </div>
+      <div className="bg-white rounded-2xl border p-3 flex flex-wrap items-center gap-2" style={{borderColor:"#e2e8f0"}}>
+        <div className="relative flex-1 min-w-[220px]">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcSearch size={15}/></span>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search incidents..." className="w-full pl-9 pr-3 py-2.5 rounded-full border bg-slate-50 focus:bg-white outline-none focus:border-slate-400 text-sm" style={{borderColor:"#e2e8f0"}}/>
+        </div>
+        <select value={fStatus} onChange={e=>setFStatus(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+          <option value="All">All Status</option>
+          {INC_STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}
+        </select>
+        <select value={fSev} onChange={e=>setFSev(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+          <option value="All">All Severity</option>
+          {SEVERITIES.map(s=><option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      {newOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewOpen(false)}/>}
+      {editInc && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} existing={editInc} onClose={()=>setEditInc(null)}/>}
+      {filtered.length===0 ? (
+        <div className="bg-white rounded-2xl border py-14 text-center" style={{borderColor:"#e2e8f0"}}>
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 grid place-items-center mx-auto"><IcFileText size={20}/></div>
+          <h3 className="mt-3 font-bold">No incidents yet</h3>
+          <p className="text-sm text-slate-500 mt-1">Report the first incident for your site.</p>
+          <button onClick={()=>setNewOpen(true)} className="mt-4 px-4 py-2 rounded-full bg-red-600 text-white text-sm font-bold">New incident</button>
+        </div>
+      ) : (
+        <div className="space-y-3">{filtered.map(inc=>(
+          <div key={inc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden" style={{borderColor:"#e2e8f0"}}>
+            <div className={`absolute top-0 left-0 w-full h-1 ${inc.severity==="Critical"?"bg-red-700":inc.severity==="High"?"bg-red-500":inc.severity==="Medium"?"bg-amber-500":"bg-slate-900"}`}/>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center shrink-0"><IcFileText size={15}/></div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-sm">{inc.title}</h3>
+                  <Badge status={inc.status}/>
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1"><IcPin size={11}/>{inc.siteName || "—"}</span>
+                  <span className="flex items-center gap-1"><IcUser size={11}/>{inc.reportedBy||"Owner"}</span>
+                  <span>{inc.date}</span>
+                  <span className="flex items-center gap-1"><IcFileText size={11}/>{inc.category}</span>
+                </div>
+                <p className="text-xs text-slate-600 mt-2">{inc.description||"—"}</p>
+                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{inc.history?.length||0} changes</span>
+                </div>
+                {inc.history && inc.history.length>0 && (
+                  <div className="mt-3 border-t pt-2" style={{borderColor:"#f1f5f9"}}>
+                    <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Change History</div>
+                    {inc.history.slice(-2).map((h,i)=>(
+                      <div key={i} className="text-[11px] text-slate-500 flex gap-2"><span className="font-mono2 shrink-0">{h.at}</span><span className="truncate">{h.by} — {h.change}</span></div>
+                    ))}
+                    {inc.history.length>2 && <div className="text-[10px] text-slate-400">+{inc.history.length-2} earlier</div>}
+                  </div>
+                )}
+                <div className="mt-3 flex gap-1.5 flex-wrap">
+                  {INC_STATUS.filter(s=>s.value!==inc.status).map(s=>(
+                    <button key={s.value} onClick={()=>changeStatus(inc, s.value)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>→ {s.value}</button>
+                  ))}
+                  <button onClick={()=>setEditInc(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full bg-slate-900 text-white flex items-center gap-1"><IcEdit size={11}/> Edit</button>
+                  <button onClick={()=>del(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border text-red-600 hover:bg-red-50" style={{borderColor:"#fecaca"}}><IcTrash size={11}/></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}</div>
+      )}
+    </div>
+  );
+}
+
+const TABS_OWNER = [
+  { id:"overview", label:"Overview" },
+  { id:"reports",  label:"Reports" },
+];
 
 /* ---------------- boot ---------------- */
 const root = ReactDOM.createRoot(document.getElementById("root"));
