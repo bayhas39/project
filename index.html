@@ -197,11 +197,12 @@ const postSync = (type, payload) => {
    The service bumps `rev` on every write. "__dhre_sync_rev" remembers the rev
    this browser already applied, so a pull is ignored unless the server really is
    newer -- that is what makes every account converge on the same data.
-   Empty by default: set localStorage "dhre_sync_url" to a working service to
-   turn shared sync on. With no URL the dashboard never leaves this browser.
-   Poll cadence is localStorage "dhre_sync_interval" in ms (default 3000); raise
-   it to spend fewer requests against the sync service's plan.                  */
-const SYNC_API = "";
+   The deployed app uses its same-origin database route by default. The URL can
+   still be overridden with localStorage "dhre_sync_url" for a separately hosted
+   sync service. Poll cadence is localStorage "dhre_sync_interval" in ms
+   (default 3000); raise it to spend fewer requests against the sync service's
+   plan.                                                                    */
+const SYNC_API = "/api/sync";
 const REV_KEY = "__dhre_sync_rev";
 const SYNC_INTERVAL = 3000;
 const REMOTE = {
