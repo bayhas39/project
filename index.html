@@ -1904,13 +1904,6 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
       {newAccOpen && <AccidentFormModal site={site} accidents={accidents} setAccidents={setAccidents} onClose={()=>setNewAccOpen(false)}/>}
-      <div className="mt-6">
-        <div className="flex items-center gap-1.5 border-b pb-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">
-          {TABS_OWNER.map(t=>(
-            <button key={t.id} onClick={()=>setPage(t.id)} className={`px-3 py-1 rounded-full ${page===t.id?"bg-slate-900 text-white":"text-slate-500 hover:text-slate-700"}`}>{t.label}</button>
-          ))}
-        </div>
-      </div>
       <Toaster/>
     </div>
   );
@@ -2026,11 +2019,6 @@ function OwnerReportsPage({site, incidents, setIncidents, onBack}){
     </div>
   );
 }
-
-const TABS_OWNER = [
-  { id:"overview", label:"Overview" },
-  { id:"reports",  label:"Reports" },
-];
 
 /* ---------------- boot ---------------- */
 const root = ReactDOM.createRoot(document.getElementById("root"));
