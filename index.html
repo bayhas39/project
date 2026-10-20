@@ -500,7 +500,7 @@ function App(){
   const syncMode = !remoteOn ? "paused" : !hasRemote ? "local" : (syncInfo.ok ? "live" : "offline");
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
-  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
+  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
   return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
 }
 
@@ -538,7 +538,7 @@ function Login({sites, onAuth}){
       <header className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900 border-b" style={{borderColor:"#0f172a"}}>
         <div className="max-w-[720px] mx-auto px-4 h-[64px] flex items-center gap-3">
           <div className="h-10 px-2 rounded-xl bg-white grid place-items-center">
-            <img src="./dhre-logo.svg" alt="DHRE" className="h-8 w-auto object-contain"
+            <img src="./dhre-logo.avif" alt="DHRE" className="h-8 w-auto object-contain"
               onError={e=>{ e.currentTarget.src="./dhre-logo.jpg"; e.currentTarget.onerror=null; }}/>
           </div>
           <div className="font-extrabold text-white leading-none text-[18px]">DHRE Security Dashboard</div>
@@ -580,7 +580,7 @@ function Login({sites, onAuth}){
                   <div className="text-center">
                     <div className="w-10 h-10 rounded-xl bg-slate-900 text-white grid place-items-center mx-auto"><IcShieldCk size={18}/></div>
                     <h2 className="mt-2 font-extrabold">Admin — Full dashboard</h2>
-                    <p className="text-sm text-slate-500">All 80 sites • cameras & ANPR • charts • AMC • attention • reports • AI report</p>
+                    <p className="text-sm text-slate-500">All 80 sites • cameras & ANPR • charts • AMC • attention • reports</p>
                   </div>
                   <Field label="Username *">
                     <div className="relative">
@@ -628,7 +628,7 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
       <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900">
         <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
           <div className="h-12 px-3 rounded-xl bg-white grid place-items-center overflow-hidden shrink-0 shadow-lg ring-1 ring-white/20">
-            <img src="./dhre-logo.svg" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
+            <img src="./dhre-logo.avif" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
               onError={e=>{ e.currentTarget.src="./dhre-logo.jpg"; e.currentTarget.onerror=null; }}/>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center text-center">
@@ -657,16 +657,16 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
 /* ================================================================ */
 /*                          ADMIN SHELL                             */
 /* ================================================================ */
-const PAGES = ["sites","charts","amc","attention","reports","ai"];
-const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports", ai:"AI Report" };
-const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"AI Report", ai:"Sites" };
+const PAGES = ["sites","charts","amc","attention","reports"];
+const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports" };
+const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"Sites" };
 
 /* ================================================================ */
 /*                        ADMIN ACTIONS                             */
-/*  Admin • <name> | Logout | Export Data | Import Data  */
-/*  Rendered inside the nav strip, right next to the AI Report tab.  */
+/*  Admin • <name> | Logout  */
+/*  Rendered inside the nav strip.  */
 /* ================================================================ */
-function AdminTitleBar({ auth, onLogout, onExport, onImport, fileRef }) {
+function AdminTitleBar({ auth, onLogout }) {
   return (
     <div className="flex items-center gap-2 shrink-0">
       <span className="hidden xl:inline text-xs font-semibold text-slate-500 whitespace-nowrap">Admin • {auth.name}</span>
@@ -677,27 +677,6 @@ function AdminTitleBar({ auth, onLogout, onExport, onImport, fileRef }) {
       >
         <IcLogout size={13}/> Logout
       </button>
-      <button
-        onClick={onExport}
-        className="px-3 py-1.5 rounded-full bg-white text-slate-900 border text-xs font-bold hover:bg-slate-50 shadow-sm flex items-center gap-1.5 whitespace-nowrap"
-        style={{borderColor:"#e2e8f0"}}
-      >
-        <IcDownload size={14}/> Export Data
-      </button>
-      <button
-        onClick={() => fileRef.current && fileRef.current.click()}
-        className="px-3 py-1.5 rounded-full bg-white text-slate-900 border text-xs font-bold hover:bg-slate-50 shadow-sm flex items-center gap-1.5 whitespace-nowrap"
-        style={{borderColor:"#e2e8f0"}}
-      >
-        <IcUpload size={14}/> Import Data
-      </button>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="application/json"
-        className="hidden"
-        onChange={onImport}
-      />
     </div>
   );
 }
@@ -708,8 +687,6 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
   const [editSite, setEditSite] = useState(null);
   useEffect(()=>{ LS.set("dhre_current_page", page); }, [page]);
   useEffect(()=>{ const t=setInterval(()=>setClock(fmtTime()), 5000); return ()=>clearInterval(t); }, []);
-  const fileRef = useRef(null);
-
   const stats = useMemo(()=>({
     total: sites.length,
     pending: sites.filter(s=>s.status==="Pending").length,
@@ -754,29 +731,12 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
     return counts;
   }, [sites, incidents]);
 
-  const onExport = () => { download(`dhre-security-data-${new Date().toISOString().slice(0,10)}.json`, {sites, incidents, accidents, exportedAt:new Date().toISOString()}); toast.success("Exported data JSON"); };
-  const onImportFile = (e) => {
-    const file = e.target.files && e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const data = JSON.parse(reader.result);
-        if(Array.isArray(data.sites)) setSites(data.sites);
-        if(Array.isArray(data.incidents)) setIncidents(data.incidents);
-        toast.success("Imported data — dashboard updated");
-      }catch(err){ toast.error("Invalid JSON file"); }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  };
-
   const TABS = [
     { id:"sites",     icon:IcGrid,   label:"Sites" },
     { id:"charts",    icon:IcChart,  label:"Charts" },
     { id:"amc",       icon:IcVideo,  label:"AMC" },
     { id:"attention", icon:IcAlert,  label:"Attention", count:attention.length },
     { id:"reports",   icon:IcFileText, label:"Reports" },
-    { id:"ai",        icon:IcSparkles, label:"AI Report" },
   ];
 
   return (
@@ -798,9 +758,6 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
             <AdminTitleBar
               auth={auth}
               onLogout={onLogout}
-              onExport={onExport}
-              onImport={onImportFile}
-              fileRef={fileRef}
             />
           </div>
         </div>
@@ -808,12 +765,11 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} stats={stats} setPage={setPage}/>}
+          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
           {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
-          {page==="attention" && <AttentionPage attention={attention} setPage={setPage}/>}
+          {page==="attention" && <AttentionPage attention={attention} sites={sites} setPage={setPage}/>}
           {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
-          {page==="ai"        && <AIReportPage live={syncMode==="live"} sites={sites} incidents={incidents} accidents={accidents} auth={auth}/>}
         </div>
         <p className="mt-8 text-center text-xs text-slate-400">
           Page: {PAGE_LABEL[page]} •
@@ -831,7 +787,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
+function SitesPage({sites, setSites, incidents, setIncidents, accidents, stats, setPage}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
   const [editSite, setEditSite] = useState(null); const [viewSite, setViewSite] = useState(null);
@@ -961,7 +917,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
       </div>
 
       {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
-      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
     </div>
@@ -1005,9 +961,10 @@ function SiteCard({site, onOpen, onEdit, onDelete, onReport}){
 }
 
 /* ------------- site details modal ------------- */
-function SiteDetailModal({site, incidents, setPage, onClose}){
+function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
+  const siteAccidents = (accidents||[]).filter(a=>a.siteId===site.id || a.siteName===site.name);
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
@@ -1069,7 +1026,7 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
 
         <div>
           <h4 className="text-sm font-extrabold mb-2">Issues for this site • {problems.length} problems</h4>
-          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • 0 accidents</p>
+          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • {siteAccidents.length} accidents</p>
           {problems.length===0 ? <p className="text-sm text-slate-500 bg-emerald-50 border border-emerald-100 rounded-xl p-3">No problems — all systems online for this site.</p> : (
             <div className="flex flex-wrap gap-2">{problems.map(p=> <span key={p} className="text-xs font-semibold px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">{p}</span>)}</div>
           )}
@@ -1098,8 +1055,20 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
         </div>
 
         <div>
-          <h4 className="text-sm font-extrabold mb-2">Accidents (0)</h4>
-          <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p>
+          <h4 className="text-sm font-extrabold mb-2">Accidents ({siteAccidents.length})</h4>
+          {siteAccidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p> : (
+            <div className="space-y-2">
+              {siteAccidents.map(a=>(
+                <div key={a.id} className="border rounded-xl p-3 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
+                    <span className="ml-auto text-[11px] text-slate-400">{a.status} • {a.date}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">{a.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Modal>
@@ -1229,6 +1198,9 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
   const totalProblems = Object.values(problemTotals).reduce((a,b)=>a+b,0);
   const completion = stats.total ? Math.round((stats.completed/stats.total)*100) : 0;
   const criticalCount = attention.filter(a=>a.severity==="Critical").length;
+  const offlineCamSites = sites.filter(s=>(s.offlineCameras||0)>0).length;
+  const offlineAnprSites = sites.filter(s=>(s.offlineANPR||0)>0).length;
+  const offlineAcsSites = sites.filter(s=>(s.notWorkingANPR||0)>0).length;
 
   const byStatus = STATUS.map((st,i)=>({ name:st.value, value:sites.filter(s=>s.status===st.value).length, color:PALETTE[i%PALETTE.length] })).filter(x=>x.value>0);
   const byType = TYPES.map((t,i)=>({ name:t.value, value:sites.filter(s=>s.type===t.value).length, color:PALETTE[i%PALETTE.length] })).filter(x=>x.value>0);
@@ -1242,6 +1214,10 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
   const worst = [...perSite].sort((a,b)=>
     (b.offlineCameras+b.offlineANPR+b.notWorkingANPR+b.notWorkingGate+b.notWorkingIntercom) -
     (a.offlineCameras+a.offlineANPR+a.notWorkingANPR+a.notWorkingGate+a.notWorkingIntercom)).slice(0,10);
+  const topOfflineCamSites = [...perSite].filter(s=>(s.offlineCameras||0)>0).sort((a,b)=>(b.offlineCameras||0)-(a.offlineCameras||0)).slice(0,10);
+  const topOfflineAnprSites = [...perSite].filter(s=>(s.offlineANPR||0)>0).sort((a,b)=>(b.offlineANPR||0)-(a.offlineANPR||0)).slice(0,10);
+  const top5AnprSites = [...perSite].filter(s=>(s.offlineANPR||0)>0).sort((a,b)=>(b.offlineANPR||0)-(a.offlineANPR||0)).slice(0,5);
+  const top5GateSites = [...perSite].filter(s=>(s.notWorkingGate||0)>0).sort((a,b)=>(b.notWorkingGate||0)-(a.notWorkingGate||0)).slice(0,5);
 
   return (
     <div className="space-y-4">
@@ -1257,10 +1233,71 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
         <KPI label="Total Sites" value={stats.total} sub={`${stats.total} sites`} icon={IcBuilding} color="bg-slate-900 text-white"/>
         <button onClick={()=>setPage("attention")} className="text-left">
-          <KPI label="Attention Needed" value={attention.length} sub={`${criticalCount} critical • Tap to see sites + problems`} icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+          <KPI label="Total Sites with Offline Camera" value={offlineCamSites} sub={`${stats.offlineCameras} offline cameras • Tap to see sites + problems`} icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
         </button>
-        <KPI label="Total Problems" value={totalProblems} icon={IcAlert} color="bg-amber-500 text-white" top="bg-amber-500"/>
-        <KPI label="Completion Rate" value={`${completion}%`} sub={`${stats.completed} of ${stats.total} completed`} icon={IcTrend} color="bg-emerald-500 text-white"/>
+        <button onClick={()=>setPage("attention")} className="text-left">
+          <KPI label="Sites with Offline ANPR" value={offlineAnprSites} sub={`${stats.offlineANPR} offline ANPR • Tap to see sites + problems`} icon={IcWifiOff} color="bg-amber-500 text-white" top="bg-amber-500"/>
+        </button>
+        <button onClick={()=>setPage("attention")} className="text-left">
+          <KPI label="Total Sites with Offline Access Control" value={offlineAcsSites} sub={`${stats.nwACS} not-working ACS • Tap to see sites + problems`} icon={IcLock} color="bg-emerald-500 text-white" top="bg-emerald-500"/>
+        </button>
+      </div>
+
+      <Card title="Top 10 Sites — Highest Offline Cameras" subtitle="Sites with the most offline CCTV cameras" icon={IcCamOff}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={topOfflineCamSites} margin={{top:8,right:12,left:0,bottom:60}}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+            <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+            <Tooltip/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={16} fill="#ef4444">
+              {topOfflineCamSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+
+      <Card title="Top 10 Sites — Highest Offline ANPR" subtitle="Sites with the most offline ANPR cameras" icon={IcWifiOff}>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={topOfflineAnprSites} margin={{top:8,right:12,left:0,bottom:60}}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+            <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+            <Tooltip/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#ef4444">
+              {topOfflineAnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card title="Top 5 Sites — Highest Offline ANPR" subtitle="Sites with the most offline ANPR cameras" icon={IcWifiOff}>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={top5AnprSites} margin={{top:8,right:12,left:0,bottom:60}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+              <Tooltip/>
+              <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#ef4444">
+                {top5AnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+        <Card title="Top 5 Sites — Highest Offline Gate Barrier" subtitle="Sites with the most offline gate barriers" icon={IcLock}>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={top5GateSites} margin={{top:8,right:12,left:0,bottom:60}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+              <Tooltip/>
+              <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={16} fill="#0ea5e9">
+                {top5GateSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
       </div>
 
       <Card title="Problems by Category" subtitle={`${totalProblems} total • Top: ${topProblem? topProblem.name : "—"} (${topProblem? topProblem.value : 0})`} icon={IcAlert}>
@@ -1400,7 +1437,7 @@ function AMCPage({sites, stats, perSite, setPage}){
 /* ================================================================ */
 /*                         ATTENTION PAGE                           */
 /* ================================================================ */
-function AttentionPage({attention, setPage}){
+function AttentionPage({attention, sites, setPage}){
   const [mode, setMode] = useState({});
   return (
     <div className="space-y-4">
@@ -1409,7 +1446,7 @@ function AttentionPage({attention, setPage}){
           <div className="w-8 h-8 rounded-lg bg-red-600 grid place-items-center text-white"><IcAlert size={16}/></div>
           <div>
             <h2 className="text-[16px] font-extrabold tracking-tight leading-none">Attention Needed</h2>
-            <p className="text-xs text-slate-500">{attention.length} site{attention.length!==1?"s":""} require action • Click any to jump to report</p>
+            <p className="text-xs text-slate-500">Total sites with offline camera <span className="font-bold text-2xl">{sites.filter(s=>(s.offlineCameras||0)>0).length}</span></p>
           </div>
           <button onClick={()=>setPage("charts")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border text-xs font-semibold hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Back to Charts</button>
         </div>
@@ -1656,185 +1693,57 @@ function IncidentFormModal({sites, incidents, setIncidents, existing, preSite, f
 }
 
 /* ================================================================ */
-/*                          AI REPORT                               */
+/*                        ACCIDENT FORM MODAL                       */
 /* ================================================================ */
-function withinRange(date, range){
-  if(!date) return false;
-  const t = new Date(date);
-  if(isNaN(t.getTime())) return false;
-  const now = new Date(); now.setHours(23,59,59,999);
-  if(range==="Day"){ const d=new Date(now); d.setDate(d.getDate()-1); return t>=d; }
-  if(range==="Week"){ const d=new Date(now); d.setDate(d.getDate()-7); return t>=d; }
-  if(range==="Month"){ const d=new Date(now); d.setMonth(d.getMonth()-1); return t>=d; }
-  return true;
-}
-function AIReportPage({live, sites, incidents, accidents, auth}){
-  const [range, setRange] = useState("Day");
-  const [q, setQ] = useState("");
-
-  const isOwner = auth?.role==="owner";
-  const site = isOwner ? (sites.find(s=>s.id===auth.siteId) || sites[0] || null) : null;
-  const siteIds = site ? [site.id] : (sites.map(s=>s.id));
-
-  const siteRows = sites.filter(s=> siteIds.includes(s.id));
-  const siteIncidents = incidents.filter(i=> siteIds.includes(i.siteId) || siteIds.includes(i.siteName===undefined?"":i.siteName));
-  const siteAccidents = accidents.filter(a=> siteIds.includes(a.siteId) || siteIds.includes(a.siteName===undefined?"":a.siteName));
-
-  const incInWindow = siteIncidents.filter(i=> withinRange(i.date, range));
-  const accInWindow = siteAccidents.filter(a=> withinRange(a.date, range));
-
-  const siteOffCam = siteRows.reduce((n,s)=> n + (s.offlineCameras||0), 0);
-  const siteOffAnpr = siteRows.reduce((n,s)=> n + (s.offlineANPR||0), 0);
-  const siteNotWorking = siteRows.reduce((n,s)=> n + (s.notWorkingGate||0) + (s.notWorkingANPR||0) + (s.notWorkingIntercom||0) + (s.notWorkingACS||0), 0);
-
-  const totalCameras = siteRows.reduce((n,s)=> n + (s.totalCameras||0), 0);
-
-  const openInc = siteIncidents.filter(i=> i.status==="Open" || i.status==="In Review");
-  const openAcc = siteAccidents.filter(a=> a.status!=="Closed" && a.status!=="Resolved");
-  const solvedInc = siteIncidents.filter(i=> i.status==="Resolved" || i.status==="Closed");
-  const solvedAcc = siteAccidents.filter(a=> a.status==="Resolved" || a.status==="Closed");
-
-  const problems = [];
-  if(siteOffCam>0) problems.push({ label:`${siteOffCam} offline camera${siteOffCam===1?"":"s"}`, cls:"bg-amber-100 text-amber-800 border-amber-200" });
-  if(siteOffAnpr>0) problems.push({ label:`${siteOffAnpr} offline ANPR`, cls:"bg-amber-100 text-amber-800 border-amber-200" });
-  if(siteNotWorking>0) problems.push({ label:`${siteNotWorking} not-working 장치를 포함`, cls:"bg-amber-100 text-amber-800 border-amber-200" });
-  openInc.forEach(i=> problems.push({ label:i.title, cls:"bg-red-100 text-red-800 border-red-200" }));
-  openAcc.forEach(a=> problems.push({ label:a.title||a.type, cls:"bg-red-100 text-red-800 border-red-200" }));
-
-  /* keyword match over site rows + records */
-  const ql = q.trim().toLowerCase();
-  const matchedSites = ql ? siteRows.filter(s=>
-    ([s.name,s.location,s.type,s.inspector,s.pincode]).some(t=> t && String(t).toLowerCase().includes(ql))
-  ) : siteRows;
-  const matchedInc = ql ? siteIncidents.filter(i=>
-    [i.title,i.description,i.category,i.severity,i.status,i.reportedBy,i.siteName].some(t=> t && String(t).toLowerCase().includes(ql))
-  ) : siteIncidents;
-  const matchedAcc = ql ? siteAccidents.filter(a=>
-    [a.title,a.description,a.type,a.severity,a.status,a.location,a.personsInvolved,a.reportedBy,a.siteName].some(t=> t && String(t).toLowerCase().includes(ql))
-  ) : siteAccidents;
-
-  const showSites = ql ? matchedSites : siteRows;
-  const showInc = ql ? matchedInc : (range==="All"? siteIncidents : incInWindow);
-  const showAcc = ql ? matchedAcc : (range==="All"? siteAccidents : accInWindow);
-
-  const summary = (
-    <div className="text-xs text-slate-500 leading-relaxed">
-      {showSites.length} site(s) · {showInc.length} incident(s) · {showAcc.length} accident(s) · {openInc.length+openAcc.length} open · {solvedInc.length+solvedAcc.length} solved
-      {siteOffCam>0 || siteOffAnpr>0 || siteNotWorking>0 ? ` · ${siteOffCam+siteOffAnpr+siteNotWorking} device issue(s) (offline cameras ${siteOffCam}, offline ANPR ${siteOffAnpr}, not-working ${siteNotWorking})` : ""}
-      {site && <> · this site: {site.name} — {site.location}</>}
-    </div>
-  );
-
+function AccidentFormModal({site, accidents, setAccidents, onClose}){
+  const [form, setForm] = useState(()=>({
+    siteId: site?.id || "", siteName: site?.name || "", title:"", type:"Accident", description:"", status:"Open", date:new Date().toISOString().slice(0,10),
+  }));
+  const set = (k,v)=>setForm(f=>({...f,[k]:v}));
+  const save = () => {
+    if(!form.title.trim()){ toast.error("Title required"); return; }
+    setAccidents(list=>[{ ...form, id:uid(), siteId: site?.id || form.siteId, siteName: site?.name || form.siteName }, ...list]);
+    toast.success("Accident reported");
+    onClose();
+  };
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border bg-gradient-to-br from-slate-900 via-slate-900 to-sky-900 p-5 text-white" style={{borderColor:"#0f172a"}}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 grid place-items-center"><IcSparkles size={18}/></div>
-          <div>
-            <div className="text-[11px] font-bold tracking-widest uppercase text-sky-200">AI Report (real data only)</div>
-            <h2 className="text-xl font-extrabold leading-none mt-0.5">Dashboard Security Summary</h2>
-            <p className="text-xs text-sky-200 mt-1">{isOwner? "Your site report" : "All sites report"} · no random information</p>
-          </div>
-          <button onClick={()=>setQ("")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 border border-white/20 text-xs font-bold hover:bg-white/25">
-            <IcRefresh size={13}/> Reset
-          </button>
-        </div>
-        <div className="mt-4 flex items-center gap-3 flex-wrap text-xs text-sky-200 flex-wrap">
-          <span className="font-semibold text-white">{new Date().toLocaleDateString([], {weekday:"long", year:"numeric", month:"long", day:"numeric"})}</span>
-          <span>· {live ? "Auto-sync on" : "Auto-sync paused"}</span>
-          <div className="ml-auto flex p-0.5 rounded-full bg-white/10 border border-white/20">
-            {["Day","Week","Month","All"].map(r=>(
-              <button key={r} onClick={()=>setRange(r)} className={`px-3 py-1 rounded-full text-[11px] font-bold ${range===r?"bg-white text-slate-900":""}`}>{r}</button>
-            ))}
-          </div>
-        </div>
+    <Modal title="New Accident Report" onClose={onClose} wide>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="sm:col-span-2"><Field label="Title *">
+          <input value={form.title} onChange={e=>set("title", e.target.value)} placeholder="e.g. Slip and fall on level 2" className={inputCls}/>
+        </Field></div>
+        <Field label="Type"><select value={form.type} onChange={e=>set("type", e.target.value)} className={inputCls}>
+          <option value="Accident">Accident</option>
+          <option value="Near Miss">Near Miss</option>
+          <option value="Injury">Injury</option>
+          <option value="Property Damage">Property Damage</option>
+        </select></Field>
+        <Field label="Status"><select value={form.status} onChange={e=>set("status", e.target.value)} className={inputCls}>
+          <option value="Open">Open</option>
+          <option value="In Review">In Review</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+        </select></Field>
+        <Field label="Date"><input type="date" value={form.date} onChange={e=>set("date", e.target.value)} className={inputCls}/></Field>
+        <div className="sm:col-span-2"><Field label="Description">
+          <textarea value={form.description} onChange={e=>set("description", e.target.value)} placeholder="What happened? Include details..." rows={3} className={inputCls}/>
+        </Field></div>
       </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-          <div className="text-3xl font-extrabold">{showSites.length}</div>
-          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Sites</div>
-        </div>
-        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-          <div className="text-3xl font-extrabold">{openInc.length+openAcc.length}</div>
-          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Open items</div>
-        </div>
-        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-          <div className="text-3xl font-extrabold">{solvedInc.length+solvedAcc.length}</div>
-          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Solved</div>
-        </div>
-        <div className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-          <div className="text-3xl font-extrabold">{siteOffCam+siteOffAnpr+siteNotWorking}</div>
-          <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">Device issue(s)</div>
-        </div>
+      <div className="mt-4 flex gap-2 justify-end">
+        <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm" style={{borderColor:"#e2e8f0"}}>Cancel</button>
+        <button onClick={save} className="px-5 py-2.5 rounded-full bg-red-600 text-white font-bold text-sm hover:bg-red-700">Report</button>
       </div>
-
-      {ql ? (
-        <div className="rounded-2xl border bg-amber-50 border-amber-200 p-4">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold tracking-widest uppercase text-amber-700">Search results for “{q}”</span>
-          </div>
-          <div className="mt-3 space-y-3">
-            {showSites.length===0 ? <div className="text-xs text-slate-500">No sites match “{q}”.</div> :
-              <div className="text-xs text-slate-500">Sites ({showSites.length})</div>}
-            {showSites.map(s=>(
-              <div key={s.id} className="flex items-start gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
-                <span className="font-semibold text-sm">{s.name}</span>
-                <div className="text-xs text-slate-500">{s.location} · {s.type} · {s.inspector} · PIN {s.pincode} · {s.totalCameras} cameras, {s.offlineCameras||0} offline · {s.totalANPR} ANPR, {s.offlineANPR||0} offline</div>
-              </div>
-            ))}
-            {showInc.length===0 && showAcc.length===0 ? null :
-              <div className="text-xs text-slate-500">{showInc.length+showAcc.length} record(s)</div>}
-            {showInc.map(i=>(
-              <div key={i.id} className="flex items-start gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
-                <span className={`text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${severityCls(i.severity)}`}>{i.severity}</span>
-                <span className="font-semibold text-sm">{i.title}</span>
-                <div className="text-xs text-slate-500">{i.siteName||""} · {i.category||i.severity} · {i.status} · reported {i.date||""} by {i.reportedBy||""}</div>
-              </div>
-            ))}
-            {showAcc.map(a=>(
-              <div key={a.id} className="flex items-start gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
-                <span className={`text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${severityCls(a.severity)}`}>{a.severity}</span>
-                <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
-                <div className="text-xs text-slate-500">{a.siteName||""} · {a.type||""} · {a.status} · {a.date||""} by {a.reportedBy||""}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div>
-          <div className="text-xs text-slate-500 mb-2">{summary}</div>
-          {problems.length===0 ? <div className="text-xs text-slate-500 bg-emerald-50 border border-emerald-100 rounded-xl p-3">No open issues.</div> :
-            <div className="space-y-2">
-              <div className="text-xs font-bold tracking-widest uppercase text-slate-500">Open issues</div>
-              {problems.map((p,i)=>(
-                <div key={i} className="flex items-center gap-2 border rounded-xl p-3 bg-white" style={{borderColor:"#eef2f7"}}>
-                  <span className={`text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${p.cls}`}>{p.label}</span>
-                </div>
-              ))}
-            </div>
-          }
-        </div>
-      )}
-
-      <div className="rounded-2xl border bg-slate-50 p-4" style={{borderColor:"#eef2f7"}}>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Ask the report</span>
-          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="e.g. which sites have offline cameras, open incidents this week, accidents" className="flex-1 mt-1 w-full px-4 py-2 rounded-xl border bg-white focus:bg-white outline-none focus:border-slate-400" style={{borderColor:"#e2e8f0"}}/>
-        </div>
-        <div className="mt-2 text-[11px] text-slate-400">Type a question — the report filters real site and incident/accident records. Examples: “offline cameras”, “open incidents”, “accidents”, “Electrical”.</div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 
 /* ================================================================ */
 /*                        OWNER DASHBOARD                           */
 /* ================================================================ */
-function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
+function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const site = sites.find(s=>s.id===auth.siteId);
   const [editOpen, setEditOpen] = useState(false);
-  const [page, setPage] = useState(()=> LS.get("dhre_owner_page", "overview")); const [newIncOpen, setNewIncOpen] = useState(false);
+  const [page, setPage] = useState(()=> LS.get("dhre_owner_page", "overview")); const [newIncOpen, setNewIncOpen] = useState(false); const [newAccOpen, setNewAccOpen] = useState(false);
   if(!site) return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="bg-white rounded-2xl border p-8 text-center max-w-[420px]" style={{borderColor:"#e2e8f0"}}>
@@ -1974,7 +1883,10 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, o
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-red-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#fecaca"}}>
               <span className="flex items-center gap-1.5"><IcAlert size={14}/> Accidents — {siteAccidents.length}</span>
-              <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+                <button onClick={()=>setNewAccOpen(true)} className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
+              </div>
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteAccidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No accidents for this site.</div> : siteAccidents.map(a=>(
@@ -1990,6 +1902,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
+      {newAccOpen && <AccidentFormModal site={site} accidents={accidents} setAccidents={setAccidents} onClose={()=>setNewAccOpen(false)}/>}
       <div className="mt-6">
         <div className="flex items-center gap-1.5 border-b pb-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">
           {TABS_OWNER.map(t=>(
