@@ -1759,11 +1759,11 @@ function CertifiedSitesPage({sites, setPage}){
         <KPI label="Sites without SIRA" value={uncertified.length} icon={IcAlert} color="bg-amber-500 text-white"/>
         <KPI label="Total Sites" value={sites.length} icon={IcBuilding} color="bg-slate-900 text-white"/>
       </div>
-      <div className="lg:w-1/2">
-        <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
-          <ResponsiveContainer width="100%" height={130}>
+      <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
+        <div className="grid lg:grid-cols-2 gap-4 items-center">
+          <ResponsiveContainer width="100%" height={220}>
             <PieChart>
-              <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={30} outerRadius={50} paddingAngle={2} strokeWidth={2} stroke="#fff">
+              <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={72} paddingAngle={2} strokeWidth={2} stroke="#fff">
                 {certData.map((x,i)=><Cell key={i} fill={x.color}/>)}
               </Pie>
               <Tooltip/>
@@ -1777,8 +1777,8 @@ function CertifiedSitesPage({sites, setPage}){
               </div>
             ))}
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 }
