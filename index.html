@@ -366,7 +366,11 @@ const ownerUrl = (s) => `${location.pathname || "index.html"}?owner=${encodeURIC
 /*                              APP                                 */
 /* ================================================================ */
 function App(){
-  const [sites, setSites] = useState(()=> LS.get(COLLECTIONS.sites.key, null) || makeSites());
+const [sites, setSites] = useState(()=> {
+  const loaded = LS.get(COLLECTIONS.sites.key, null);
+  if(!loaded) return makeSites();
+  return loaded.map((s,i)=> (s && s.siraCertified===undefined) ? {...s, siraCertified: (i+1)%3===0} : s);
+});
   const [incidents, setIncidents] = useState(()=> LS.get(COLLECTIONS.incidents.key, null) || makeIncidents());
   const [accidents, setAccidents] = useState(()=> LS.get(COLLECTIONS.accidents.key, []));
   const [auth, setAuth] = useState(()=> initialAuth(sites));
