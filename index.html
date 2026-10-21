@@ -658,9 +658,9 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
 /* ================================================================ */
 /*                          ADMIN SHELL                             */
 /* ================================================================ */
-const PAGES = ["sites","charts","amc","attention","reports"];
-const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports" };
-const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"Sites" };
+const PAGES = ["sites","charts","amc","attention","reports","certified"];
+const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports", certified:"Certified Sites" };
+const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"Certified Sites", certified:"Sites" };
 
 /* ================================================================ */
 /*                        ADMIN ACTIONS                             */
@@ -738,6 +738,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
     { id:"amc",       icon:IcVideo,  label:"AMC" },
     { id:"attention", icon:IcAlert,  label:"Attention", count:attention.length },
     { id:"reports",   icon:IcFileText, label:"Reports" },
+    { id:"certified", icon:IcShieldCk, label:"Certified Sites" },
   ];
 
   return (
@@ -771,6 +772,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
           {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
           {page==="attention" && <AttentionPage attention={attention} sites={sites} setPage={setPage}/>}
           {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
+          {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
         </div>
         <p className="mt-8 text-center text-xs text-slate-400">
           Page: {PAGE_LABEL[page]} •
@@ -1741,6 +1743,18 @@ function AccidentFormModal({site, accidents, setAccidents, onClose}){
 /* ================================================================ */
 /*                        OWNER DASHBOARD                           */
 /* ================================================================ */
+function CertifiedSitesPage({sites, setPage}){
+  return (
+    <div className="space-y-4">
+      <div className="bg-white rounded-2xl border p-6 text-center" style={{borderColor:"#e2e8f0"}}>
+        <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 grid place-items-center mx-auto"><IcShieldCk size={24}/></div>
+        <h2 className="mt-3 font-extrabold text-xl">Certified Sites</h2>
+        <p className="text-sm text-slate-500 mt-1">Sites that have been certified will appear here.</p>
+      </div>
+    </div>
+  );
+}
+
 function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const site = sites.find(s=>s.id===auth.siteId);
   const [editOpen, setEditOpen] = useState(false);
