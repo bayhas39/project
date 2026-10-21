@@ -627,7 +627,7 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
   return (
     <header className="sticky top-0 z-30 border-b overflow-hidden" style={{borderColor:"#0f172a"}}>
       <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900">
-        <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
+        <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
           <div className="h-12 px-3 rounded-xl bg-white grid place-items-center overflow-hidden shrink-0 shadow-lg ring-1 ring-white/20">
             <img src="./dhre-logo.avif" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
               onError={e=>{ e.currentTarget.src="./dhre-logo.jpg"; e.currentTarget.onerror=null; }}/>
@@ -764,7 +764,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
         </div>
       </Header>
 
-      <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
+      <main className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
           {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
@@ -1773,7 +1773,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
     <div className="min-h-screen bg-[#f8fafc] text-slate-900">
       <Header title="My Site Website" syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync} right={HeaderRight}>
         <div className="border-t bg-sky-50" style={{borderColor:"#e0f2fe"}}>
-          <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[44px] flex items-center justify-center">
+          <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[44px] flex items-center justify-center">
             <div className="text-xs font-bold tracking-widest uppercase text-sky-700 flex items-center gap-2 w-full">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
               <span className="truncate">My Site Website — {site.name} • One dashboard • All things for this site</span>
@@ -1783,7 +1783,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
         </div>
       </Header>
 
-      <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
+      <main className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
         <div key={page} className="page-fade">
           {page==="overview" && (
           <>
