@@ -1763,26 +1763,30 @@ function CertifiedSitesPage({sites, setPage}){
         <KPI label="Sites without SIRA" value={uncertified.length} icon={IcAlert} color="bg-amber-500 text-white"/>
         <KPI label="Total Sites" value={sites.length} icon={IcBuilding} color="bg-slate-900 text-white"/>
       </div>
-      <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
-        <div className="grid lg:grid-cols-2 gap-4 items-center">
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={72} paddingAngle={2} strokeWidth={2} stroke="#fff">
-                {certData.map((x,i)=><Cell key={i} fill={x.color}/>)}
-              </Pie>
-              <Tooltip/>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="space-y-2">
-            {certData.map(x=>(
-              <div key={x.name} className="flex items-center gap-2 text-sm">
-                <span className="w-2.5 h-2.5 rounded-sm" style={{background:x.color}}/>
-                <span className="font-semibold">{x.name}</span><span className="ml-auto text-slate-400">{x.value}</span>
-              </div>
-            ))}
+      <div className="lg:max-w-md">
+        <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
+          <div className="flex items-center gap-3">
+            <div className="w-[140px] shrink-0">
+              <ResponsiveContainer width="100%" height={140}>
+                <PieChart>
+                  <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={26} outerRadius={44} paddingAngle={2} strokeWidth={2} stroke="#fff">
+                    {certData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+                  </Pie>
+                  <Tooltip/>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-1.5 min-w-0">
+              {certData.map(x=>(
+                <div key={x.name} className="flex items-center gap-2 text-xs">
+                  <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:x.color}}/>
+                  <span className="font-semibold truncate">{x.name}</span><span className="ml-auto text-slate-400">{x.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }
