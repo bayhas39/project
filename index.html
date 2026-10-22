@@ -780,7 +780,6 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
       </Header>
 
       <main className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
-        <h1 className="text-2xl font-extrabold mb-4">SIRA</h1>
         <div key={page} className="page-fade">
           {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
           {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
