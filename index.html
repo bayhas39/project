@@ -544,14 +544,14 @@ const [sites, setSites] = useState(()=> {
   return (
     <>
       {sticky.length>0 && (
-        <div className="fixed top-2 right-2 z-[200] space-y-2 w-[340px] max-w-[90vw]">
+        <div className="fixed top-20 right-4 z-[9999] space-y-2 w-[360px] max-w-[90vw]">
           {sticky.map(x=>(
-            <div key={x.id} className={`text-white text-sm font-semibold px-4 py-3 rounded-xl shadow-lg fade-up ${x.type==="incident"?"bg-red-600":"bg-orange-600"}`}>
+            <div key={x.id} className={`text-white text-sm font-semibold px-4 py-3 rounded-xl shadow-2xl fade-up border-2 border-white/30 ${x.type==="incident"?"bg-red-600":"bg-orange-600"}`}>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-widest opacity-80">{x.type}</span>
-                <span className="ml-auto text-[10px] opacity-80">{Math.max(0, Math.ceil((x.expiresAt-Date.now())/60000))}m left</span>
+                <span className="text-[10px] uppercase tracking-widest opacity-90 font-bold">{x.type}</span>
+                <span className="ml-auto text-[10px] opacity-90">{Math.max(0, Math.ceil((x.expiresAt-Date.now())/60000))}m left</span>
               </div>
-              <div className="mt-0.5">{x.title}</div>
+              <div className="mt-0.5 font-bold">{x.title}</div>
               <div className="text-xs opacity-90">{x.site}</div>
             </div>
           ))}
