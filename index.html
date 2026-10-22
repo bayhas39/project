@@ -1766,17 +1766,17 @@ function CertifiedSitesPage({sites, setPage}){
       <div className="lg:max-w-2xl">
         <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
           <div className="flex items-center gap-4">
-            <div className="w-[200px] shrink-0">
-              <ResponsiveContainer width="100%" height={190}>
+            <div className="w-[260px] shrink-0">
+              <ResponsiveContainer width="100%" height={240}>
                 <PieChart>
-                  <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={36} outerRadius={60} paddingAngle={2} strokeWidth={2} stroke="#fff">
+                  <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={48} outerRadius={78} paddingAngle={2} strokeWidth={2} stroke="#fff">
                     {certData.map((x,i)=><Cell key={i} fill={x.color}/>)}
                   </Pie>
                   <Tooltip/>
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="space-y-2 min-w-0">
+            <div className="space-y-2 min-w-0 pl-2">
               {certData.map(x=>(
                 <div key={x.name} className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:x.color}}/>
