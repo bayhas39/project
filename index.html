@@ -1767,6 +1767,13 @@ function CertifiedSitesPage({sites, setPage}){
     { name:"SIRA Certified", value: certified.length, color:"#10b981" },
     { name:"Not Certified", value: withoutCert.length, color:"#ef4444" },
   ];
+  const total = sites.length || 1;
+  const pct = (n)=> Math.round((n/total)*100);
+  const rateData = [
+    { name:"SIRA Certified", pct: pct(certified.length), count: certified.length, color:"#10b981" },
+    { name:"Without SIRA",   pct: pct(withoutCert.length), count: withoutCert.length, color:"#f59e0b" },
+    { name:"Not Eligible",   pct: pct(notEligible.length), count: notEligible.length, color:"#64748b" },
+  ];
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
@@ -1801,6 +1808,19 @@ function CertifiedSitesPage({sites, setPage}){
             </div>
           </Card>
         </div>
+        <Card title="SIRA Rate" subtitle="Percentage of sites with and without SIRA" icon={IcChart}>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={rateData} margin={{top:16,right:12,left:-10,bottom:4}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="name" tick={{fontSize:11}}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
+              <Tooltip formatter={(v,n,p)=>[`${v}% (${p.payload.count} sites)`, n]}/>
+              <Bar dataKey="pct" name="Rate %" radius={[8,8,0,0]} barSize={44} label={{position:"top", fontSize:12, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+                {rateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
         <Card title="Sites without SIRA certificate" subtitle={`${withoutCert.length} eligible sites need certification`} icon={IcAlert}>
           <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
             {withoutCert.length===0 ? <p className="text-xs text-slate-500">All eligible sites are SIRA certified.</p> : withoutCert.map(s=>(
