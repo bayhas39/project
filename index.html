@@ -382,7 +382,6 @@ const [sites, setSites] = useState(()=> {
 });
   const [incidents, setIncidents] = useState(()=> LS.get(COLLECTIONS.incidents.key, null) || makeIncidents());
   const [accidents, setAccidents] = useState(()=> LS.get(COLLECTIONS.accidents.key, []));
-  const [sticky, setSticky] = useState([]);
   const [auth, setAuth] = useState(()=> initialAuth(sites));
 
   // per-collection "this write came from the other dashboard" flags + payload dedupe
@@ -470,28 +469,6 @@ const [sites, setSites] = useState(()=> {
   // Declared after the three publishers above so those see mounted === false.
   useEffect(()=>{ mounted.current = true; }, []);
 
-  /* Sticky notifications: new incidents/accidents stay on top for 5 minutes */
-  const prevIncRef = useRef(incidents);
-  const prevAccRef = useRef(accidents);
-  useEffect(()=>{
-    const added = incidents.filter(i=> !prevIncRef.current.some(p=>p.id===i.id));
-    if(added.length){
-      setSticky(s=>[...s, ...added.map(i=>({id:i.id, type:"incident", title:i.title||"Incident", site:i.siteName||i.siteId, expiresAt:Date.now()+5*60*1000}))]);
-    }
-    prevIncRef.current = incidents;
-  }, [incidents]);
-  useEffect(()=>{
-    const added = accidents.filter(a=> !prevAccRef.current.some(p=>p.id===a.id));
-    if(added.length){
-      setSticky(s=>[...s, ...added.map(a=>({id:a.id, type:"accident", title:a.title||a.type||"Accident", site:a.siteName||a.siteId, expiresAt:Date.now()+5*60*1000}))]);
-    }
-    prevAccRef.current = accidents;
-  }, [accidents]);
-  useEffect(()=>{
-    const iv = setInterval(()=> setSticky(s=>s.filter(x=>x.expiresAt>Date.now())), 10000);
-    return ()=>clearInterval(iv);
-  }, []);
-
   /* Shared service: seed an empty service from this browser, then poll for other
      accounts' edits and apply them in place -- no reload, same as a live tab. */
   useEffect(()=>{
@@ -538,28 +515,8 @@ const [sites, setSites] = useState(()=> {
   const syncMode = !remoteOn ? "paused" : !hasRemote ? "local" : (syncInfo.ok ? "live" : "offline");
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
-  const view = auth.role==="owner"
-    ? <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>
-    : <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
-  return (
-    <>
-      {sticky.length>0 && (
-        <div className="fixed top-20 right-4 z-[9999] space-y-2 w-[380px] max-w-[90vw]">
-          {sticky.map(x=>(
-            <div key={x.id} className={`text-white text-sm font-semibold px-4 py-3 rounded-xl shadow-2xl fade-up border-2 border-white/40 ${x.type==="incident"?"bg-red-600":"bg-orange-600"}`}>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-widest opacity-90 font-bold">{x.type}</span>
-                <span className="ml-auto text-[10px] opacity-90">{Math.max(0, Math.ceil((x.expiresAt-Date.now())/60000))}m left</span>
-              </div>
-              <div className="mt-0.5 font-bold">{x.title}</div>
-              <div className="text-xs opacity-90">{x.site}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {view}
-    </>
-  );
+  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
+  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
