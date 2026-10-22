@@ -1416,6 +1416,46 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 function AMCPage({sites, stats, perSite, setPage}){
   const offlineCamPct = stats.totalCameras ? Math.round((stats.offlineCameras/stats.totalCameras)*100) : 0;
   const offlineAnprPct = stats.totalANPR ? Math.round((stats.offlineANPR/stats.totalANPR)*100) : 0;
+  const nwACS = stats.nwACS||0, nwGate = stats.nwGate||0, nwIntercom = stats.nwIntercom||0;
+  const totalNW = nwACS + nwGate + nwIntercom;
+  const totalDevices = (stats.totalCameras||0) + (stats.totalANPR||0);
+  const totalOffline = (stats.offlineCameras||0) + (stats.offlineANPR||0);
+  const onlineDevices = Math.max(0, totalDevices - totalOffline);
+  const siteCount = sites.length || 1;
+
+  const healthData = [
+    { name:"Online",      value: onlineDevices, color:"#10b981" },
+    { name:"Offline",     value: totalOffline,   color:"#ef4444" },
+    { name:"Not Working", value: totalNW,        color:"#f59e0b" },
+  ];
+
+  const camOnlinePct = stats.totalCameras ? Math.round(((stats.totalCameras-stats.offlineCameras)/stats.totalCameras)*100) : 100;
+  const anprOnlinePct = stats.totalANPR ? Math.round(((stats.totalANPR-stats.offlineANPR)/stats.totalANPR)*100) : 100;
+  const acsOkPct  = Math.round(((siteCount - perSite.filter(s=>s.notWorkingANPR>0).length)/siteCount)*100);
+  const gateOkPct = Math.round(((siteCount - perSite.filter(s=>s.notWorkingGate>0).length)/siteCount)*100);
+  const interOkPct= Math.round(((siteCount - perSite.filter(s=>s.notWorkingIntercom>0).length)/siteCount)*100);
+  const rateData = [
+    { name:"Cameras",   pct: camOnlinePct, color:"#0284c7" },
+    { name:"ANPR",      pct: anprOnlinePct, color:"#7c3aed" },
+    { name:"ACS",       pct: acsOkPct,  color:"#10b981" },
+    { name:"Gate",      pct: gateOkPct, color:"#0ea5e9" },
+    { name:"Intercom",  pct: interOkPct,color:"#1e293b" },
+  ];
+
+  const offCamSites  = perSite.filter(s=>s.offlineCameras>0).sort((a,b)=>b.offlineCameras-a.offlineCameras);
+  const offAnprSites = perSite.filter(s=>s.offlineANPR>0).sort((a,b)=>b.offlineANPR-a.offlineANPR);
+  const nwSites = perSite.filter(s=>(s.notWorkingANPR+s.notWorkingGate+s.notWorkingIntercom)>0)
+    .map(s=>({...s, nwTotal: s.notWorkingANPR+s.notWorkingGate+s.notWorkingIntercom}))
+    .sort((a,b)=>b.nwTotal-a.nwTotal);
+
+  const nwLabel = (s)=> {
+    const bits=[];
+    if(s.notWorkingANPR>0) bits.push(`${s.notWorkingANPR} ACS`);
+    if(s.notWorkingGate>0) bits.push(`${s.notWorkingGate} Gate`);
+    if(s.notWorkingIntercom>0) bits.push(`${s.notWorkingIntercom} Intercom`);
+    return bits.join(" • ");
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-2xl border p-4 flex items-center gap-3" style={{borderColor:"#e2e8f0"}}>
@@ -1432,6 +1472,90 @@ function AMCPage({sites, stats, perSite, setPage}){
         <KPI label="Offline Cameras" value={stats.offlineCameras} sub={`${offlineCamPct}% offline of ${stats.totalCameras}`} icon={IcCamOff} color="bg-red-600 text-white" top="bg-red-500"/>
         <KPI label="Total ANPR" value={stats.totalANPR} sub={`${stats.totalANPR-stats.offlineANPR} online • ${stats.offlineANPR} offline`} icon={IcScan} color="bg-violet-600 text-white"/>
         <KPI label="Offline ANPR" value={stats.offlineANPR} sub={`${offlineAnprPct}% offline of ${stats.totalANPR}`} icon={IcWifiOff} color="bg-amber-500 text-white" top="bg-amber-500"/>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <KPI label="Not Working ACS" value={nwACS} sub={`${perSite.filter(s=>s.notWorkingANPR>0).length} sites affected`} icon={IcLock} color="bg-emerald-500 text-white"/>
+        <KPI label="Not Working Gate" value={nwGate} sub={`${perSite.filter(s=>s.notWorkingGate>0).length} sites affected`} icon={IcLock} color="bg-sky-600 text-white"/>
+        <KPI label="Not Working Intercom" value={nwIntercom} sub={`${perSite.filter(s=>s.notWorkingIntercom>0).length} sites affected`} icon={IcWifiOff} color="bg-orange-500 text-white"/>
+        <KPI label="Total Devices" value={totalDevices} sub={`${onlineDevices} online • ${totalOffline} offline`} icon={IcBuilding} color="bg-slate-900 text-white"/>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div>
+          <Card title="Device Health" subtitle="Online vs Offline vs Not Working" icon={IcShield}>
+            <div className="flex items-center gap-4">
+              <div className="w-[240px] shrink-0">
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={healthData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={72} paddingAngle={2} strokeWidth={2} stroke="#fff">
+                      {healthData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+                    </Pie>
+                    <Tooltip/>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-2 min-w-0">
+                {healthData.map(x=>(
+                  <div key={x.name} className="flex items-center gap-2 text-sm">
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:x.color}}/>
+                    <span className="font-semibold truncate">{x.name}</span>
+                    <span className="ml-auto text-slate-400 font-bold">{x.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+        <Card title="AMC Health Rate" subtitle="Percentage of each system operating normally" icon={IcChart}>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={rateData} margin={{top:16,right:12,left:-10,bottom:4}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="name" tick={{fontSize:11}}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
+              <Tooltip formatter={(v)=>[`${v}%`, "Healthy"]}/>
+              <Bar dataKey="pct" name="Healthy %" radius={[8,8,0,0]} barSize={34} label={{position:"top", fontSize:11, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+                {rateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card title="Sites with Offline Cameras" subtitle={`${offCamSites.length} sites affected`} icon={IcCamOff}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {offCamSites.length===0 ? <p className="text-xs text-slate-500">All cameras are online.</p> : offCamSites.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-red-50/60 px-2.5 py-1.5" style={{borderColor:"#fecaca"}}>
+                <IcCamOff size={12} className="text-red-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.shortName}</span>
+                <span className="ml-auto text-[10px] font-bold text-red-600 shrink-0">{s.offlineCameras} off</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card title="Sites with Offline ANPR" subtitle={`${offAnprSites.length} sites affected`} icon={IcWifiOff}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {offAnprSites.length===0 ? <p className="text-xs text-slate-500">All ANPR are online.</p> : offAnprSites.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-amber-50/60 px-2.5 py-1.5" style={{borderColor:"#fde68a"}}>
+                <IcWifiOff size={12} className="text-amber-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.shortName}</span>
+                <span className="ml-auto text-[10px] font-bold text-amber-600 shrink-0">{s.offlineANPR} off</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card title="Sites with Not Working Devices" subtitle={`${nwSites.length} sites affected`} icon={IcLock}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {nwSites.length===0 ? <p className="text-xs text-slate-500">All devices are working.</p> : nwSites.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-orange-50/60 px-2.5 py-1.5" style={{borderColor:"#fed7aa"}}>
+                <IcLock size={12} className="text-orange-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.shortName}</span>
+                <span className="ml-auto text-[10px] text-slate-500 shrink-0 truncate">{nwLabel(s)}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
 
       <Card title="All Sites — Cameras & ANPR" subtitle={`${sites.length} sites • Total vs Offline — one chart • Scroll →`} icon={IcChart}>
@@ -1827,17 +1951,6 @@ function CertifiedSitesPage({sites, setPage}){
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </Card>
-        <Card title="Expired SIRA" subtitle={`${expired.length} certificates have expired`} icon={IcClock}>
-          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
-            {expired.length===0 ? <p className="text-xs text-slate-500">No expired SIRA certificates.</p> : expired.map(s=>(
-              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-orange-50/60 px-2.5 py-1.5" style={{borderColor:"#fed7aa"}}>
-                <IcClock size={12} className="text-orange-600 shrink-0"/>
-                <span className="text-xs font-semibold truncate">{s.name}</span>
-                <span className="ml-auto text-[10px] text-slate-400 shrink-0 font-mono2">{s.pincode}</span>
-              </div>
-            ))}
-          </div>
         </Card>
         <Card title="Sites without SIRA certificate" subtitle={`${withoutCert.length} eligible sites need certification`} icon={IcAlert}>
           <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
