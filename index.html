@@ -15,106 +15,96 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./recharts.min.js"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
-      body { font-family: 'JetBrains Mono', 'Courier New', monospace; background: #000000; color:#00ff41; min-height:100vh; margin:0; }
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+      body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color:#c9d1d9; min-height:100vh; margin:0; -webkit-font-smoothing: antialiased; }
       .font-mono2 { font-family:'JetBrains Mono', monospace; }
-      /* Scanline overlay */
-      body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:9999; background: repeating-linear-gradient(0deg, rgba(0,255,65,.03) 0px, rgba(0,255,65,.03) 1px, transparent 1px, transparent 2px); mix-blend-mode: screen; }
-      /* Subtle grid */
-      body::after { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; background-image: linear-gradient(rgba(0,255,65,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,.04) 1px, transparent 1px); background-size: 40px 40px; }
-      ::-webkit-scrollbar{width:8px;height:8px} ::-webkit-scrollbar-thumb{background:#00ff41;border-radius:0;border:1px solid #000} ::-webkit-scrollbar-track{background:#0a0a0a}
-      @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+      ::-webkit-scrollbar{width:8px;height:8px} ::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px} ::-webkit-scrollbar-track{background:#0d1117}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-      @keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-2px,1px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(1px,-2px)}100%{transform:translate(0)}}
-      @keyframes pulse-glow{0%,100%{box-shadow:0 0 8px #00ff41, inset 0 0 8px rgba(0,255,65,.1)}50%{box-shadow:0 0 16px #00ff41, inset 0 0 12px rgba(0,255,65,.2)}}
-      .fade-up{animation:fadeUp .35s ease}
-      .page-fade{animation:fadeIn .3s ease}
+      .fade-up{animation:fadeUp .25s ease}
+      .page-fade{animation:fadeIn .2s ease}
       .line-clamp-1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
       .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-      /* ===== Hacker / terminal theme ===== */
-      .bg-white { background:#0a0a0a !important; }
-      .bg-slate-50 { background:#050505 !important; }
-      .bg-slate-100 { background:#0a0a0a !important; }
-      .bg-slate-200 { background:#111111 !important; }
-      .bg-slate-900 { background:#000000 !important; }
-      .bg-sky-50 { background:#050a05 !important; }
-      .bg-red-50 { background:#0a0505 !important; }
-      .bg-amber-50 { background:#0a0a05 !important; }
-      .bg-emerald-50 { background:#050a05 !important; }
-      .bg-blue-50 { background:#05050a !important; }
-      .text-slate-900 { color:#00ff41 !important; }
-      .text-slate-800 { color:#33ff66 !important; }
-      .text-slate-700 { color:#66ff99 !important; }
-      .text-slate-600 { color:#00cc33 !important; }
-      .text-slate-500 { color:#00aa22 !important; }
-      .text-slate-400 { color:#008822 !important; }
-      .border { border-color:#00ff41 !important; border-radius:0 !important; }
-      .border-t, .border-b { border-color:#00ff41 !important; }
-      .border-slate-200 { border-color:#00ff41 !important; }
-      .border-slate-300 { border-color:#00cc33 !important; }
-      .border-sky-200 { border-color:#00ff41 !important; }
-      .border-red-200, .border-red-300 { border-color:#ff0040 !important; }
-      .border-amber-200 { border-color:#ffaa00 !important; }
-      .border-emerald-200 { border-color:#00ff41 !important; }
-      .border-blue-200 { border-color:#00ffff !important; }
-      .border-eef2f7, [style*="borderColor:#eef2f7"] { border-color:#00ff41 !important; }
-      .shadow, .shadow-sm, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 0 12px rgba(0,255,65,.3), inset 0 0 4px rgba(0,255,65,.1) !important; }
-      .backdrop-blur-sm { backdrop-filter: blur(4px); }
-      .rounded-2xl, .rounded-xl, .rounded-full, .rounded-lg { border-radius:0 !important; }
-      .rounded { border-radius:0 !important; }
-      input, select, textarea { background:#050505 !important; color:#00ff41 !important; border:1px solid #00ff41 !important; border-radius:0 !important; font-family:'JetBrains Mono', monospace !important; }
-      input::placeholder, textarea::placeholder { color:#005511 !important; }
-      .bg-slate-900.text-white, button.bg-slate-900 { background:#000000 !important; color:#00ff41 !important; border:1px solid #00ff41 !important; }
-      .bg-sky-600 { background:#000000 !important; color:#00ff41 !important; border:1px solid #00ff41 !important; }
-      .bg-red-600 { background:#000000 !important; color:#ff0040 !important; border:1px solid #ff0040 !important; }
-      .bg-emerald-500 { background:#000000 !important; color:#00ff41 !important; border:1px solid #00ff41 !important; }
-      .bg-amber-500 { background:#000000 !important; color:#ffaa00 !important; border:1px solid #ffaa00 !important; }
-      .bg-blue-500 { background:#000000 !important; color:#00ffff !important; border:1px solid #00ffff !important; }
-      .bg-violet-500 { background:#000000 !important; color:#ff00ff !important; border:1px solid #ff00ff !important; }
-      .bg-slate-700 { background:#111111 !important; color:#00ff41 !important; }
-      .text-sky-200 { color:#00ff41 !important; }
-      .text-sky-700 { color:#00ff41 !important; }
-      .text-red-600, .text-red-700 { color:#ff0040 !important; }
-      .text-amber-600, .text-amber-700, .text-amber-800 { color:#ffaa00 !important; }
-      .text-emerald-700 { color:#00ff41 !important; }
-      .text-blue-700 { color:#00ffff !important; }
-      .bg-red-100 { background:#0a0505 !important; color:#ff0040 !important; border:1px solid #ff0040 !important; }
-      .bg-amber-100 { background:#0a0a05 !important; color:#ffaa00 !important; border:1px solid #ffaa00 !important; }
-      .bg-emerald-100 { background:#050a05 !important; color:#00ff41 !important; border:1px solid #00ff41 !important; }
-      .bg-blue-100 { background:#05050a !important; color:#00ffff !important; border:1px solid #00ffff !important; }
-      .bg-orange-100 { background:#0a0a05 !important; color:#ffaa00 !important; border:1px solid #ffaa00 !important; }
-      .bg-slate-100 { background:#0a0a0a !important; }
-      .stroke-slate-200 { stroke:#00ff41 !important; }
-      .fill-slate-900 { fill:#00ff41 !important; }
-      .bg-gradient-to-r.from-slate-900 { background: #000000 !important; }
-      .ring-white\/20 { --tw-ring-color: rgba(0,255,65,.2); }
-      /* Terminal-style title bars */
-      .terminal-bar { background:#0a0a0a; border:1px solid #00ff41; border-bottom:2px solid #00ff41; padding:4px 12px; font-family:'JetBrains Mono', monospace; font-size:11px; color:#00ff41; letter-spacing:1px; text-transform:uppercase; }
-      /* Neon glow text */
-      .neon-text { color:#00ff41; text-shadow: 0 0 4px #00ff41, 0 0 8px #00ff41, 0 0 16px rgba(0,255,65,.4); }
-      /* Chart 3D depth - hacker style */
-      .recharts-wrapper { filter: drop-shadow(0 0 8px rgba(0,255,65,.3)); }
-      .recharts-surface { border-radius: 0; background:#050505; }
-      .recharts-bar-rectangle { filter: drop-shadow(0 0 4px rgba(0,255,65,.4)); transition: filter .2s; }
-      .recharts-bar-rectangle:hover { filter: drop-shadow(0 0 10px rgba(0,255,65,.8)); }
-      .recharts-pie { filter: drop-shadow(0 0 8px rgba(0,255,65,.4)); }
-      .recharts-line { filter: drop-shadow(0 0 6px rgba(0,255,255,.6)); }
-      .recharts-area { filter: drop-shadow(0 0 8px rgba(0,255,65,.4)); }
-      .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke: #00ff41 !important; stroke-width: 0.5px; opacity:0.3; }
-      .recharts-text { fill: #00ff41 !important; font-size: 10px !important; font-family:'JetBrains Mono', monospace !important; }
-      .recharts-tooltip-wrapper .recharts-default-tooltip { background:#050505 !important; border:1px solid #00ff41 !important; border-radius:0 !important; box-shadow:0 0 16px rgba(0,255,65,.4) !important; color:#00ff41 !important; padding:6px 10px !important; font-family:'JetBrains Mono', monospace !important; }
-      .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item { color:#00ff41 !important; font-size:11px !important; }
-      .recharts-legend-item-text { color:#00cc33 !important; font-size:10px !important; font-family:'JetBrains Mono', monospace !important; }
-      .recharts-pie-label-text { fill:#00cc33 !important; font-size:10px !important; }
-      .recharts-legend-wrapper { padding-top: 6px !important; }
-      /* Sidebar */
-      .sidebar-bg { background:#050505; border-right:1px solid #00ff41; }
-      .header-bg { background:#000000; border-bottom:1px solid #00ff41; }
-      /* Glow buttons */
-      button { transition: all .15s; }
-      button:hover { text-shadow: 0 0 4px #00ff41; }
-      /* KPI values glow */
-      .kpi-value { color:#00ff41; text-shadow: 0 0 6px #00ff41; }
+      /* ===== Professional Black & Blue Office Theme ===== */
+      .bg-white { background:#161b22 !important; }
+      .bg-slate-50 { background:#0d1117 !important; }
+      .bg-slate-100 { background:#161b22 !important; }
+      .bg-slate-200 { background:#21262d !important; }
+      .bg-slate-900 { background:#0d1117 !important; }
+      .bg-sky-50 { background:#0d1520 !important; }
+      .bg-red-50 { background:#1a1215 !important; }
+      .bg-amber-50 { background:#1a1710 !important; }
+      .bg-emerald-50 { background:#0d1a15 !important; }
+      .bg-blue-50 { background:#0d1520 !important; }
+      .text-slate-900 { color:#f0f6fc !important; }
+      .text-slate-800 { color:#e6edf3 !important; }
+      .text-slate-700 { color:#c9d1d9 !important; }
+      .text-slate-600 { color:#8b949e !important; }
+      .text-slate-500 { color:#8b949e !important; }
+      .text-slate-400 { color:#6e7681 !important; }
+      .border { border-color:#30363d !important; }
+      .border-t, .border-b { border-color:#30363d !important; }
+      .border-slate-200 { border-color:#30363d !important; }
+      .border-slate-300 { border-color:#30363d !important; }
+      .border-sky-200 { border-color:#1f6feb !important; }
+      .border-red-200, .border-red-300 { border-color:#da3633 !important; }
+      .border-amber-200 { border-color:#d29922 !important; }
+      .border-emerald-200 { border-color:#238636 !important; }
+      .border-blue-200 { border-color:#1f6feb !important; }
+      .border-eef2f7, [style*="borderColor:#eef2f7"] { border-color:#30363d !important; }
+      .shadow, .shadow-sm, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 3px 12px rgba(0,0,0,.4) !important; }
+      .backdrop-blur-sm { backdrop-filter: blur(8px); }
+      input, select, textarea { background:#0d1117 !important; color:#c9d1d9 !important; border:1px solid #30363d !important; border-radius:6px !important; font-family:'Inter', sans-serif !important; }
+      input::placeholder, textarea::placeholder { color:#6e7681 !important; }
+      .bg-slate-900.text-white, button.bg-slate-900 { background:#1f6feb !important; color:#ffffff !important; border:none !important; }
+      .bg-sky-600 { background:#1f6feb !important; color:#ffffff !important; }
+      .bg-red-600 { background:#da3633 !important; color:#ffffff !important; }
+      .bg-emerald-500 { background:#238636 !important; color:#ffffff !important; }
+      .bg-amber-500 { background:#d29922 !important; color:#ffffff !important; }
+      .bg-blue-500 { background:#1f6feb !important; color:#ffffff !important; }
+      .bg-violet-500 { background:#8957e5 !important; color:#ffffff !important; }
+      .bg-slate-700 { background:#21262d !important; color:#c9d1d9 !important; }
+      .text-sky-200 { color:#58a6ff !important; }
+      .text-sky-700 { color:#58a6ff !important; }
+      .text-red-600, .text-red-700 { color:#f85149 !important; }
+      .text-amber-600, .text-amber-700, .text-amber-800 { color:#d29922 !important; }
+      .text-emerald-700 { color:#3fb950 !important; }
+      .text-blue-700 { color:#58a6ff !important; }
+      .bg-red-100 { background:#1a1215 !important; color:#f85149 !important; }
+      .bg-amber-100 { background:#1a1710 !important; color:#d29922 !important; }
+      .bg-emerald-100 { background:#0d1a15 !important; color:#3fb950 !important; }
+      .bg-blue-100 { background:#0d1520 !important; color:#58a6ff !important; }
+      .bg-orange-100 { background:#1a1710 !important; color:#d29922 !important; }
+      .bg-slate-100 { background:#161b22 !important; }
+      .stroke-slate-200 { stroke:#30363d !important; }
+      .fill-slate-900 { fill:#1f6feb !important; }
+      .bg-gradient-to-r.from-slate-900 { background: linear-gradient(to right, #0d1117, #161b22) !important; }
+      .ring-white\/20 { --tw-ring-color: rgba(255,255,255,.08); }
+      .text-gradient { background: linear-gradient(90deg, #58a6ff, #1f6feb, #8957e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      /* Chart 3D depth - professional */
+      .recharts-wrapper { filter: drop-shadow(0 4px 12px rgba(0,0,0,.4)); }
+      .recharts-surface { border-radius: 8px; background:#161b22; }
+      .recharts-bar-rectangle { filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); transition: filter .15s; }
+      .recharts-bar-rectangle:hover { filter: drop-shadow(0 4px 8px rgba(31,111,235,.5)); }
+      .recharts-pie { filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
+      .recharts-line { filter: drop-shadow(0 2px 6px rgba(31,111,235,.4)); }
+      .recharts-area { filter: drop-shadow(0 2px 8px rgba(31,111,235,.3)); }
+      .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke: #21262d !important; stroke-width: 1px; }
+      .recharts-text { fill: #8b949e !important; font-size: 11px !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip { background:#161b22 !important; border:1px solid #30363d !important; border-radius:6px !important; box-shadow:0 8px 24px rgba(0,0,0,.5) !important; color:#c9d1d9 !important; padding:8px 12px !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item { color:#c9d1d9 !important; font-size:12px !important; }
+      .recharts-legend-item-text { color:#8b949e !important; font-size:11px !important; }
+      .recharts-pie-label-text { fill:#8b949e !important; font-size:11px !important; }
+      .recharts-legend-wrapper { padding-top: 8px !important; }
+      /* Professional sidebar */
+      .sidebar-bg { background:#0d1117; border-right:1px solid #30363d; }
+      .header-bg { background:#161b22; border-bottom:1px solid #30363d; }
+      /* Buttons */
+      button { transition: all .15s ease; }
+      button:hover { opacity: .9; }
+      /* Professional cards */
+      .card-pro { background:#161b22; border:1px solid #30363d; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.3); transition: box-shadow .2s; }
+      .card-pro:hover { box-shadow:0 4px 16px rgba(0,0,0,.4); }
     </style>
   </head>
   <body>
@@ -197,7 +187,7 @@ const INC_STATUS = [
 ];
 const SEVERITIES = ["Low","Medium","High","Critical"];
 const CATEGORIES = ["Safety","HVAC","Finishing","Electrical","Security","Civil","Plumbing"];
-const PALETTE = ["#00ff41","#00ffff","#ff0040","#ffaa00","#ff00ff","#33ff66","#00ccff","#ffff00"];
+const PALETTE = ["#1f6feb","#58a6ff","#3fb950","#d29922","#f85149","#8957e5","#39c5cf","#db6d28"];
 const PROB_KEYS = [
   { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#3b82f6" },
   { key:"offlineANPR",    label:"Offline ANPR",          short:"ANPR Off", color:"#f87171" },
@@ -640,8 +630,8 @@ function Login({sites, onAuth}){
   );
 
   return (
-    <div className="min-h-screen bg-[#000000] flex flex-col">
-      <header className="bg-gradient-to-r from-[#000000] via-[#050505] to-[#0a0a0a] border-b" style={{borderColor:"#0f172a"}}>
+    <div className="min-h-screen bg-[#0d1117] flex flex-col">
+      <header className="bg-gradient-to-r from-[#0d1117] via-[#161b22] to-[#161b22] border-b" style={{borderColor:"#0f172a"}}>
         <div className="max-w-[720px] mx-auto px-4 h-[64px] flex items-center gap-3">
           <div className="h-10 px-2 rounded-xl bg-white grid place-items-center">
             <img src="./dhre-logo.avif" alt="DHRE" className="h-8 w-auto object-contain"
@@ -731,7 +721,7 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
   const sb = SYNC_BADGE[syncMode] || SYNC_BADGE.local;
   return (
     <header className="sticky top-0 z-30 border-b overflow-hidden" style={{borderColor:"#0f172a"}}>
-      <div className="bg-gradient-to-r from-[#000000] via-[#050505] to-[#0a0a0a]">
+      <div className="bg-gradient-to-r from-[#0d1117] via-[#161b22] to-[#161b22]">
         <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
           <div className="h-12 px-3 rounded-xl bg-white grid place-items-center overflow-hidden shrink-0 shadow-lg ring-1 ring-white/20">
             <img src="./dhre-logo.avif" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
@@ -847,10 +837,10 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
   ];
 
   return (
-    <div className="min-h-screen flex bg-[#000000] text-[#00ff41]">
-      <aside className="w-[232px] shrink-0 bg-[#050505] border-r flex flex-col" style={{borderColor:"#00ff41"}}>
-        <div className="px-4 py-4 border-b flex items-center gap-3" style={{borderColor:"#00ff41"}}>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#000000] to-[#0a0a0a] grid place-items-center text-white shadow-lg"><IcShieldCk size={18}/></div>
+    <div className="min-h-screen flex bg-[#0d1117] text-[#c9d1d9]">
+      <aside className="w-[232px] shrink-0 bg-[#0d1117] border-r flex flex-col" style={{borderColor:"#30363d"}}>
+        <div className="px-4 py-4 border-b flex items-center gap-3" style={{borderColor:"#30363d"}}>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0d1117] to-[#161b22] grid place-items-center text-white shadow-lg"><IcShieldCk size={18}/></div>
           <div className="min-w-0">
             <div className="font-extrabold text-sm text-white leading-none">DHRE</div>
             <div className="text-[10px] text-[#8fb3a2] mt-0.5">Security Dashboard</div>
@@ -860,16 +850,16 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
           {TABS.map(t=>{
             const Icon = t.icon;
             return (
-              <button key={t.id} onClick={()=>setPage(t.id)} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition ${page===t.id?"bg-gradient-to-r from-[#000000] to-[#111111] text-white shadow":"text-[#b5cdc1] hover:bg-[#0a0a0a] hover:text-white"}`}>
+              <button key={t.id} onClick={()=>setPage(t.id)} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition ${page===t.id?"bg-gradient-to-r from-[#0d1117] to-[#21262d] text-white shadow":"text-[#8b949e] hover:bg-[#161b22] hover:text-white"}`}>
                 <Icon size={16}/> {t.label}
                 {t.count!==undefined && <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] bg-red-500/30 text-red-200">{t.count}</span>}
               </button>
             );
           })}
         </nav>
-        <div className="px-3 py-4 border-t space-y-2" style={{borderColor:"#00ff41"}}>
+        <div className="px-3 py-4 border-t space-y-2" style={{borderColor:"#30363d"}}>
           <div className="text-[11px] text-[#8fb3a2]">Admin • {auth.name}</div>
-          <button onClick={onLogout} className="w-full px-3 py-2 rounded-xl bg-[#0a0a0a] text-[#00ff41] border text-xs font-bold hover:bg-[#111111] flex items-center justify-center gap-1.5" style={{borderColor:"#00ff41"}}>
+          <button onClick={onLogout} className="w-full px-3 py-2 rounded-xl bg-[#161b22] text-[#c9d1d9] border text-xs font-bold hover:bg-[#21262d] flex items-center justify-center gap-1.5" style={{borderColor:"#30363d"}}>
             <IcLogout size={13}/> Logout
           </button>
         </div>
@@ -877,9 +867,9 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
       <div className="flex-1 flex flex-col min-w-0">
         <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={null}>
-          <div className="border-t" style={{borderColor:"#00ff41", background:"#000000"}}>
+          <div className="border-t" style={{borderColor:"#30363d", background:"#161b22"}}>
             <div className="px-4 lg:px-6 h-[42px] flex items-center justify-between">
-              <div className="text-xs font-bold tracking-widest uppercase text-[#9fd4b8] flex items-center gap-2">
+              <div className="text-xs font-bold tracking-widest uppercase text-[#8b949e] flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"/>
                 <span className="truncate">{PAGE_LABEL[page]} • Security Operations</span>
               </div>
@@ -899,7 +889,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
           </div>
           <p className="mt-8 text-center text-xs text-[#6f9a86]">
             Page: {PAGE_LABEL[page]} •
-            <button onClick={()=>setPage(PAGES[(PAGES.indexOf(page)+1)%PAGES.length])} className="underline font-semibold hover:text-[#9fd4b8] ml-1">
+            <button onClick={()=>setPage(PAGES[(PAGES.indexOf(page)+1)%PAGES.length])} className="underline font-semibold hover:text-[#8b949e] ml-1">
               Go to {NEXT_PAGE[page]} →
             </button>
           </p>
@@ -1680,7 +1670,7 @@ function AMCPage({sites, stats, perSite, setPage}){
             <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#fbbf24" radius={[3,3,0,0]}/>
             <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#60a5fa" radius={[3,3,0,0]}/>
             <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#334155" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#22d3ee" radius={[3,3,0,0]}/>
+            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#39c5cf" radius={[3,3,0,0]}/>
           </BarChart>
         </ResponsiveContainer>
         {perSite.length>30 && <p className="text-xs text-slate-400 text-center mt-1">Showing first 30 of {perSite.length} sites — use search/filters to narrow down</p>}
@@ -2117,7 +2107,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
   );
 
   return (
-    <div className="min-h-screen bg-[#000000] text-[#00ff41]">
+    <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
       <Header title="My Site Website" syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync} right={HeaderRight}>
         <div className="border-t bg-sky-50" style={{borderColor:"#e0f2fe"}}>
           <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[44px] flex items-center justify-center">
