@@ -78,7 +78,19 @@
       .bg-slate-100 { background:#132019 !important; }
       .stroke-slate-200 { stroke:#1f3a2a !important; }
       .fill-slate-900 { fill:#1a3a2a !important; }
-      .bg-gradient-to-r.from-slate-900 { background: linear-gradient(to right, #0d2a1a, #0d2a1a, #1a4a30) !important; }
+      /* 3D chart depth (matches reference dashboard) */
+      .recharts-wrapper { filter: drop-shadow(0 4px 12px rgba(0,0,0,.35)); }
+      .recharts-surface { border-radius: 12px; }
+      .recharts-bar-rectangle { filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
+      .recharts-pie { filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)); }
+      .recharts-line { filter: drop-shadow(0 2px 6px rgba(59,130,246,.4)); }
+      .recharts-area { filter: drop-shadow(0 2px 8px rgba(59,130,246,.3)); }
+      .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke: #1f3a2a !important; }
+      .recharts-text { fill: #8fb3a2 !important; font-size: 11px !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip { background:#0e1813 !important; border:1px solid #1f3a2a !important; border-radius:10px !important; box-shadow:0 8px 24px rgba(0,0,0,.5) !important; color:#e6f0ea !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item { color:#e6f0ea !important; }
+      .recharts-legend-item-text { color:#b5cdc1 !important; font-size:11px !important; }
+      .recharts-pie-label-text { fill:#b5cdc1 !important; font-size:11px !important; }
       .ring-white\/20 { --tw-ring-color: rgba(255,255,255,.1); }
     </style>
   </head>
@@ -162,13 +174,13 @@ const INC_STATUS = [
 ];
 const SEVERITIES = ["Low","Medium","High","Critical"];
 const CATEGORIES = ["Safety","HVAC","Finishing","Electrical","Security","Civil","Plumbing"];
-const PALETTE = ["#0284c7","#ef4444","#7c3aed","#f59e0b","#0ea5e9","#1e293b","#06b6d4","#10b981"];
+const PALETTE = ["#3b82f6","#f87171","#8b5cf6","#fbbf24","#60a5fa","#475569","#22d3ee","#34d399"];
 const PROB_KEYS = [
-  { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#0284c7" },
-  { key:"offlineANPR",    label:"Offline ANPR",          short:"ANPR Off", color:"#ef4444" },
-  { key:"notWorkingANPR", label:"Not Working ACS",       short:"ACS",      color:"#7c3aed" },
-  { key:"notWorkingGate", label:"Not Working Gate barrier", short:"Gate",  color:"#0ea5e9" },
-  { key:"notWorkingIntercom", label:"Not Working Intercom", short:"Intercom", color:"#1e293b" },
+  { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#3b82f6" },
+  { key:"offlineANPR",    label:"Offline ANPR",          short:"ANPR Off", color:"#f87171" },
+  { key:"notWorkingANPR", label:"Not Working ACS",       short:"ACS",      color:"#8b5cf6" },
+  { key:"notWorkingGate", label:"Not Working Gate barrier", short:"Gate",  color:"#60a5fa" },
+  { key:"notWorkingIntercom", label:"Not Working Intercom", short:"Intercom", color:"#334155" },
 ];
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -1098,8 +1110,8 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
               <BarChart data={camData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-                <Bar dataKey="online" name="Online" fill="#0284c7" radius={[3,3,0,0]}/>
-                <Bar dataKey="offline" name="Offline" fill="#ef4444" radius={[3,3,0,0]}/>
+                <Bar dataKey="online" name="Online" fill="#3b82f6" radius={[3,3,0,0]}/>
+                <Bar dataKey="offline" name="Offline" fill="#f87171" radius={[3,3,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -1108,9 +1120,9 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
               <BarChart data={[{name:"ANPR", online:(site.totalANPR||0)-(site.offlineANPR||0), offline:site.offlineANPR||0, nw:site.notWorkingANPR||0}]}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-                <Bar dataKey="online" name="Online" fill="#7c3aed" radius={[3,3,0,0]}/>
-                <Bar dataKey="offline" name="Offline" fill="#ef4444" radius={[3,3,0,0]}/>
-                <Bar dataKey="nw" name="Not Working" fill="#f59e0b" radius={[3,3,0,0]}/>
+                <Bar dataKey="online" name="Online" fill="#8b5cf6" radius={[3,3,0,0]}/>
+                <Bar dataKey="offline" name="Offline" fill="#f87171" radius={[3,3,0,0]}/>
+                <Bar dataKey="nw" name="Not Working" fill="#fbbf24" radius={[3,3,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -1304,7 +1316,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
     .map(([name,value])=>({name, value})).sort((a,b)=>b.value-a.value);
   const probData = PROB_KEYS.map(k=>({ name:k.label, short:k.short, value:problemTotals[k.label]||0, color:k.color }));
   const incidentSites = sites.filter(s=>problemsOf(s, incidents).includes("Incident Sites"));
-  probData.push({ name:"Incident Sites", short:"Incidents", value:incidentSites.length, color:"#f59e0b" });
+  probData.push({ name:"Incident Sites", short:"Incidents", value:incidentSites.length, color:"#fbbf24" });
   const topProblem = [...probData].sort((a,b)=>b.value-a.value)[0];
 
   const worst = [...perSite].sort((a,b)=>
@@ -1346,7 +1358,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={16} fill="#ef4444">
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={16} fill="#f87171">
               {topOfflineCamSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
             </Bar>
           </BarChart>
@@ -1360,7 +1372,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#ef4444">
+            <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#f87171">
               {topOfflineAnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
             </Bar>
           </BarChart>
@@ -1375,7 +1387,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
               <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
               <YAxis tick={{fontSize:11}} allowDecimals={false}/>
               <Tooltip/>
-              <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#ef4444">
+              <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#f87171">
                 {top5AnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
               </Bar>
             </BarChart>
@@ -1388,7 +1400,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
               <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
               <YAxis tick={{fontSize:11}} allowDecimals={false}/>
               <Tooltip/>
-              <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={16} fill="#0ea5e9">
+              <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={16} fill="#60a5fa">
                 {top5GateSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
               </Bar>
             </BarChart>
@@ -1472,11 +1484,11 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/><Legend wrapperStyle={{fontSize:11}}/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" stackId="a" fill="#0284c7"/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" stackId="a" fill="#ef4444"/>
-            <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#7c3aed"/>
-            <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#0ea5e9"/>
-            <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#1e293b"/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" stackId="a" fill="#3b82f6"/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" stackId="a" fill="#f87171"/>
+            <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#8b5cf6"/>
+            <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#60a5fa"/>
+            <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#334155"/>
           </BarChart>
         </ResponsiveContainer>
       </Card>
@@ -1499,8 +1511,8 @@ function AMCPage({sites, stats, perSite, setPage}){
 
   const healthData = [
     { name:"Online",      value: onlineDevices, color:"#10b981" },
-    { name:"Offline",     value: totalOffline,   color:"#ef4444" },
-    { name:"Not Working", value: totalNW,        color:"#f59e0b" },
+    { name:"Offline",     value: totalOffline,   color:"#f87171" },
+    { name:"Not Working", value: totalNW,        color:"#fbbf24" },
   ];
 
   const camOnlinePct = stats.totalCameras ? Math.round(((stats.totalCameras-stats.offlineCameras)/stats.totalCameras)*100) : 100;
@@ -1509,11 +1521,11 @@ function AMCPage({sites, stats, perSite, setPage}){
   const gateOkPct = Math.round(((siteCount - perSite.filter(s=>s.notWorkingGate>0).length)/siteCount)*100);
   const interOkPct= Math.round(((siteCount - perSite.filter(s=>s.notWorkingIntercom>0).length)/siteCount)*100);
   const rateData = [
-    { name:"Cameras",   pct: camOnlinePct, color:"#0284c7" },
-    { name:"ANPR",      pct: anprOnlinePct, color:"#7c3aed" },
+    { name:"Cameras",   pct: camOnlinePct, color:"#3b82f6" },
+    { name:"ANPR",      pct: anprOnlinePct, color:"#8b5cf6" },
     { name:"ACS",       pct: acsOkPct,  color:"#10b981" },
-    { name:"Gate",      pct: gateOkPct, color:"#0ea5e9" },
-    { name:"Intercom",  pct: interOkPct,color:"#1e293b" },
+    { name:"Gate",      pct: gateOkPct, color:"#60a5fa" },
+    { name:"Intercom",  pct: interOkPct,color:"#334155" },
   ];
 
   const offCamSites  = perSite.filter(s=>s.offlineCameras>0).sort((a,b)=>b.offlineCameras-a.offlineCameras);
@@ -1639,13 +1651,13 @@ function AMCPage({sites, stats, perSite, setPage}){
             <XAxis dataKey="shortName" angle={-35} textAnchor="end" height={90} tick={{fontSize:10}} interval={0}/>
             <YAxis tick={{fontSize:11}}/>
             <Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-            <Bar dataKey="totalCameras" name="Total Cameras" fill="#0284c7" radius={[3,3,0,0]} barGap={2}/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" fill="#ef4444" radius={[3,3,0,0]}/>
-            <Bar dataKey="totalANPR" name="Total ANPR" fill="#7c3aed" radius={[3,3,0,0]}/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#f59e0b" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#0ea5e9" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#1e293b" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#06b6d4" radius={[3,3,0,0]}/>
+            <Bar dataKey="totalCameras" name="Total Cameras" fill="#3b82f6" radius={[3,3,0,0]} barGap={2}/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" fill="#f87171" radius={[3,3,0,0]}/>
+            <Bar dataKey="totalANPR" name="Total ANPR" fill="#8b5cf6" radius={[3,3,0,0]}/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#fbbf24" radius={[3,3,0,0]}/>
+            <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#60a5fa" radius={[3,3,0,0]}/>
+            <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#334155" radius={[3,3,0,0]}/>
+            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#22d3ee" radius={[3,3,0,0]}/>
           </BarChart>
         </ResponsiveContainer>
         {perSite.length>30 && <p className="text-xs text-slate-400 text-center mt-1">Showing first 30 of {perSite.length} sites — use search/filters to narrow down</p>}
@@ -1968,14 +1980,14 @@ function CertifiedSitesPage({sites, setPage}){
   const withoutCert = eligible.filter(s=> !s.siraCertified && !s.siraExpired);
   const certData = [
     { name:"SIRA Certified", value: certified.length, color:"#10b981" },
-    { name:"Not Certified", value: withoutCert.length + expired.length, color:"#ef4444" },
+    { name:"Not Certified", value: withoutCert.length + expired.length, color:"#f87171" },
   ];
   const total = sites.length || 1;
   const pct = (n)=> Math.round((n/total)*100);
   const rateData = [
     { name:"SIRA Certified", pct: pct(certified.length), count: certified.length, color:"#10b981" },
     { name:"Expired SIRA",   pct: pct(expired.length), count: expired.length, color:"#f97316" },
-    { name:"Without SIRA",   pct: pct(withoutCert.length), count: withoutCert.length, color:"#f59e0b" },
+    { name:"Without SIRA",   pct: pct(withoutCert.length), count: withoutCert.length, color:"#fbbf24" },
     { name:"Not Eligible",   pct: pct(notEligible.length), count: notEligible.length, color:"#64748b" },
   ];
   return (
