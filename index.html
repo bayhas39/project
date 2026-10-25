@@ -15,15 +15,71 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./recharts.min.js"></script>
     <style>
-      body { font-family: 'Inter', system-ui, sans-serif; background:#f8fafc; color:#0f172a; }
+      body { font-family: 'Inter', system-ui, sans-serif; background:#0a120e; color:#e6f0ea; }
       .font-mono2 { font-family:'JetBrains Mono', monospace; }
-      ::-webkit-scrollbar{width:10px;height:10px} ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid #f8fafc} ::-webkit-scrollbar-track{background:transparent}
+      ::-webkit-scrollbar{width:10px;height:10px} ::-webkit-scrollbar-thumb{background:#1f3a2a;border-radius:8px;border:2px solid #0a120e} ::-webkit-scrollbar-track{background:transparent}
       @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
       .fade-up{animation:fadeUp .35s ease}
       .page-fade{animation:fadeIn .3s ease}
       .line-clamp-1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
       .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      /* ===== Dark green professional theme (matches reference) ===== */
+      .bg-white { background:#111a14 !important; }
+      .bg-slate-50 { background:#0e1813 !important; }
+      .bg-slate-100 { background:#132019 !important; }
+      .bg-slate-200 { background:#1a2b22 !important; }
+      .bg-slate-900 { background:#060d09 !important; }
+      .bg-sky-50 { background:#0e1f18 !important; }
+      .bg-red-50 { background:#1f1212 !important; }
+      .bg-amber-50 { background:#1f1a10 !important; }
+      .bg-emerald-50 { background:#0f1f17 !important; }
+      .bg-blue-50 { background:#0f1820 !important; }
+      .text-slate-900 { color:#e6f0ea !important; }
+      .text-slate-800 { color:#dceae2 !important; }
+      .text-slate-700 { color:#cfe2d8 !important; }
+      .text-slate-600 { color:#b5cdc1 !important; }
+      .text-slate-500 { color:#8fb3a2 !important; }
+      .text-slate-400 { color:#6f9a86 !important; }
+      .border { border-color:#1f3a2a !important; }
+      .border-t, .border-b { border-color:#1f3a2a !important; }
+      .border-slate-200 { border-color:#1f3a2a !important; }
+      .border-slate-300 { border-color:#2a4a38 !important; }
+      .border-sky-200 { border-color:#1f4a38 !important; }
+      .border-red-200, .border-red-300 { border-color:#4a2020 !important; }
+      .border-amber-200 { border-color:#4a3a18 !important; }
+      .border-emerald-200 { border-color:#1f4a2a !important; }
+      .border-blue-200 { border-color:#1f3a4a !important; }
+      .border-eef2f7, [style*="borderColor:#eef2f7"] { border-color:#1f3a2a !important; }
+      .shadow, .shadow-sm, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 4px 24px rgba(0,0,0,.4) !important; }
+      .backdrop-blur-sm { backdrop-filter: blur(8px); }
+      .rounded-2xl, .rounded-xl, .rounded-full { }
+      input, select, textarea { background:#0e1813 !important; color:#e6f0ea !important; border-color:#1f3a2a !important; }
+      input::placeholder, textarea::placeholder { color:#6f9a86 !important; }
+      .bg-slate-900.text-white, button.bg-slate-900 { background:#1a3a2a !important; color:#e6f0ea !important; }
+      .bg-sky-600 { background:#1f6b4a !important; }
+      .bg-red-600 { background:#9a2a2a !important; }
+      .bg-emerald-500 { background:#1f6b4a !important; }
+      .bg-amber-500 { background:#a07a1a !important; }
+      .bg-blue-500 { background:#1f5a8a !important; }
+      .bg-violet-500 { background:#6a3a9a !important; }
+      .bg-slate-700 { background:#2a3a32 !important; }
+      .text-sky-200 { color:#9fd4b8 !important; }
+      .text-sky-700 { color:#9fd4b8 !important; }
+      .text-red-600, .text-red-700 { color:#f08080 !important; }
+      .text-amber-600, .text-amber-700, .text-amber-800 { color:#f0c060 !important; }
+      .text-emerald-700 { color:#6fd49a !important; }
+      .text-blue-700 { color:#80b8e0 !important; }
+      .bg-red-100 { background:#2a1414 !important; color:#f08080 !important; }
+      .bg-amber-100 { background:#2a2210 !important; color:#f0c060 !important; }
+      .bg-emerald-100 { background:#102a18 !important; color:#6fd49a !important; }
+      .bg-blue-100 { background:#101a2a !important; color:#80b8e0 !important; }
+      .bg-orange-100 { background:#2a1a10 !important; color:#f0a060 !important; }
+      .bg-slate-100 { background:#132019 !important; }
+      .stroke-slate-200 { stroke:#1f3a2a !important; }
+      .fill-slate-900 { fill:#1a3a2a !important; }
+      .bg-gradient-to-r.from-slate-900 { background: linear-gradient(to right, #0d2a1a, #0d2a1a, #1a4a30) !important; }
+      .ring-white\/20 { --tw-ring-color: rgba(255,255,255,.1); }
     </style>
   </head>
   <body>
@@ -549,8 +605,8 @@ function Login({sites, onAuth}){
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <header className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900 border-b" style={{borderColor:"#0f172a"}}>
+    <div className="min-h-screen bg-[#0a120e] flex flex-col">
+      <header className="bg-gradient-to-r from-[#0d2a1a] via-[#123a22] to-[#1f6b4a] border-b" style={{borderColor:"#0f172a"}}>
         <div className="max-w-[720px] mx-auto px-4 h-[64px] flex items-center gap-3">
           <div className="h-10 px-2 rounded-xl bg-white grid place-items-center">
             <img src="./dhre-logo.avif" alt="DHRE" className="h-8 w-auto object-contain"
@@ -640,7 +696,7 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
   const sb = SYNC_BADGE[syncMode] || SYNC_BADGE.local;
   return (
     <header className="sticky top-0 z-30 border-b overflow-hidden" style={{borderColor:"#0f172a"}}>
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900">
+      <div className="bg-gradient-to-r from-[#0d2a1a] via-[#123a22] to-[#1f6b4a]">
         <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
           <div className="h-12 px-3 rounded-xl bg-white grid place-items-center overflow-hidden shrink-0 shadow-lg ring-1 ring-white/20">
             <img src="./dhre-logo.avif" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
@@ -756,45 +812,64 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900">
-      <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={null}>
-        <div className="border-t bg-slate-50" style={{borderColor:"#eef2f7"}}>
-          <div className="max-w-[1600px] mx-auto px-4 lg:px-6 min-h-[48px] py-1.5 flex items-center justify-center gap-2 lg:gap-3 flex-wrap">
-            <nav className="flex p-1 rounded-full bg-white border shadow-sm overflow-auto max-w-full" style={{borderColor:"#e2e8f0"}}>
-              {TABS.map(t=>{
-                const Icon = t.icon;
-                return (
-                  <button key={t.id} onClick={()=>setPage(t.id)} className={`px-3 lg:px-5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 transition shrink-0 ${page===t.id?"bg-slate-900 text-white shadow":"text-slate-600 hover:text-slate-900"}`}>
-                    <Icon size={14}/> {t.label}
-                    {t.count!==undefined && <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs bg-red-100 text-red-700">{t.count}</span>}
-                  </button>
-                );
-              })}
-            </nav>
-            <AdminTitleBar
-              auth={auth}
-              onLogout={onLogout}
-            />
+    <div className="min-h-screen flex bg-[#0a120e] text-slate-900">
+      <aside className="w-[232px] shrink-0 bg-[#0b1a12] border-r flex flex-col" style={{borderColor:"#1f3a2a"}}>
+        <div className="px-4 py-4 border-b flex items-center gap-3" style={{borderColor:"#1f3a2a"}}>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1f6b4a] to-[#3a9a6d] grid place-items-center text-white shadow-lg"><IcShieldCk size={18}/></div>
+          <div className="min-w-0">
+            <div className="font-extrabold text-sm text-white leading-none">DHRE</div>
+            <div className="text-[10px] text-[#8fb3a2] mt-0.5">Security Dashboard</div>
           </div>
         </div>
-      </Header>
-
-      <main className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
-        <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
-          {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
-          {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
-          {page==="attention" && <AttentionPage attention={attention} sites={sites} setPage={setPage}/>}
-          {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
-          {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
-        </div>
-        <p className="mt-8 text-center text-xs text-slate-400">
-          Page: {PAGE_LABEL[page]} •
-          <button onClick={()=>setPage(PAGES[(PAGES.indexOf(page)+1)%PAGES.length])} className="underline font-semibold hover:text-slate-700 ml-1">
-            Go to {NEXT_PAGE[page]} →
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-auto">
+          {TABS.map(t=>{
+            const Icon = t.icon;
+            return (
+              <button key={t.id} onClick={()=>setPage(t.id)} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition ${page===t.id?"bg-gradient-to-r from-[#1f6b4a] to-[#2a8a5a] text-white shadow":"text-[#b5cdc1] hover:bg-[#132019] hover:text-white"}`}>
+                <Icon size={16}/> {t.label}
+                {t.count!==undefined && <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] bg-red-500/30 text-red-200">{t.count}</span>}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="px-3 py-4 border-t space-y-2" style={{borderColor:"#1f3a2a"}}>
+          <div className="text-[11px] text-[#8fb3a2]">Admin • {auth.name}</div>
+          <button onClick={onLogout} className="w-full px-3 py-2 rounded-xl bg-[#132019] text-[#e6f0ea] border text-xs font-bold hover:bg-[#1a2b22] flex items-center justify-center gap-1.5" style={{borderColor:"#1f3a2a"}}>
+            <IcLogout size={13}/> Logout
           </button>
-        </p>
-      </main>
+        </div>
+      </aside>
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={null}>
+          <div className="border-t" style={{borderColor:"#1f3a2a", background:"#0d2a1a"}}>
+            <div className="px-4 lg:px-6 h-[42px] flex items-center justify-between">
+              <div className="text-xs font-bold tracking-widest uppercase text-[#9fd4b8] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"/>
+                <span className="truncate">{PAGE_LABEL[page]} • Security Operations</span>
+              </div>
+              <span className="text-[11px] text-[#8fb3a2]">{clock}</span>
+            </div>
+          </div>
+        </Header>
+
+        <main className="flex-1 px-4 lg:px-6 py-6 lg:py-8 overflow-auto">
+          <div key={page} className="page-fade">
+            {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
+            {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
+            {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
+            {page==="attention" && <AttentionPage attention={attention} sites={sites} setPage={setPage}/>}
+            {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
+            {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
+          </div>
+          <p className="mt-8 text-center text-xs text-[#6f9a86]">
+            Page: {PAGE_LABEL[page]} •
+            <button onClick={()=>setPage(PAGES[(PAGES.indexOf(page)+1)%PAGES.length])} className="underline font-semibold hover:text-[#9fd4b8] ml-1">
+              Go to {NEXT_PAGE[page]} →
+            </button>
+          </p>
+        </main>
+      </div>
       {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
       <Toaster/>
     </div>
@@ -2007,7 +2082,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900">
+    <div className="min-h-screen bg-[#0a120e] text-slate-900">
       <Header title="My Site Website" syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync} right={HeaderRight}>
         <div className="border-t bg-sky-50" style={{borderColor:"#e0f2fe"}}>
           <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[44px] flex items-center justify-center">
