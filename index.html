@@ -1119,23 +1119,23 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
 
         <div className="grid lg:grid-cols-2 gap-3">
           <Card title="Cameras — This Site" subtitle="Total vs Offline" icon={IcCamera}>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={camData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-                <Bar dataKey="online" name="Online" fill="#3b82f6" radius={[3,3,0,0]}/>
-                <Bar dataKey="offline" name="Offline" fill="#f87171" radius={[3,3,0,0]}/>
+                <Bar dataKey="online" name="Online" fill="#1f6feb" radius={[6,6,0,0]}/>
+                <Bar dataKey="offline" name="Offline" fill="#1f6feb" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
           <Card title="ANPR — This Site" subtitle="Health" icon={IcScan}>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={[{name:"ANPR", online:(site.totalANPR||0)-(site.offlineANPR||0), offline:site.offlineANPR||0, nw:site.notWorkingANPR||0}]}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-                <Bar dataKey="online" name="Online" fill="#8b5cf6" radius={[3,3,0,0]}/>
-                <Bar dataKey="offline" name="Offline" fill="#f87171" radius={[3,3,0,0]}/>
-                <Bar dataKey="nw" name="Not Working" fill="#fbbf24" radius={[3,3,0,0]}/>
+                <Bar dataKey="online" name="Online" fill="#1f6feb" radius={[6,6,0,0]}/>
+                <Bar dataKey="offline" name="Offline" fill="#1f6feb" radius={[6,6,0,0]}/>
+                <Bar dataKey="nw" name="Not Working" fill="#1f6feb" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -1365,13 +1365,13 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       </div>
 
       <Card title="Top 10 Sites — Highest Offline Cameras" subtitle="Sites with the most offline CCTV cameras" icon={IcCamOff}>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={340}>
           <BarChart data={topOfflineCamSites} margin={{top:8,right:12,left:0,bottom:60}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={16} fill="#f87171">
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
               {topOfflineCamSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
             </Bar>
           </BarChart>
@@ -1379,13 +1379,13 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       </Card>
 
       <Card title="Top 10 Sites — Highest Offline ANPR" subtitle="Sites with the most offline ANPR cameras" icon={IcWifiOff}>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={340}>
           <BarChart data={topOfflineAnprSites} margin={{top:8,right:12,left:0,bottom:60}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#f87171">
+            <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
               {topOfflineAnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
             </Bar>
           </BarChart>
@@ -1394,26 +1394,26 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card title="Top 5 Sites — Highest Offline ANPR" subtitle="Sites with the most offline ANPR cameras" icon={IcWifiOff}>
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={top5AnprSites} margin={{top:8,right:12,left:0,bottom:60}}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
               <YAxis tick={{fontSize:11}} allowDecimals={false}/>
               <Tooltip/>
-              <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={16} fill="#f87171">
+              <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
                 {top5AnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </Card>
         <Card title="Top 5 Sites — Highest Offline Gate Barrier" subtitle="Sites with the most offline gate barriers" icon={IcLock}>
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={top5GateSites} margin={{top:8,right:12,left:0,bottom:60}}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
               <YAxis tick={{fontSize:11}} allowDecimals={false}/>
               <Tooltip/>
-              <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={16} fill="#60a5fa">
+              <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
                 {top5GateSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
               </Bar>
             </BarChart>
@@ -1422,13 +1422,13 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       </div>
 
       <Card title="Problems by Category" subtitle={`${totalProblems} total • Top: ${topProblem? topProblem.name : "—"} (${topProblem? topProblem.value : 0})`} icon={IcAlert}>
-        <ResponsiveContainer width="100%" height={260}>
+        <ResponsiveContainer width="100%" height={320}>
           <BarChart data={probData} layout="vertical" margin={{top:0,right:24,left:10,bottom:0}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
             <XAxis type="number" allowDecimals={false} tick={{fontSize:11}}/>
             <YAxis type="category" dataKey="name" width={150} tick={{fontSize:11}}/>
             <Tooltip/>
-            <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={16}>
+            <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={28}>
               {probData.map((x,i)=><Cell key={i} fill={x.color}/>)}
             </Bar>
           </BarChart>
@@ -1437,7 +1437,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card title="Sites by Status" subtitle="Distribution" icon={IcGrid}>
-          <ResponsiveContainer width="100%" height={180}>
+          <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie data={byStatus} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={2} strokeWidth={2} stroke="#fff">
                 {byStatus.map((x,i)=><Cell key={i} fill={x.color}/>)}
@@ -1455,7 +1455,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
           </div>
         </Card>
         <Card title="Assigned Sites per Person" subtitle="Workload distribution" icon={IcUser}>
-          <ResponsiveContainer width="100%" height={260}>
+          <ResponsiveContainer width="100%" height={320}>
             <BarChart data={byInspector} layout="vertical" margin={{top:0,right:12,left:30,bottom:0}}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis type="number" allowDecimals={false} tick={{fontSize:11}}/>
@@ -1471,7 +1471,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 
       <Card title="Sites by Type" subtitle="Inspection categories" icon={IcGrid}>
         <div className="grid lg:grid-cols-2 gap-4 items-center">
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie data={byType} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={2} strokeWidth={2} stroke="#fff">
                 {byType.map((x,i)=><Cell key={i} fill={x.color}/>)}
@@ -1491,17 +1491,17 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       </Card>
 
       <Card title="Security — Device Health" subtitle="Offline CCTV • Offline ANPR • Not Working ACS/Gate/Intercom — worst 10 sites" icon={IcShield}>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={340}>
           <BarChart data={worst} margin={{top:8,right:12,left:0,bottom:60}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/><Legend wrapperStyle={{fontSize:11}}/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" stackId="a" fill="#3b82f6"/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" stackId="a" fill="#f87171"/>
-            <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#8b5cf6"/>
-            <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#60a5fa"/>
-            <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#334155"/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#1f6feb"/>
           </BarChart>
         </ResponsiveContainer>
       </Card>
@@ -1585,7 +1585,7 @@ function AMCPage({sites, stats, perSite, setPage}){
           <Card title="Device Health" subtitle="Online vs Offline vs Not Working" icon={IcShield}>
             <div className="flex items-center gap-4">
               <div className="w-[240px] shrink-0">
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
                     <Pie data={healthData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={72} paddingAngle={2} strokeWidth={2} stroke="#fff">
                       {healthData.map((x,i)=><Cell key={i} fill={x.color}/>)}
@@ -1607,13 +1607,13 @@ function AMCPage({sites, stats, perSite, setPage}){
           </Card>
         </div>
         <Card title="AMC Health Rate" subtitle="Percentage of each system operating normally" icon={IcChart}>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={rateData} margin={{top:16,right:12,left:-10,bottom:4}}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis dataKey="name" tick={{fontSize:11}}/>
               <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
               <Tooltip formatter={(v)=>[`${v}%`, "Healthy"]}/>
-              <Bar dataKey="pct" name="Healthy %" radius={[8,8,0,0]} barSize={34} label={{position:"top", fontSize:11, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+              <Bar dataKey="pct" name="Healthy %" radius={[8,8,0,0]} barSize={54} label={{position:"top", fontSize:11, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
                 {rateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
               </Bar>
             </BarChart>
@@ -1658,19 +1658,19 @@ function AMCPage({sites, stats, perSite, setPage}){
       </div>
 
       <Card title="All Sites — Cameras & ANPR" subtitle={`${sites.length} sites • Total vs Offline — one chart • Scroll →`} icon={IcChart}>
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height={380}>
           <BarChart data={perSite.slice(0,30)} margin={{top:8,right:12,left:0,bottom:80}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-            <XAxis dataKey="shortName" angle={-35} textAnchor="end" height={90} tick={{fontSize:10}} interval={0}/>
+            <XAxis dataKey="shortName" angle={-35} textAnchor="end" height={140} tick={{fontSize:10}} interval={0}/>
             <YAxis tick={{fontSize:11}}/>
             <Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-            <Bar dataKey="totalCameras" name="Total Cameras" fill="#3b82f6" radius={[3,3,0,0]} barGap={2}/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" fill="#f87171" radius={[3,3,0,0]}/>
-            <Bar dataKey="totalANPR" name="Total ANPR" fill="#8b5cf6" radius={[3,3,0,0]}/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#fbbf24" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#60a5fa" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#334155" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#39c5cf" radius={[3,3,0,0]}/>
+            <Bar dataKey="totalCameras" name="Total Cameras" fill="#1f6feb" radius={[6,6,0,0]} barGap={2}/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="totalANPR" name="Total ANPR" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#1f6feb" radius={[6,6,0,0]}/>
           </BarChart>
         </ResponsiveContainer>
         {perSite.length>30 && <p className="text-xs text-slate-400 text-center mt-1">Showing first 30 of {perSite.length} sites — use search/filters to narrow down</p>}
@@ -2017,7 +2017,7 @@ function CertifiedSitesPage({sites, setPage}){
           <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
             <div className="flex items-center gap-4">
               <div className="w-[260px] shrink-0">
-                <ResponsiveContainer width="100%" height={240}>
+                <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={48} outerRadius={78} paddingAngle={2} strokeWidth={2} stroke="#fff">
                       {certData.map((x,i)=><Cell key={i} fill={x.color}/>)}
@@ -2039,13 +2039,13 @@ function CertifiedSitesPage({sites, setPage}){
           </Card>
         </div>
         <Card title="SIRA Rate" subtitle="Percentage of sites with and without SIRA" icon={IcChart}>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart data={rateData} margin={{top:16,right:12,left:-10,bottom:4}}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis dataKey="name" tick={{fontSize:11}}/>
               <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
               <Tooltip formatter={(v,n,p)=>[`${v}% (${p.payload.count} sites)`, n]}/>
-              <Bar dataKey="pct" name="Rate %" radius={[8,8,0,0]} barSize={44} label={{position:"top", fontSize:12, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+              <Bar dataKey="pct" name="Rate %" radius={[8,8,0,0]} barSize={54} label={{position:"top", fontSize:12, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
                 {rateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
               </Bar>
             </BarChart>
@@ -2180,13 +2180,13 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
                 problems.map(p=> <span key={p} className="px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs font-bold text-amber-800">{p}</span>)}
             </div>
             <div className="mt-2 h-[100px]">
-              <ResponsiveContainer width="100%" height={100}>
+              <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={probBars} margin={{top:5,right:5,left:-20,bottom:0}}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
                   <XAxis dataKey="name" tick={{fontSize:10, fill:"#64748b"}}/>
                   <YAxis tick={{fontSize:10, fill:"#64748b"}} allowDecimals={false}/>
                   <Tooltip/>
-                  <Bar dataKey="value" name="Count" radius={[3,3,0,0]}>
+                  <Bar dataKey="value" name="Count" radius={[6,6,0,0]}>
                     {probBars.map((x,i)=><Cell key={i} fill={x.color}/>)}
                   </Bar>
                 </BarChart>
