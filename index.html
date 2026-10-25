@@ -79,18 +79,20 @@
       .stroke-slate-200 { stroke:#1f3a2a !important; }
       .fill-slate-900 { fill:#1a3a2a !important; }
       /* 3D chart depth (matches reference dashboard) */
-      .recharts-wrapper { filter: drop-shadow(0 4px 12px rgba(0,0,0,.35)); }
-      .recharts-surface { border-radius: 12px; }
-      .recharts-bar-rectangle { filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
-      .recharts-pie { filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)); }
-      .recharts-line { filter: drop-shadow(0 2px 6px rgba(59,130,246,.4)); }
-      .recharts-area { filter: drop-shadow(0 2px 8px rgba(59,130,246,.3)); }
-      .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke: #1f3a2a !important; }
-      .recharts-text { fill: #8fb3a2 !important; font-size: 11px !important; }
-      .recharts-tooltip-wrapper .recharts-default-tooltip { background:#0e1813 !important; border:1px solid #1f3a2a !important; border-radius:10px !important; box-shadow:0 8px 24px rgba(0,0,0,.5) !important; color:#e6f0ea !important; }
-      .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item { color:#e6f0ea !important; }
+      .recharts-wrapper { filter: drop-shadow(0 8px 20px rgba(0,0,0,.5)); }
+      .recharts-surface { border-radius: 14px; }
+      .recharts-bar-rectangle { filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); transition: filter .2s; }
+      .recharts-bar-rectangle:hover { filter: drop-shadow(0 6px 12px rgba(59,130,246,.6)); }
+      .recharts-pie { filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)); }
+      .recharts-line { filter: drop-shadow(0 3px 8px rgba(59,130,246,.55)); }
+      .recharts-area { filter: drop-shadow(0 3px 10px rgba(59,130,246,.4)); }
+      .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke: #1f3a2a !important; stroke-width: 1px; }
+      .recharts-text { fill: #9fd4b8 !important; font-size: 11px !important; font-weight: 500 !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip { background:#0e1813 !important; border:1px solid #2a4a38 !important; border-radius:12px !important; box-shadow:0 12px 32px rgba(0,0,0,.6) !important; color:#e6f0ea !important; padding:8px 12px !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item { color:#e6f0ea !important; font-size:12px !important; }
       .recharts-legend-item-text { color:#b5cdc1 !important; font-size:11px !important; }
       .recharts-pie-label-text { fill:#b5cdc1 !important; font-size:11px !important; }
+      .recharts-legend-wrapper { padding-top: 8px !important; }
       .ring-white\/20 { --tw-ring-color: rgba(255,255,255,.1); }
     </style>
   </head>
