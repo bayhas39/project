@@ -2408,15 +2408,13 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
         </div>
       </div>
 
-      {/* KPI row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+      {/* 6 KPI boxes */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <KPI label="Total Sites" value={totalSites} icon={IcBuilding} color="bg-[#1f6feb] text-white"/>
         <KPI label="Total Cameras" value={totalCameras} icon={IcCamera} color="bg-[#58a6ff] text-white"/>
         <KPI label="Offline CCTV" value={offlineCameras} icon={IcCamOff} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
         <KPI label="Total ANPR" value={totalANPR} icon={IcScan} color="bg-[#8957e5] text-white"/>
-        <KPI label="Offline ANPR" value={offlineANPR} icon={IcWifiOff} color="bg-[#d29922] text-white"/>
         <KPI label="Open Incidents" value={openIncidents} icon={IcAlert} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
-        <KPI label="Open Accidents" value={openAccidents} icon={IcAlert} color="bg-[#d29922] text-white"/>
         <KPI label="Sites Needing Attention" value={attentionSites} icon={IcAlert} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
       </div>
 
