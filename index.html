@@ -781,8 +781,10 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
   const [page, setPage] = useState(()=> LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(()=> fmtTime());
   const [editSite, setEditSite] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(()=> LS.get("dhre_sidebar_open", true) !== false);
   useEffect(()=>{ LS.set("dhre_current_page", page); }, [page]);
   useEffect(()=>{ const t=setInterval(()=>setClock(fmtTime()), 5000); return ()=>clearInterval(t); }, []);
+  useEffect(()=>{ LS.set("dhre_sidebar_open", sidebarOpen); }, [sidebarOpen]);
   const stats = useMemo(()=>({
     total: sites.length,
     pending: sites.filter(s=>s.status==="Pending").length,
@@ -838,8 +840,8 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 
   return (
     <div className="min-h-screen flex bg-[#0d1117] text-[#c9d1d9]">
-      <aside className="w-[232px] shrink-0 bg-[#0d1117] border-r flex flex-col" style={{borderColor:"#30363d"}}>
-        <div className="px-4 py-4 border-b flex items-center gap-3" style={{borderColor:"#30363d"}}>
+      <aside className={`${sidebarOpen ? "w-[232px]" : "w-0"} shrink-0 bg-[#0d1117] border-r flex flex-col overflow-hidden transition-all duration-300 ease-in-out`} style={{borderColor:"#30363d"}}>
+        <div className="px-4 py-4 border-b flex items-center gap-3 min-w-[232px]" style={{borderColor:"#30363d"}}>
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0d1117] to-[#161b22] grid place-items-center text-white shadow-lg"><IcShieldCk size={18}/></div>
           <div className="min-w-0">
             <div className="font-extrabold text-sm text-white leading-none">DHRE</div>
@@ -866,7 +868,11 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={null}>
+        <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={
+          <button onClick={()=>setSidebarOpen(v=>!v)} className="px-3 py-1.5 rounded-md bg-[#21262d] text-[#c9d1d9] border text-xs font-bold hover:bg-[#30363d] flex items-center gap-1.5" style={{borderColor:"#30363d"}} title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
+            {sidebarOpen ? <IcX size={14}/> : <IcList size={14}/>} {sidebarOpen ? "Close" : "Menu"}
+          </button>
+        }>
           <div className="border-t" style={{borderColor:"#30363d", background:"#161b22"}}>
             <div className="px-4 lg:px-6 h-[42px] flex items-center justify-between">
               <div className="text-xs font-bold tracking-widest uppercase text-[#8b949e] flex items-center gap-2">
