@@ -2378,14 +2378,50 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
   const attentionSites = sites.filter(s=>problemsOf(s,incidents).length>0).length;
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-6">
-      <div className="grid grid-cols-3 gap-4 w-full max-w-[900px]">
-        <KPI label="Total Sites" value={totalSites} icon={IcBuilding} color="bg-[#1f6feb] text-white"/>
-        <KPI label="Total Cameras" value={totalCameras} icon={IcCamera} color="bg-[#58a6ff] text-white"/>
-        <KPI label="Offline CCTV" value={offlineCameras} icon={IcCamOff} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
-        <KPI label="Total ANPR" value={totalANPR} icon={IcScan} color="bg-[#8957e5] text-white"/>
-        <KPI label="Open Incidents" value={openIncidents} icon={IcAlert} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
-        <KPI label="Sites Needing Attention" value={attentionSites} icon={IcAlert} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
+    <div className="h-full w-full flex flex-col gap-4 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[1200px]">
+        <div className="bg-[#0d1117] border rounded-xl p-5 flex items-center gap-4" style={{borderColor:"#30363d"}}>
+          <div className="w-16 h-16 rounded-lg bg-[#1f6feb]/20 text-[#1f6feb] grid place-items-center flex-shrink-0 shadow-lg"><IcBuilding size={26}/></div>
+          <div>
+            <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider">Total Sites</div>
+            <div className="text-4xl font-extrabold text-[#f0f6fc] leading-none">{totalSites}</div>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-xl p-5 flex items-center gap-4" style={{borderColor:"#30363d"}}>
+          <div className="w-16 h-16 rounded-lg bg-[#58a6ff]/20 text-[#58a6ff] grid place-items-center flex-shrink-0 shadow-lg"><IcCamera size={26}/></div>
+          <div>
+            <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider">Total Cameras</div>
+            <div className="text-4xl font-extrabold text-[#f0f6fc] leading-none">{totalCameras}</div>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-xl p-5 flex items-center gap-4" style={{borderColor:"#30363d"}}>
+          <div className="w-16 h-16 rounded-lg bg-[#f85149]/20 text-[#f85149] grid place-items-center flex-shrink-0 shadow-lg"><IcCamOff size={26}/></div>
+          <div>
+            <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider">Offline CCTV</div>
+            <div className="text-4xl font-extrabold text-[#f0f6fc] leading-none">{offlineCameras}</div>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-xl p-5 flex items-center gap-4" style={{borderColor:"#30363d"}}>
+          <div className="w-16 h-16 rounded-lg bg-[#8957e5]/20 text-[#8957e5] grid place-items-center flex-shrink-0 shadow-lg"><IcScan size={26}/></div>
+          <div>
+            <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider">Total ANPR</div>
+            <div className="text-4xl font-extrabold text-[#f0f6fc] leading-none">{totalANPR}</div>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-xl p-5 flex items-center gap-4" style={{borderColor:"#30363d"}}>
+          <div className="w-16 h-16 rounded-lg bg-[#f85149]/20 text-[#f85149] grid place-items-center flex-shrink-0 shadow-lg"><IcAlert size={26}/></div>
+          <div>
+            <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider">Open Incidents</div>
+            <div className="text-4xl font-extrabold text-[#f0f6fc] leading-none">{openIncidents}</div>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-xl p-5 flex items-center gap-4" style={{borderColor:"#30363d"}}>
+          <div className="w-16 h-16 rounded-lg bg-[#f85149]/20 text-[#f85149] grid place-items-center flex-shrink-0 shadow-lg"><IcAlert size={26}/></div>
+          <div>
+            <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider">Sites Needing Attention</div>
+            <div className="text-4xl font-extrabold text-[#f0f6fc] leading-none">{attentionSites}</div>
+          </div>
+        </div>
       </div>
     </div>
   );
