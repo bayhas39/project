@@ -2409,7 +2409,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
       </div>
 
       {/* 6 KPI boxes */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3">
         <KPI label="Total Sites" value={totalSites} icon={IcBuilding} color="bg-[#1f6feb] text-white"/>
         <KPI label="Total Cameras" value={totalCameras} icon={IcCamera} color="bg-[#58a6ff] text-white"/>
         <KPI label="Offline CCTV" value={offlineCameras} icon={IcCamOff} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
@@ -2461,7 +2461,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
       {/* Camera & ANPR overview chart */}
       <div className="bg-[#161b22] border rounded-lg p-4" style={{borderColor:"#30363d"}}>
         <h3 className="text-sm font-bold text-[#f0f6fc] mb-3">Camera & ANPR — All Sites</h3>
-        <ResponsiveContainer width="100%" height={260}>
+        <ResponsiveContainer width="100%" height={180}>
           <BarChart data={siteHealth.slice(0,20)} margin={{top:8,right:12,left:0,bottom:60}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
             <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{fontSize:9, fill:"#8b949e"}} interval={0}/>
