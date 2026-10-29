@@ -2370,114 +2370,22 @@ function OwnerReportsPage({site, incidents, setIncidents, onBack}){
 /*                        FULLSCREEN PAGE                           */
 /* ================================================================ */
 function FullscreenPage({sites, incidents, accidents, stats, setPage}){
-  const [clock, setClock] = useState(()=> fmtTime());
-  useEffect(()=>{ const t=setInterval(()=>setClock(fmtTime()), 1000); return ()=>clearInterval(t); }, []);
   const totalSites = sites.length;
   const totalCameras = sites.reduce((a,s)=>a+(s.totalCameras||0),0);
   const offlineCameras = sites.reduce((a,s)=>a+(s.offlineCameras||0),0);
   const totalANPR = sites.reduce((a,s)=>a+(s.totalANPR||0),0);
-  const offlineANPR = sites.reduce((a,s)=>a+(s.offlineANPR||0),0);
-  const nwACS = sites.reduce((a,s)=>a+(s.notWorkingANPR||0),0);
-  const nwGate = sites.reduce((a,s)=>a+(s.notWorkingGate||0),0);
-  const nwIntercom = sites.reduce((a,s)=>a+(s.notWorkingIntercom||0),0);
   const openIncidents = incidents.filter(i=>i.status==="Open"||i.status==="In Review").length;
-  const openAccidents = accidents.filter(a=>a.status!=="Closed").length;
   const attentionSites = sites.filter(s=>problemsOf(s,incidents).length>0).length;
 
-  // per-site health
-  const siteHealth = sites.map(s=>({
-    id:s.id, name:s.name.replace(/^Site \d+ — /,""), status:s.status, type:s.type,
-    health: healthOf(s), cameras:s.totalCameras||0, offline:s.offlineCameras||0,
-    anpr:s.totalANPR||0, anprOff:s.offlineANPR||0,
-    problems: problemsOf(s, incidents).length,
-  })).sort((a,b)=>a.health-b.health);
-
   return (
-    <div className="space-y-4">
-      {/* Fullscreen header */}
-      <div className="flex items-center justify-between bg-[#161b22] border rounded-lg px-6 py-4" style={{borderColor:"#30363d"}}>
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-[#1f6feb] grid place-items-center text-white shadow-lg"><IcShieldCk size={24}/></div>
-          <div>
-            <h1 className="text-2xl font-extrabold text-[#f0f6fc] leading-none">DHRE Security Dashboard</h1>
-            <p className="text-sm text-[#8b949e] mt-1">Security Operations — Fullscreen View</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-3xl font-extrabold text-[#f0f6fc] font-mono2">{clock}</div>
-          <div className="text-xs text-[#8b949e] mt-1">{new Date().toLocaleDateString()}</div>
-        </div>
-      </div>
-
-      {/* 6 KPI boxes */}
-      <div className="grid grid-cols-3 gap-3">
+    <div className="h-full w-full flex items-center justify-center p-6">
+      <div className="grid grid-cols-3 gap-4 w-full max-w-[900px]">
         <KPI label="Total Sites" value={totalSites} icon={IcBuilding} color="bg-[#1f6feb] text-white"/>
         <KPI label="Total Cameras" value={totalCameras} icon={IcCamera} color="bg-[#58a6ff] text-white"/>
         <KPI label="Offline CCTV" value={offlineCameras} icon={IcCamOff} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
         <KPI label="Total ANPR" value={totalANPR} icon={IcScan} color="bg-[#8957e5] text-white"/>
         <KPI label="Open Incidents" value={openIncidents} icon={IcAlert} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
         <KPI label="Sites Needing Attention" value={attentionSites} icon={IcAlert} color="bg-[#f85149] text-white" top="bg-[#f85149]"/>
-      </div>
-
-      {/* Device health summary */}
-      <div className="grid lg:grid-cols-3 gap-4">
-        <div className="bg-[#161b22] border rounded-lg p-4" style={{borderColor:"#30363d"}}>
-          <h3 className="text-sm font-bold text-[#f0f6fc] mb-3">Device Health</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm"><span className="text-[#8b949e]">Not Working ACS</span><b className="text-[#f85149]">{nwACS}</b></div>
-            <div className="flex justify-between text-sm"><span className="text-[#8b949e]">Not Working Gate</span><b className="text-[#f85149]">{nwGate}</b></div>
-            <div className="flex justify-between text-sm"><span className="text-[#8b949e]">Not Working Intercom</span><b className="text-[#f85149]">{nwIntercom}</b></div>
-            <div className="flex justify-between text-sm border-t pt-2 mt-2" style={{borderColor:"#30363d"}}><span className="text-[#f0f6fc] font-bold">Total Issues</span><b className="text-[#f85149]">{nwACS+nwGate+nwIntercom}</b></div>
-          </div>
-        </div>
-        <div className="bg-[#161b22] border rounded-lg p-4 lg:col-span-2" style={{borderColor:"#30363d"}}>
-          <h3 className="text-sm font-bold text-[#f0f6fc] mb-3">Worst Sites by Health Score</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {siteHealth.slice(0,8).map(s=>(
-              <div key={s.id} className="bg-[#0d1117] border rounded p-2" style={{borderColor: s.health<50 ? "#f85149" : s.health<75 ? "#d29922" : "#30363d"}}>
-                <div className="text-xs font-bold text-[#f0f6fc] truncate">{s.name}</div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-[10px] text-[#8b949e]">{s.type}</span>
-                  <span className={`text-xs font-bold ${s.health<50?"text-[#f85149]":s.health<75?"text-[#d29922]":"text-[#3fb950]"}`}>{s.health}%</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Site health grid */}
-      <div className="bg-[#161b22] border rounded-lg p-4" style={{borderColor:"#30363d"}}>
-        <h3 className="text-sm font-bold text-[#f0f6fc] mb-3">All Sites — Health Overview</h3>
-        <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-1.5">
-          {siteHealth.map(s=>(
-            <div key={s.id} className="rounded p-1.5 text-center" style={{background: s.health<50 ? "#1a1215" : s.health<75 ? "#1a1710" : "#0d1a15", border: `1px solid ${s.health<50 ? "#f85149" : s.health<75 ? "#d29922" : "#3fb950"}`}}>
-              <div className="text-[9px] font-bold text-[#f0f6fc] truncate">{s.name.slice(0,8)}</div>
-              <div className={`text-[10px] font-bold ${s.health<50?"text-[#f85149]":s.health<75?"text-[#d29922]":"text-[#3fb950]"}`}>{s.health}%</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Camera & ANPR overview chart */}
-      <div className="bg-[#161b22] border rounded-lg p-4" style={{borderColor:"#30363d"}}>
-        <h3 className="text-sm font-bold text-[#f0f6fc] mb-3">Camera & ANPR — All Sites</h3>
-        <ResponsiveContainer width="100%" height={180}>
-          <BarChart data={siteHealth.slice(0,20)} margin={{top:8,right:12,left:0,bottom:60}}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#21262d"/>
-            <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{fontSize:9, fill:"#8b949e"}} interval={0}/>
-            <YAxis tick={{fontSize:10, fill:"#8b949e"}}/>
-            <Tooltip/>
-            <Bar dataKey="cameras" name="Total Cameras" fill="#1f6feb" radius={[4,4,0,0]} barSize={12}/>
-            <Bar dataKey="offline" name="Offline CCTV" fill="#1f6feb" radius={[4,4,0,0]} barSize={12}/>
-            <Bar dataKey="anpr" name="Total ANPR" fill="#1f6feb" radius={[4,4,0,0]} barSize={12}/>
-            <Bar dataKey="anprOff" name="Offline ANPR" fill="#1f6feb" radius={[4,4,0,0]} barSize={12}/>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="text-center text-xs text-[#6e7681] py-2">
-        <button onClick={()=>setPage("sites")} className="px-4 py-2 rounded-md bg-[#21262d] text-[#c9d1d9] border text-xs font-bold hover:bg-[#30363d]" style={{borderColor:"#30363d"}}>Back to Sites</button>
       </div>
     </div>
   );
