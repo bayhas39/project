@@ -893,6 +893,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
             {page==="attention" && <AttentionPage attention={attention} sites={sites} setPage={setPage}/>}
             {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
             {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
+            {page==="fullscreen" && <FullscreenPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} setPage={setPage}/>}
           </div>
           <p className="mt-8 text-center text-xs text-[#6f9a86]">
             Page: {PAGE_LABEL[page]} •
