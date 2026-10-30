@@ -4052,32 +4052,36 @@ function AIReportPage({
     className: "flex justify-between"
   }, /*#__PURE__*/React.createElement("span", null, "Gate barrier"), /*#__PURE__*/React.createElement("b", null, site.notWorkingGate || 0)), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between"
-  }, /*#__PURE__*/React.createElement("span", null, "Intercom"), /*#__PURE__*/React.createElement("b", null, site.notWorkingIntercom || 0)))), /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-xl border p-3 lg:col-span-2",
+  }, /*#__PURE__*/React.createElement("span", null, "Intercom"), /*#__PURE__*/React.createElement("b", null, site.notWorkingIntercom || 0)))), }, /*#__PURE__*/React.createElement("div", {
+    className: "bg-white rounded-xl border p-4 lg:col-span-2",
     style: {
       borderColor: "#e2e8f0"
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "flex items-center justify-between mb-3"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "text-xs font-bold tracking-widest uppercase text-slate-500"
-  }, "Problems for this site"), /*#__PURE__*/React.createElement("div", {
-    className: "mt-2 flex flex-wrap gap-1.5"
+  }, "Problems for this site"), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"
+  }, problems.length, " issues")), /*#__PURE__*/React.createElement("div", {
+    className: "mt-2 flex flex-wrap gap-2"
   }, problems.length === 0 ? /*#__PURE__*/React.createElement("span", {
-    className: "px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-700"
+    className: "px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-sm font-bold text-emerald-700 shadow-sm"
   }, "All systems online") : problems.map(p => /*#__PURE__*/React.createElement("span", {
     key: p,
-    className: "px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs font-bold text-amber-800"
-  }, p))), /*#__PURE__*/React.createElement("div", {
-    className: "mt-2 h-[100px]"
+    className: "px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-sm font-bold text-amber-800 shadow-sm"
+  }, p))), problems.length > 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "mt-4 h-[140px]"
   }, /*#__PURE__*/React.createElement(ResponsiveContainer, {
     width: "100%",
-    height: 100
+    height: 140
   }, /*#__PURE__*/React.createElement(BarChart, {
     data: probBars,
     margin: {
-      top: 5,
-      right: 5,
-      left: -20,
-      bottom: 0
+      top: 8,
+      right: 8,
+      left: 0,
+      bottom: 24
     }
   }, /*#__PURE__*/React.createElement(CartesianGrid, {
     strokeDasharray: "3 3",
@@ -4085,23 +4089,23 @@ function AIReportPage({
   }), /*#__PURE__*/React.createElement(XAxis, {
     dataKey: "name",
     tick: {
-      fontSize: 10,
+      fontSize: 11,
       fill: "#64748b"
     }
   }), /*#__PURE__*/React.createElement(YAxis, {
     tick: {
-      fontSize: 10,
+      fontSize: 11,
       fill: "#64748b"
     },
     allowDecimals: false
   }), /*#__PURE__*/React.createElement(Tooltip, null), /*#__PURE__*/React.createElement(Bar, {
     dataKey: "value",
     name: "Count",
-    radius: [3, 3, 0, 0]
+    radius: [4, 4, 0, 0]
   }, probBars.map((x, i) => /*#__PURE__*/React.createElement(Cell, {
     key: i,
     fill: x.color
-  })))))))), /*#__PURE__*/React.createElement("div", {
+  })))))))) : null, /*#__PURE__*/React.createElement("div", {
     className: "grid lg:grid-cols-2 gap-3"
   }, /*#__PURE__*/React.createElement("div", {
     className: "bg-white rounded-xl border overflow-hidden",
