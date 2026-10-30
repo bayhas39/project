@@ -405,7 +405,7 @@ const problemsOf = (s, incidents) => {
   if((s.notWorkingANPR||0)>0) p.push("Not Working ACS");
   if((s.notWorkingGate||0)>0) p.push("Not Working Gate barrier");
   if((s.notWorkingIntercom||0)>0) p.push("Not Working Intercom");
-  if((incidents||[]).some(i=>i.siteId===s.id && (i.status==="Open"||i.status==="In Review")) || s.status==="Issue Found") p.push("Incident Sites");
+  if((incidents||[]).some(i=>i.siteId===s.id && (i.status==="Opened"||i.status==="Solving")) || s.status==="Issue Found") p.push("Incident Sites");
   return p;
 };
 const uptimeOf = (s) => s.totalCameras ? Math.round(((s.totalCameras-(s.offlineCameras||0))/s.totalCameras)*100) : 100;
@@ -812,7 +812,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
     sites.forEach(site=>{
       const problems = problemsOf(site, incidents);
       if(problems.length===0) return;
-      const siteIncidents = incidents.filter(i=>i.siteId===site.id && (i.status==="Open"||i.status==="In Review"));
+      const siteIncidents = incidents.filter(i=>i.siteId===site.id && (i.status==="Opened"||i.status==="Solving"));
       let severity = "Low";
       if(site.status==="Issue Found" || siteIncidents.some(i=>i.severity==="Critical")) severity="Critical";
       else if(siteIncidents.some(i=>i.severity==="High") || problems.length>=2) severity="High";
@@ -1042,7 +1042,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, stats, 
       </div>
 
       {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
-      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
     </div>
@@ -1086,7 +1086,7 @@ function SiteCard({site, onOpen, onEdit, onDelete, onReport}){
 }
 
 /* ------------- site details modal ------------- */
-function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
+function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents, setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
   const siteAccidents = (accidents||[]).filter(a=>a.siteId===site.id || a.siteName===site.name);
@@ -1226,6 +1226,14 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
             </div>
           </div>
           <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setIncidents(list=>list.map(x=>x.id===viewIncident.id?{...x,status:s}:x)); setViewIncident({...viewIncident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewIncident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div>
             <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
             <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewIncident.description||"No description."}</p>
           </div>
@@ -1258,6 +1266,14 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
             <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
               <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
               <div className="text-sm font-semibold mt-1">{viewAccident.status||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setAccidents(list=>list.map(x=>x.id===viewAccident.id?{...x,status:s}:x)); setViewAccident({...viewAccident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewAccident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
             </div>
             <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
               <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
@@ -2351,6 +2367,14 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             </div>
           </div>
           <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setIncidents(list=>list.map(x=>x.id===viewIncident.id?{...x,status:s}:x)); setViewIncident({...viewIncident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewIncident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div>
             <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
             <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewIncident.description||"No description."}</p>
           </div>
@@ -2383,6 +2407,14 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
               <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
               <div className="text-sm font-semibold mt-1">{viewAccident.status||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setAccidents(list=>list.map(x=>x.id===viewAccident.id?{...x,status:s}:x)); setViewAccident({...viewAccident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewAccident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
             </div>
             <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
               <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
@@ -2520,7 +2552,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
   const totalCameras = sites.reduce((a,s)=>a+(s.totalCameras||0),0);
   const offlineCameras = sites.reduce((a,s)=>a+(s.offlineCameras||0),0);
   const totalANPR = sites.reduce((a,s)=>a+(s.totalANPR||0),0);
-  const openIncidents = incidents.filter(i=>i.status==="Open"||i.status==="In Review").length;
+  const openIncidents = incidents.filter(i=>i.status==="Opened"||i.status==="Solving").length;
   const attentionSites = sites.filter(s=>problemsOf(s,incidents).length>0).length;
 
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
