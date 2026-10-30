@@ -1094,8 +1094,9 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
-    <Modal title={site.name} onClose={onClose} wide>
-      <div className="space-y-4">
+    <React.Fragment>
+      <Modal title={site.name} onClose={onClose} wide>
+        <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={site.status}/>
           <TypePill type={site.type}/>
@@ -1269,7 +1270,7 @@ function SiteDetailModal({site, incidents, accidents, setPage, onClose}){
           </div>
         </div>
       </Modal>}
-    </>
+    </React.Fragment>
   );
 }
 
