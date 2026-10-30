@@ -4075,26 +4075,27 @@ function AIReportPage({
     key: p,
     className: "px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-sm font-bold text-amber-800 shadow-sm"
   }, p))), problems.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "mt-5 h-[110px]"
+    className: "mt-5 h-[120px] bg-[#0f172a] rounded-lg border border-slate-700 p-3"
   }, /*#__PURE__*/React.createElement(ResponsiveContainer, {
     width: "100%",
-    height: 110
+    height: 120
   }, /*#__PURE__*/React.createElement(BarChart, {
     data: probBars,
     margin: {
-      top: 8,
-      right: 12,
+      top: 12,
+      right: 20,
       left: 0,
-      bottom: 24
+      bottom: 28
     }
   }, /*#__PURE__*/React.createElement(CartesianGrid, {
     strokeDasharray: "3 3",
-    stroke: "#f1f5f9"
+    stroke: "#334155"
   }), /*#__PURE__*/React.createElement(XAxis, {
     dataKey: "name",
     tick: {
-      fontSize: 11,
-      fill: "#94a3b8"
+      fontSize: 10,
+      fill: "#94a3b8",
+      margin: 4
     }
   }), /*#__PURE__*/React.createElement(YAxis, {
     tick: {
@@ -4116,7 +4117,8 @@ function AIReportPage({
   }), /*#__PURE__*/React.createElement(Bar, {
     dataKey: "value",
     name: "Count",
-    radius: [4, 4, 0, 0]
+    radius: [4, 4, 0, 0],
+    barSize: 26
   }, probBars.map((x, i) => /*#__PURE__*/React.createElement(Cell, {
     key: i,
     fill: x.color
