@@ -999,11 +999,12 @@ const Card = ({
   icon: Icon,
   action,
   children,
-  className = ""
+  className = "",
+  borderColor = "#e2e8f0"
 }) => /*#__PURE__*/React.createElement("div", {
   className: `bg-white rounded-2xl border overflow-hidden flex flex-col ${className}`,
   style: {
-    borderColor: "#e2e8f0"
+    borderColor: borderColor
   }
 }, /*#__PURE__*/React.createElement("div", {
   className: "px-4 py-3 flex items-center justify-between border-b",
@@ -3045,17 +3046,19 @@ function ChartsPage({
   }, x.value)))))), /*#__PURE__*/React.createElement(Card, {
     title: "Security \u2014 Device Health",
     subtitle: "Offline CCTV \u2022 Offline ANPR \u2022 Not Working ACS/Gate/Intercom \u2014 worst 10 sites",
-    icon: IcShield
+    icon: IcShield,
+    className: "bg-slate-950 border-blue-500 text-white",
+    borderColor: "#3b82f6"
   }, /*#__PURE__*/React.createElement(ResponsiveContainer, {
     width: "100%",
-    height: 280
+    height: 260
   }, /*#__PURE__*/React.createElement(BarChart, {
     data: worst,
     margin: {
-      top: 8,
-      right: 12,
-      left: 0,
-      bottom: 60
+      top: 10,
+      right: 16,
+      left: 44,
+      bottom: 64
     }
   }, /*#__PURE__*/React.createElement(CartesianGrid, {
     strokeDasharray: "3 3",
