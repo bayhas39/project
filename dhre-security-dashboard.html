@@ -4053,33 +4053,37 @@ function AIReportPage({
   }, /*#__PURE__*/React.createElement("span", null, "Gate barrier"), /*#__PURE__*/React.createElement("b", null, site.notWorkingGate || 0)), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between"
   }, /*#__PURE__*/React.createElement("span", null, "Intercom"), /*#__PURE__*/React.createElement("b", null, site.notWorkingIntercom || 0)))), }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-xl border p-3 lg:col-span-2",
+    className: "bg-white rounded-xl border p-5 lg:col-span-2",
     style: {
       borderColor: "#e2e8f0"
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "flex items-center justify-between mb-2"
+    className: "flex items-center justify-between mb-4"
   }, /*#__PURE__*/React.createElement("div", {
-    className: "text-xs font-bold tracking-widest uppercase text-slate-500"
-  }, "Problems for this site"), /*#__PURE__*/React.createElement("span", {
-    className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"
+    className: "flex items-center gap-2"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "w-2.5 h-2.5 rounded-full bg-red-500"
+  }), /*#__PURE__*/React.createElement("h3", {
+    className: "text-sm font-extrabold text-slate-900"
+  }, "Problems for this site")), /*#__PURE__*/React.createElement("span", {
+    className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200"
   }, problems.length, " issues")), /*#__PURE__*/React.createElement("div", {
-    className: "mt-1 flex flex-wrap gap-2"
+    className: "mt-3 flex flex-wrap gap-2"
   }, problems.length === 0 ? /*#__PURE__*/React.createElement("span", {
     className: "px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-sm font-bold text-emerald-700 shadow-sm"
   }, "All systems online") : problems.map(p => /*#__PURE__*/React.createElement("span", {
     key: p,
     className: "px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-sm font-bold text-amber-800 shadow-sm"
   }, p))), problems.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "mt-2 h-[100px]"
+    className: "mt-5 h-[110px]"
   }, /*#__PURE__*/React.createElement(ResponsiveContainer, {
     width: "100%",
-    height: 100
+    height: 110
   }, /*#__PURE__*/React.createElement(BarChart, {
     data: probBars,
     margin: {
       top: 8,
-      right: 8,
+      right: 12,
       left: 0,
       bottom: 24
     }
@@ -4090,15 +4094,26 @@ function AIReportPage({
     dataKey: "name",
     tick: {
       fontSize: 11,
-      fill: "#64748b"
+      fill: "#94a3b8"
     }
   }), /*#__PURE__*/React.createElement(YAxis, {
     tick: {
-      fontSize: 11,
-      fill: "#64748b"
+      fontSize: 10,
+      fill: "#94a3b8"
     },
-    allowDecimals: false
-  }), /*#__PURE__*/React.createElement(Tooltip, null), /*#__PURE__*/React.createElement(Bar, {
+    allowDecimals: false,
+    hide: true
+  }), /*#__PURE__*/React.createElement(Tooltip, {
+    contentStyle: {
+      backgroundColor: "#0f172a",
+      borderColor: "#334155"
+    },
+    labelStyle: {
+      color: "#f8fafc",
+      fontSize: 11,
+      fontWeight: 700
+    }
+  }), /*#__PURE__*/React.createElement(Bar, {
     dataKey: "value",
     name: "Count",
     radius: [4, 4, 0, 0]
