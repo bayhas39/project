@@ -4056,9 +4056,9 @@ function AIReportPage({
   }, /*#__PURE__*/React.createElement("span", null, "Gate barrier"), /*#__PURE__*/React.createElement("b", null, site.notWorkingGate || 0)), /*#__PURE__*/React.createElement("div", {
     className: "flex justify-between"
   }, /*#__PURE__*/React.createElement("span", null, "Intercom"), /*#__PURE__*/React.createElement("b", null, site.notWorkingIntercom || 0)))), }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-white rounded-xl border p-5 lg:col-span-2",
+    className: "bg-slate-950 rounded-xl border p-5 lg:col-span-2 text-white",
     style: {
-      borderColor: "#e2e8f0"
+      borderColor: "#3b82f6"
     }
   }, /*#__PURE__*/React.createElement("div", {
     className: "flex items-center justify-between mb-4"
@@ -4067,18 +4067,18 @@ function AIReportPage({
   }, /*#__PURE__*/React.createElement("div", {
     className: "w-2.5 h-2.5 rounded-full bg-red-500"
   }), /*#__PURE__*/React.createElement("h3", {
-    className: "text-sm font-extrabold text-slate-900"
+    className: "text-sm font-extrabold text-white"
   }, "Problems for this site")), /*#__PURE__*/React.createElement("span", {
-    className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200"
+    className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-blue-500/50"
   }, problems.length, " issues")), /*#__PURE__*/React.createElement("div", {
     className: "mt-3 flex flex-wrap gap-2"
   }, problems.length === 0 ? /*#__PURE__*/React.createElement("span", {
-    className: "px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-sm font-bold text-emerald-700 shadow-sm"
+    className: "px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-sm font-bold text-emerald-400 shadow-sm"
   }, "All systems online") : problems.map(p => /*#__PURE__*/React.createElement("span", {
     key: p,
-    className: "px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-sm font-bold text-amber-800 shadow-sm"
+    className: "px-3 py-1.5 rounded-full bg-amber-900/20 border border-amber-500/30 text-sm font-bold text-amber-300 shadow-sm"
   }, p))), problems.length > 0 ? /*#__PURE__*/React.createElement("div", {
-    className: "mt-5 h-[120px] bg-[#0f172a] rounded-lg border border-slate-700 p-3"
+    className: "mt-5 h-[120px] bg-[#0f172a] rounded-lg border border-blue-500/30 p-3"
   }, /*#__PURE__*/React.createElement(ResponsiveContainer, {
     width: "100%",
     height: 120
