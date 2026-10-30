@@ -1296,9 +1296,9 @@ function SiteFormModal({site, sites, setSites, onClose}){
   const [form, setForm] = useState(()=> isNew ? {
     name:"", location:"", type:"Construction", status:"Pending", date:new Date().toISOString().slice(0,10),
     inspector:"", notes:"", totalCameras:8, offlineCameras:0, totalANPR:2, offlineANPR:0,
-    notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0, siraCertified:false,
+    notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0, siraCertified:false, siraExpiryDate:"",
     pincode:String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"),
-  } : {...site});
+  } : {...site, siraExpiryDate: site.siraExpiryDate||""});
   const set = (k, v) => setForm(f=>({...f, [k]: v}));
   const save = () => {
     if(!form.name.trim() || !form.location.trim()){ toast.error("Site name and location are required"); return; }
@@ -1331,6 +1331,7 @@ function SiteFormModal({site, sites, setSites, onClose}){
         <Field label="Type"><select value={form.type} onChange={e=>set("type", e.target.value)} className={inputCls}>{TYPES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select></Field>
         <Field label="Status"><select value={form.status} onChange={e=>set("status", e.target.value)} className={inputCls}>{STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}</select></Field>
         <Field label="SIRA Certified"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={!!form.siraCertified} onChange={e=>set("siraCertified", e.target.checked)} className="w-4 h-4"/> Site has valid SIRA certificate</label></Field>
+        {form.siraCertified && <Field label="SIRA Expiry Date"><input type="date" value={form.siraExpiryDate||""} onChange={e=>set("siraExpiryDate", e.target.value)} className={inputCls}/></Field>}
         <Field label="SIRA Eligible"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={form.siraEligible!==false} onChange={e=>set("siraEligible", e.target.checked)} className="w-4 h-4"/> Site is eligible for SIRA certification</label></Field>
         <Field label="SIRA Expired"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={!!form.siraExpired} onChange={e=>set("siraExpired", e.target.checked)} className="w-4 h-4"/> Site SIRA certificate has expired</label></Field>
         <Field label="Inspector"><input value={form.inspector} onChange={e=>set("inspector", e.target.value)} placeholder="e.g. Ahmed R." className={inputCls}/></Field>
