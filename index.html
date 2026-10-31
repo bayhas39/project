@@ -753,9 +753,9 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
 /* ================================================================ */
 /*                          ADMIN SHELL                             */
 /* ================================================================ */
-const PAGES = ["sites","charts","amc","attention","reports","certified","fullscreen"];
-const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports", certified:"Certified Sites", fullscreen:"Fullscreen" };
-const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"Certified Sites", certified:"Fullscreen", fullscreen:"Sites" };
+const PAGES = ["sites","charts","amc","accidents","reports","certified","fullscreen"];
+const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", accidents:"Accidents", reports:"Reports", certified:"Certified Sites", fullscreen:"Fullscreen" };
+const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Accidents", accidents:"Reports", reports:"Certified Sites", certified:"Fullscreen", fullscreen:"Sites" };
 
 /* ================================================================ */
 /*                        ADMIN ACTIONS                             */
@@ -833,7 +833,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
     { id:"sites",     icon:IcGrid,   label:"Sites" },
     { id:"charts",    icon:IcChart,  label:"Charts" },
     { id:"amc",       icon:IcVideo,  label:"AMC" },
-    { id:"attention", icon:IcAlert,  label:"Attention", count:attention.length },
+    { id:"accidents", icon:IcAlert,  label:"Accidents", count:(accidents||[]).length },
     { id:"reports",   icon:IcFileText, label:"Reports" },
     { id:"certified", icon:IcShieldCk, label:"Certified Sites" },
     { id:"fullscreen", icon:IcExternal, label:"Fullscreen" },
@@ -890,7 +890,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
             {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
             {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
             {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
-            {page==="attention" && <AttentionPage attention={attention} sites={sites} setPage={setPage}/>}
+            {page==="accidents" && <AccidentsPage accidents={accidents} sites={sites} setAccidents={setAccidents} setPage={setPage}/>}
             {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
             {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
             {page==="fullscreen" && <FullscreenPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} setPage={setPage}/>}
@@ -1452,13 +1452,13 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
         <KPI label="Total Sites" value={stats.total} sub={`${stats.total} sites`} icon={IcBuilding} color="bg-slate-900 text-white"/>
-        <button onClick={()=>setPage("attention")} className="text-left">
+        <button onClick={()=>setPage("accidents")} className="text-left">
           <KPI label="Total Sites with Offline Camera" value={offlineCamSites} sub={`${stats.offlineCameras} offline cameras • Tap to see sites + problems`} icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
         </button>
-        <button onClick={()=>setPage("attention")} className="text-left">
+        <button onClick={()=>setPage("accidents")} className="text-left">
           <KPI label="Sites with Offline ANPR" value={offlineAnprSites} sub={`${stats.offlineANPR} offline ANPR • Tap to see sites + problems`} icon={IcWifiOff} color="bg-amber-500 text-white" top="bg-amber-500"/>
         </button>
-        <button onClick={()=>setPage("attention")} className="text-left">
+        <button onClick={()=>setPage("accidents")} className="text-left">
           <KPI label="Total Sites with Offline Access Control" value={offlineAcsSites} sub={`${stats.nwACS} not-working ACS • Tap to see sites + problems`} icon={IcLock} color="bg-emerald-500 text-white" top="bg-emerald-500"/>
         </button>
       </div>
@@ -1781,135 +1781,129 @@ function AMCPage({sites, stats, perSite, setPage}){
 /* ================================================================ */
 /*                         ATTENTION PAGE                           */
 /* ================================================================ */
-function AttentionPage({attention, sites, setPage}){
-  const [mode, setMode] = useState({});
-  const [viewInc, setViewInc] = useState(null);
+function AccidentsPage({accidents, sites, setAccidents, setPage}){
+  const [q, setQ] = useState(""); const [fStatus, setFStatus] = useState("All");
+  const [viewAcc, setViewAcc] = useState(null);
+
+  const filtered = useMemo(()=> (accidents||[]).filter(a=>{
+    const qq=q.trim().toLowerCase();
+    const okQ = !qq || (a.title||"").toLowerCase().includes(qq) || (a.siteName||"").toLowerCase().includes(qq) || (a.description||"").toLowerCase().includes(qq) || (a.type||"").toLowerCase().includes(qq);
+    const okSt = fStatus==="All" || a.status===fStatus;
+    return okQ && okSt;
+  }), [accidents, q, fStatus]);
+
+  const counts = {
+    total: (accidents||[]).length,
+    open: (accidents||[]).filter(a=>a.status==="Open").length,
+    review: (accidents||[]).filter(a=>a.status==="In Review").length,
+    resolved: (accidents||[]).filter(a=>a.status==="Resolved").length,
+    closed: (accidents||[]).filter(a=>a.status==="Closed").length,
+  };
+
+  const del = (acc) => {
+    if(!window.confirm(`Delete accident "${acc.title||acc.type}"?`)) return;
+    setAccidents(list=>list.filter(x=>x.id!==acc.id));
+    toast.success("Accident deleted");
+  };
+
   return (
-    <React.Fragment>
+    <div>
       <div className="space-y-4">
         <div className="bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
           <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
             <div className="w-8 h-8 rounded-lg bg-red-600 grid place-items-center text-white"><IcAlert size={16}/></div>
-          <div>
-            <h2 className="text-[16px] font-extrabold tracking-tight leading-none">Attention Needed</h2>
-            <p className="text-xs text-slate-500">Total sites with offline camera <span className="font-bold text-2xl">{sites.filter(s=>(s.offlineCameras||0)>0).length}</span></p>
+            <div>
+              <h2 className="text-[16px] font-extrabold tracking-tight leading-none">Accidents</h2>
+              <p className="text-xs text-slate-500">All accident reports across sites</p>
+            </div>
+            <button onClick={()=>setPage("charts")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border text-xs font-semibold hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Back to Charts</button>
           </div>
-          <button onClick={()=>setPage("charts")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border text-xs font-semibold hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Back to Charts</button>
         </div>
 
-        {attention.length===0 ? (
-          <div className="py-14 text-center">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 grid place-items-center mx-auto"><IcCheck size={20}/></div>
-            <h3 className="mt-3 font-bold">All clear — no attention needed</h3>
-            <p className="text-sm text-slate-500 mt-1">Every site is completed or has no open problems/incidents.</p>
-            <button onClick={()=>setPage("sites")} className="mt-4 px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-bold">Go to Sites</button>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <KPI label="Total Accidents" value={counts.total} sub="all reports" icon={IcAlert} color="bg-slate-900 text-white"/>
+          <KPI label="Open" value={counts.open} sub="needs action" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+          <KPI label="In Review" value={counts.review} sub="under review" icon={IcClock} color="bg-amber-500 text-white"/>
+          <KPI label="Resolved" value={counts.resolved} sub="fixed" icon={IcCheck} color="bg-emerald-500 text-white"/>
+          <KPI label="Closed" value={counts.closed} sub="closed" icon={IcCheck} color="bg-slate-500 text-white"/>
+        </div>
+
+        <div className="bg-white rounded-2xl border p-3 flex flex-wrap items-center gap-2" style={{borderColor:"#e2e8f0"}}>
+          <div className="relative flex-1 min-w-[220px]">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcSearch size={15}/></span>
+            <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search accidents by title, site, description, type..."
+              className="w-full pl-9 pr-3 py-2.5 rounded-full border bg-slate-50 focus:bg-white outline-none focus:border-slate-400 text-sm" style={{borderColor:"#e2e8f0"}}/>
+          </div>
+          <select value={fStatus} onChange={e=>setFStatus(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+            <option value="All">All Status</option>
+            {INC_STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+        </div>
+
+        {filtered.length===0 ? (
+          <div className="bg-white rounded-2xl border py-14 text-center" style={{borderColor:"#e2e8f0"}}>
+            <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 grid place-items-center mx-auto"><IcAlert size={20}/></div>
+            <h3 className="mt-3 font-bold">No accident reports</h3>
+            <p className="text-sm text-slate-500 mt-1">Nothing matches your filters.</p>
           </div>
         ) : (
-          <div className="divide-y" style={{borderColor:"#f1f5f9"}}>
-            {attention.map(({site, problems, incidents:si, severity})=>{
-              const tab = mode[site.id] || "site";
-              return (
-                <div key={site.id} className={`p-4 border-l-4 ${severity==="Critical"?"border-red-600":severity==="High"?"border-red-400":severity==="Medium"?"border-amber-400":"border-blue-400"}`}>
-                  <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm flex items-center gap-2 flex-wrap">{site.name} <StatusBadge status={site.status}/></div>
-                      <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                        <span className="flex items-center gap-1"><IcPin size={11}/>{site.location}</span> • <span className="flex items-center gap-1"><IcUser size={11}/>{site.inspector}</span>
-                      </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {filtered.map(acc=>(
+              <div key={acc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition" style={{borderColor:"#e2e8f0"}} onClick={()=>setViewAcc(acc)}>
+                <div className={`absolute top-0 left-0 w-full h-1 ${acc.status==="Open"?"bg-red-500":acc.status==="In Review"?"bg-amber-500":acc.status==="Resolved"?"bg-emerald-500":"bg-slate-500"}`}/>
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-red-600 text-white grid place-items-center shrink-0"><IcAlert size={15}/></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-sm">{acc.title||acc.type||"Accident"}</h3>
+                      <Badge status={acc.status}/>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[11px] font-bold px-2 py-1 rounded-full ${severity==="Critical"?"bg-red-600 text-white":severity==="High"?"bg-red-100 text-red-700":severity==="Medium"?"bg-amber-100 text-amber-700":"bg-blue-100 text-blue-700"}`}>
-                        {severity} attention
-                      </span>
-                      <div className="flex p-0.5 rounded-full bg-slate-100 border text-[11px] font-bold" style={{borderColor:"#e2e8f0"}}>
-                        <button onClick={()=>setMode(m=>({...m,[site.id]:"site"}))} className={`px-2.5 py-1 rounded-full ${tab==="site"?"bg-white shadow":""}`}>Site</button>
-                        <button onClick={()=>setMode(m=>({...m,[site.id]:"reports"}))} className={`px-2.5 py-1 rounded-full ${tab==="reports"?"bg-white shadow":""}`}>Reports ({si.length})</button>
-                      </div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                      <span className="flex items-center gap-1"><IcPin size={11}/>{acc.siteName || "-"}</span>
+                      <span>{acc.date}</span>
+                      <span className="flex items-center gap-1"><IcAlert size={11}/>{acc.type||"Accident"}</span>
+                    </div>
+                    <p className="text-xs text-slate-600 mt-2">{acc.description||""}</p>
+                    <div className="mt-2 flex gap-1.5 flex-wrap">
+                      <button onClick={(e)=>{e.stopPropagation(); del(acc);}} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border text-red-600 hover:bg-red-50" style={{borderColor:"#fecaca"}}><IcTrash size={11}/></button>
                     </div>
                   </div>
-
-                  {tab==="site" ? (
-                    <div className="mt-3 space-y-2">
-                      <div>
-                        <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Problems on site ({problems.length})</div>
-                        <div className="mt-1 flex flex-wrap gap-1.5">
-                          {problems.map(p=> <span key={p} className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">{p}</span>)}
-                        </div>
-                      </div>
-                      <div className="text-[11px] text-slate-500">Note: {site.notes || "—"}</div>
-                    </div>
-                  ) : (
-                    <div className="mt-3 space-y-2">
-                      <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Open incidents ({si.length})</div>
-                      {si.length===0 ? <div className="text-xs text-slate-500">No open incidents — but status indicates attention.</div> : si.map(i=>(
-                        <div key={i.id} className="border rounded-xl p-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition" style={{borderColor:"#eef2f7"}} onClick={()=>setViewInc(i)}>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold text-sm">{i.title}</span>
-                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(i.severity)}`}>{i.severity}</span>
-                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{i.category}</span>
-                            <span className="ml-auto text-[11px] text-slate-400">{i.date}</span>
-                          </div>
-                          <p className="text-xs text-slate-500 mt-1">{i.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <button onClick={()=>setPage("reports")} className="mt-3 text-[11px] font-bold px-3 py-1.5 rounded-full bg-slate-900 text-white">Open in Reports →</button>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            ))}</div>
         )}
-      </div>
-    </div>
-      {viewInc && <Modal title="Incident Details" onClose={()=>setViewInc(null)} wide>
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-lg">{viewInc.title}</span>
-            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewInc.severity)}`}>{viewInc.severity}</span>
-            <Badge status={viewInc.status}/>
-            <span className="ml-auto text-xs text-slate-400">{viewInc.date}</span>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
-              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Category</div>
-              <div className="text-sm font-semibold mt-1">{viewInc.category||"-"}</div>
+
+        {viewAcc && <Modal title="Accident Details" onClose={()=>setViewAcc(null)} wide>
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-bold text-lg">{viewAcc.title||viewAcc.type||"Accident"}</span>
+              <span className="ml-auto text-xs text-slate-400">{viewAcc.date}</span>
             </div>
-            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
-              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
-              <div className="text-sm font-semibold mt-1">{viewInc.reportedBy||"-"}</div>
-            </div>
-            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
-              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
-              <div className="text-sm font-semibold mt-1">{viewInc.siteName||"-"}</div>
-            </div>
-            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
-              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
-              <div className="text-sm font-semibold mt-1">{viewInc.status}</div>
-            </div>
-          </div>
-          <div>
-            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
-            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewInc.description||"No description."}</p>
-          </div>
-          {viewInc.history && viewInc.history.length>0 && (
-            <div>
-              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
-              <div className="space-y-1.5">
-                {viewInc.history.map((h,idx)=>(
-                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
-                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
-                    <div className="text-slate-600 mt-0.5">{h.change}</div>
-                  </div>
-                ))}
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+                <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Type</div>
+                <div className="text-sm font-semibold mt-1">{viewAcc.type||"-"}</div>
+              </div>
+              <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+                <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+                <div className="text-sm font-semibold mt-1">{viewAcc.status||"-"}</div>
+              </div>
+              <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+                <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+                <div className="text-sm font-semibold mt-1">{viewAcc.siteName||"-"}</div>
               </div>
             </div>
-          )}
-        </div>
-      </Modal>}
-    </React.Fragment>
-  );
-}
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+              <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewAcc.description||"No description."}</p>
+            </div>
+          </div>
+        </Modal>}
+      </div>
+    </div>
+    );
+  }
+
 
 /* ================================================================ */
 /*                         REPORTS PAGE                             */
