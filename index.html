@@ -1783,11 +1783,13 @@ function AMCPage({sites, stats, perSite, setPage}){
 /* ================================================================ */
 function AttentionPage({attention, sites, setPage}){
   const [mode, setMode] = useState({});
+  const [viewInc, setViewInc] = useState(null);
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
-        <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
-          <div className="w-8 h-8 rounded-lg bg-red-600 grid place-items-center text-white"><IcAlert size={16}/></div>
+    <React.Fragment>
+      <div className="space-y-4">
+        <div className="bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
+          <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
+            <div className="w-8 h-8 rounded-lg bg-red-600 grid place-items-center text-white"><IcAlert size={16}/></div>
           <div>
             <h2 className="text-[16px] font-extrabold tracking-tight leading-none">Attention Needed</h2>
             <p className="text-xs text-slate-500">Total sites with offline camera <span className="font-bold text-2xl">{sites.filter(s=>(s.offlineCameras||0)>0).length}</span></p>
@@ -1840,7 +1842,7 @@ function AttentionPage({attention, sites, setPage}){
                     <div className="mt-3 space-y-2">
                       <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Open incidents ({si.length})</div>
                       {si.length===0 ? <div className="text-xs text-slate-500">No open incidents — but status indicates attention.</div> : si.map(i=>(
-                        <div key={i.id} className="border rounded-xl p-3 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                        <div key={i.id} className="border rounded-xl p-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition" style={{borderColor:"#eef2f7"}} onClick={()=>setViewInc(i)}>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-semibold text-sm">{i.title}</span>
                             <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(i.severity)}`}>{i.severity}</span>
@@ -1860,6 +1862,52 @@ function AttentionPage({attention, sites, setPage}){
         )}
       </div>
     </div>
+      {viewInc && <Modal title="Incident Details" onClose={()=>setViewInc(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewInc.title}</span>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewInc.severity)}`}>{viewInc.severity}</span>
+            <Badge status={viewInc.status}/>
+            <span className="ml-auto text-xs text-slate-400">{viewInc.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Category</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.category||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.siteName||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewInc.description||"No description."}</p>
+          </div>
+          {viewInc.history && viewInc.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewInc.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
+                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
+                    <div className="text-slate-600 mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
+    </React.Fragment>
   );
 }
 
