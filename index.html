@@ -1869,6 +1869,7 @@ function AttentionPage({attention, sites, setPage}){
 function ReportsPage({sites, incidents, setIncidents}){
   const [q, setQ] = useState(""); const [fSev, setFSev] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [editInc, setEditInc] = useState(null); const [quickSite, setQuickSite] = useState("");
+  const [viewInc, setViewInc] = useState(null);
 
   const filtered = useMemo(()=> incidents.filter(i=>{
     const qq=q.trim().toLowerCase();
@@ -1939,7 +1940,7 @@ function ReportsPage({sites, incidents, setIncidents}){
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
           {filtered.map(inc=>(
-            <div key={inc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden" style={{borderColor:"#e2e8f0"}}>
+            <div key={inc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition" style={{borderColor:"#e2e8f0"}} onClick={()=>setViewInc(inc)}>
               <div className={`absolute top-0 left-0 w-full h-1 ${inc.severity==="Critical"?"bg-red-700":inc.severity==="High"?"bg-red-500":inc.severity==="Medium"?"bg-amber-500":"bg-slate-900"}`}/>
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center shrink-0"><IcFileText size={15}/></div>
@@ -1969,9 +1970,6 @@ function ReportsPage({sites, incidents, setIncidents}){
                     </div>
                   )}
                   <div className="mt-3 flex gap-1.5 flex-wrap">
-                    {INC_STATUS.filter(s=>s.value!==inc.status).map(s=>(
-                      <button key={s.value} onClick={()=>changeStatus(inc, s.value)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>→ {s.value}</button>
-                    ))}
                     <button onClick={()=>setEditInc(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full bg-slate-900 text-white flex items-center gap-1"><IcEdit size={11}/> Edit</button>
                     <button onClick={()=>del(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border text-red-600 hover:bg-red-50" style={{borderColor:"#fecaca"}}><IcTrash size={11}/></button>
                   </div>
@@ -1983,6 +1981,51 @@ function ReportsPage({sites, incidents, setIncidents}){
       )}
 
       {editInc && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} existing={editInc} onClose={()=>setEditInc(null)}/>}
+      {viewInc && <Modal title="Report Details" onClose={()=>setViewInc(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewInc.title}</span>
+            <Badge status={viewInc.status}/>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewInc.severity)}`}>{viewInc.severity}</span>
+            <span className="ml-auto text-xs text-slate-400">{viewInc.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Category</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.category||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.siteName||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewInc.description||"No description."}</p>
+          </div>
+          {viewInc.history && viewInc.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewInc.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
+                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
+                    <div className="text-slate-600 mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
     </div>
   );
 }
