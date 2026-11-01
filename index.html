@@ -597,7 +597,7 @@ const [sites, setSites] = useState(()=> {
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
   if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
-  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
+  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
@@ -777,7 +777,7 @@ function AdminTitleBar({ auth, onLogout }) {
   );
 }
 
-function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
+function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const [page, setPage] = useState(()=> LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(()=> fmtTime());
   const [editSite, setEditSite] = useState(null);
