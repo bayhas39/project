@@ -1432,6 +1432,7 @@ function PincodeAccessModal({sites, onClose}){
 /*                          CHARTS PAGE                             */
 /* ================================================================ */
 function ChartsPage({sites, incidents, accidents, stats, perSite, attention, problemTotals, setPage}){
+  const [selectedInspector, setSelectedInspector] = useState(null);
   const totalProblems = Object.values(problemTotals).reduce((a,b)=>a+b,0);
   const completion = stats.total ? Math.round((stats.completed/stats.total)*100) : 0;
   const criticalCount = attention.filter(a=>a.severity==="Critical").length;
@@ -1572,16 +1573,31 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
         </Card>
         <Card title="Assigned Sites per Person" subtitle="Workload distribution" icon={IcUser}>
           <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={byInspector} layout="vertical" margin={{top:0,right:12,left:30,bottom:0}}>
+            <BarChart data={byInspector} layout="vertical" margin={{top:0,right:12,left:30,bottom:0}} onClick={(e)=>{ if(e && e.activePayload && e.activePayload[0]) setSelectedInspector(e.activePayload[0].payload.name); }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis type="number" allowDecimals={false} tick={{fontSize:11}}/>
               <YAxis type="category" dataKey="name" width={90} tick={{fontSize:11}}/>
-              <Tooltip/>
-              <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={14}>
+              <Tooltip cursor={{fill:'rgba(0,0,0,0.05)'}}/>
+              <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={14} cursor="pointer">
                 {byInspector.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          <p className="text-[11px] text-slate-400 mt-2 text-center">Click a bar to see assigned sites</p>
+          {selectedInspector && <Modal title={"Sites assigned to " + selectedInspector} onClose={()=>setSelectedInspector(null)} wide>
+            <div className="space-y-2">
+              {sites.filter(s=>s.inspector===selectedInspector).map(s=>(
+                <div key={s.id} className="flex items-center justify-between gap-2 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+                  <div>
+                    <div className="font-bold text-sm">{s.name}</div>
+                    <div className="text-[11px] text-slate-500">{s.location} • {s.type} • {s.status}</div>
+                  </div>
+                  <button onClick={()=>{ setSelectedInspector(null); setPage("sites"); }} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border bg-white hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>View</button>
+                </div>
+              ))}
+              {sites.filter(s=>s.inspector===selectedInspector).length===0 && <p className="text-sm text-slate-500">No sites assigned.</p>}
+            </div>
+          </Modal>}
         </Card>
       </div>
 
