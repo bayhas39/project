@@ -1801,7 +1801,12 @@ function AccidentsPage({accidents, sites, setAccidents, setPage}){
           <button onClick={()=>setPage("charts")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border text-xs font-semibold hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Back to Charts</button>
         </div>
       </div>
-      <p>Total accidents: {(accidents||[]).length}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KPI label="Total Sites with Accidents" value={new Set((accidents||[]).map(a=>a.siteName)).size} sub="sites affected" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+        <KPI label="Total Accidents" value={(accidents||[]).length} sub="all reports" icon={IcAlert} color="bg-slate-900 text-white"/>
+        <KPI label="Open" value={(accidents||[]).filter(a=>a.status==="Open").length} sub="needs action" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+        <KPI label="Resolved" value={(accidents||[]).filter(a=>a.status==="Resolved").length} sub="fixed" icon={IcCheck} color="bg-emerald-500 text-white"/>
+      </div>
       <div className="grid gap-4 lg:grid-cols-2">
         {(accidents||[]).map(acc=>(
           <div key={acc.id} className="bg-white rounded-2xl border p-4 cursor-pointer hover:shadow-lg transition" style={{borderColor:"#e2e8f0"}} onClick={()=>setViewAcc(acc)}>
