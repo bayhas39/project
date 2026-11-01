@@ -887,7 +887,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
 
         <main className="flex-1 px-4 lg:px-6 py-6 lg:py-8 overflow-auto">
           <div key={page} className="page-fade">
-            {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} stats={stats} setPage={setPage}/>}
+            {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} stats={stats} setPage={setPage}/>}
             {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
             {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
             {page==="accidents" && <AccidentsPage accidents={accidents} sites={sites} setAccidents={setAccidents} setPage={setPage}/>}
@@ -912,7 +912,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, accidents, stats, setPage}){
+function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAccidents, stats, setPage}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
   const [editSite, setEditSite] = useState(null); const [viewSite, setViewSite] = useState(null);
@@ -1124,6 +1124,17 @@ function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents
           <div className={`rounded-xl p-3 border ${problems.length>0?"bg-amber-50 border-amber-200":"bg-slate-50"}`} style={problems.length>0?{}:{borderColor:"#e2e8f0"}}>
             <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Problems</div>
             <div className={`text-2xl font-extrabold mt-1 ${problems.length>0?"text-amber-600":""}`}>{problems.length}</div>
+          </div>
+          <div className={`rounded-xl p-3 border ${site.siraCertified?"bg-emerald-50 border-emerald-200":"bg-slate-50"}`} style={site.siraCertified?{}:{borderColor:"#e2e8f0"}}>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">SIRA Certificate</div>
+            <div className={`text-2xl font-extrabold mt-1 ${site.siraCertified?"text-emerald-600":""}`}>{site.siraCertified?"Valid":"Not Certified"}</div>
+            {site.siraCertified && site.siraExpiryDate && (()=>{
+              const expiry = new Date(site.siraExpiryDate);
+              const today = new Date();
+              const diff = Math.ceil((expiry - today) / (1000*60*60*24));
+              const color = diff < 0 ? "text-red-600" : diff <= 30 ? "text-amber-600" : "text-emerald-600";
+              return <div className={`text-[11px] mt-0.5 ${color}`}>Expires: {site.siraExpiryDate} ({diff < 0 ? "Expired " + Math.abs(diff) + " days ago" : diff + " days remaining"})</div>;
+            })()}
           </div>
         </div>
 
