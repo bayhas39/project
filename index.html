@@ -1799,12 +1799,46 @@ function AccidentsPage({accidents, sites, setAccidents, setPage}){
       <p>Total accidents: {(accidents||[]).length}</p>
       <div className="grid gap-4 lg:grid-cols-2">
         {(accidents||[]).map(acc=>(
-          <div key={acc.id} className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-            <h3 className="font-bold text-sm">{acc.title||acc.type||"Accident"}</h3>
+          <div key={acc.id} className="bg-white rounded-2xl border p-4 cursor-pointer hover:shadow-lg transition" style={{borderColor:"#e2e8f0"}} onClick={()=>setViewAcc(acc)}>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-bold text-sm">{acc.title||acc.type||"Accident"}</h3>
+              <Badge status={acc.status}/>
+            </div>
+            <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+              <span className="flex items-center gap-1"><IcPin size={11}/>{acc.siteName || "-"}</span>
+              <span>{acc.date}</span>
+              <span className="flex items-center gap-1"><IcAlert size={11}/>{acc.type||"Accident"}</span>
+            </div>
             <p className="text-xs text-slate-600 mt-2">{acc.description||""}</p>
           </div>
         ))}
       </div>
+      {viewAcc && <Modal title="Accident Details" onClose={()=>setViewAcc(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewAcc.title||viewAcc.type||"Accident"}</span>
+            <span className="ml-auto text-xs text-slate-400">{viewAcc.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Type</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.type||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.status||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.siteName||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewAcc.description||"No description."}</p>
+          </div>
+        </div>
+      </Modal>}
     </div>
   );
 }
