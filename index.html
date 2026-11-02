@@ -2281,8 +2281,8 @@ function CertifiedSitesPage({sites, setPage}){
         <KPI label="Expired SIRA" value={expired.length} icon={IcClock} color="bg-orange-500 text-white"/>
         <KPI label="Sites without SIRA" value={withoutCert.length} icon={IcAlert} color="bg-amber-500 text-white"/>
         <KPI label="Sites not eligible for SIRA" value={notEligible.length} icon={IcX} color="bg-slate-500 text-white"/>
-<KPI label="AMC CERTIFIED Sites" value={sites.filter(s=>s.amcCertified).length} icon={IcShieldCk} color="bg-blue-500 text-white"/>
         <KPI label="Total Sites" value={sites.length} icon={IcBuilding} color="bg-slate-900 text-white"/>
+        <KPI label="AMC CERTIFIED Sites" value={sites.filter(s=>s.amcCertified).length} icon={IcShieldCk} color="bg-blue-500 text-white"/>
       </div>
       <div className="grid lg:grid-cols-2 gap-4">
         <div>
