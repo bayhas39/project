@@ -2407,8 +2407,18 @@ function CertifiedSitesPage({sites, setPage}){
             ))}
           </div>
         </Card>
+        <Card title="Sites with AMC certification" subtitle={`${amcCertified.length} sites have valid AMC`} icon={IcShieldCk}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {amcCertified.length===0 ? <p className="text-xs text-slate-500">No sites are AMC certified.</p> : amcCertified.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-blue-50/60 px-2.5 py-1.5" style={{borderColor:"#bfdbfe"}}>
+                <IcShieldCk size={12} className="text-blue-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.name}</span>
+                <span className="ml-auto text-[10px] text-slate-400 shrink-0 font-mono2">{s.pincode}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
       </div>
-    </div>
   );
 }
 
