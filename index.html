@@ -1579,7 +1579,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
               <YAxis type="category" dataKey="name" width={90} tick={{fontSize:11}}/>
               <Tooltip cursor={{fill:'rgba(0,0,0,0.05)'}}/>
               <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={14} cursor="pointer" onClick={(data)=>{ if(data && data.name) setSelectedInspector(data.name); }}>
-                {byInspector.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+                {byInspector.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]} onClick={()=>setSelectedInspector(x.name)}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
