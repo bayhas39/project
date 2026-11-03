@@ -2798,6 +2798,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
   const totalSites = sites.length;
   const totalCameras = sites.reduce((a,s)=>a+(s.totalCameras||0),0);
   const offlineCameras = sites.reduce((a,s)=>a+(s.offlineCameras||0),0);
+  const sitesWithOfflineCam = sites.filter(s=>(s.offlineCameras||0)>0).length;
   const totalANPR = sites.reduce((a,s)=>a+(s.totalANPR||0),0);
   const openIncidents = incidents.filter(i=>i.status==="Opened"||i.status==="Solving").length;
   const attentionSites = sites.filter(s=>problemsOf(s,incidents).length>0).length;
@@ -2805,11 +2806,13 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
 
-  const Box = ({icon, color, bg, label, value}) => (
+  const Box = ({icon, color, bg, label, value, label2, value2}) => (
     <div className="bg-[#0d1117] border rounded-2xl p-6 flex flex-col items-center justify-center gap-3 min-h-0" style={{borderColor:"#30363d"}}>
       <div className={`w-20 h-20 rounded-2xl ${bg} grid place-items-center shadow-xl`}>{icon}</div>
       <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider text-center">{label}</div>
       <div className="text-5xl font-extrabold text-[#f0f6fc] leading-none">{value}</div>
+      {label2 && <div className="text-xs font-bold text-[#8b949e] uppercase tracking-wider text-center mt-2">{label2}</div>}
+      {label2 && <div className="text-3xl font-extrabold text-[#f85149] leading-none">{value2}</div>}
     </div>
   );
 
@@ -2823,7 +2826,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
         </div>
       </div>
       <div className="flex-1 grid grid-cols-3 grid-rows-2 gap-4 min-h-0">
-        <Box icon={<IcBuilding size={32} className="text-[#1f6feb]"/>} bg="bg-[#1f6feb]/20" label="Total Sites" value={totalSites}/>
+        <Box icon={<IcBuilding size={32} className="text-[#1f6feb]"/>} bg="bg-[#1f6feb]/20" label="Total Sites" value={totalSites} label2="Sites with Offline Cameras" value2={sitesWithOfflineCam}/>
         <Box icon={<IcCamera size={32} className="text-[#58a6ff]"/>} bg="bg-[#58a6ff]/20" label="Total Cameras" value={totalCameras}/>
         <Box icon={<IcCamOff size={32} className="text-[#f85149]"/>} bg="bg-[#f85149]/20" label="Offline CCTV" value={offlineCameras}/>
         <Box icon={<IcScan size={32} className="text-[#8957e5]"/>} bg="bg-[#8957e5]/20" label="Total ANPR" value={totalANPR}/>
