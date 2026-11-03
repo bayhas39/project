@@ -2839,14 +2839,14 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
               <div className="text-xl font-extrabold text-[#58a6ff] leading-none">{sitesWithOfflineCam}</div>
             </div>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="h-[50px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bySiteOffline} margin={{top:4,right:2,left:0,bottom:20}}>
+              <BarChart data={bySiteOffline} margin={{top:1,right:1,left:0,bottom:10}}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#30363d"/>
-                <XAxis dataKey="name" tick={{fontSize:8, fill:"#8b949e"}} angle={-30} textAnchor="end" height={30}/>
-                <YAxis tick={{fontSize:9, fill:"#8b949e"}} allowDecimals={false}/>
-                <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
-                <Bar dataKey="value" name="Offline Cameras" fill="#1f6feb" radius={[4,4,0,0]}/>
+                <XAxis dataKey="name" tick={{fontSize:6, fill:"#8b949e"}} angle={-30} textAnchor="end" height={20}/>
+                <YAxis tick={{fontSize:6, fill:"#8b949e"}} allowDecimals={false}/>
+                <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:9}}/>
+                <Bar dataKey="value" name="Offline Cameras" fill="#1f6feb" radius={[2,2,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
