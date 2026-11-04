@@ -2811,6 +2811,9 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
 
+  const [showIncAcc, setShowIncAcc] = useState(false);
+  const [viewItem, setViewItem] = useState(null);
+
 const Box = ({icon, color, bg, label, value, label2, value2}) => (
     <div className="bg-[#0d1117] border rounded-2xl p-2 flex flex-col items-center justify-center gap-1 h-full" style={{borderColor:"#30363d"}}>
       <div className={`w-8 h-8 rounded-lg ${bg} grid place-items-center shadow-xl`}>{icon}</div>
@@ -2925,8 +2928,136 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
             </ResponsiveContainer>
           </div>
         </div>
-        <Box icon={<IcAlert size={16} className="text-[#58a6ff]"/>} bg="bg-[#58a6ff]/20" label="Sites Needing Attention" value={attentionSites}/>
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 h-full cursor-pointer hover:bg-[#161b22] transition" style={{borderColor:"#30363d"}} onClick={()=>setShowIncAcc(true)}>
+          <div className={`w-8 h-8 rounded-lg bg-[#f85149]/20 grid place-items-center shadow-xl`}><IcAlert size={16} className="text-[#f85149]"/></div>
+          <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Total Incidents & Accidents</div>
+          <div className="text-2xl font-extrabold text-[#f0f6fc] leading-none">{incidents.length + (accidents||[]).length}</div>
+          <div className="text-[8px] text-[#8b949e]">{incidents.length} incidents • {(accidents||[]).length} accidents</div>
+        </div>
       </div>
+      {showIncAcc && <Modal title="All Incidents & Accidents" onClose={()=>setShowIncAcc(false)} wide>
+        <div className="space-y-3">
+          <div className="text-sm font-bold text-[#8b949e]">Total: {incidents.length + (accidents||[]).length} ({incidents.length} incidents, {(accidents||[]).length} accidents)</div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {incidents.map(inc=>(
+              <div key={inc.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'incident', data:inc}); setShowIncAcc(false); }}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-sm text-[#f0f6fc]">{inc.title}</span>
+                  <Badge status={inc.status}/>
+                </div>
+                <div className="text-[11px] text-[#8b949e] mt-1 flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1"><IcPin size={11}/>{inc.siteName || "-"}</span>
+                  <span>{inc.date}</span>
+                  <span className="flex items-center gap-1"><IcFileText size={11}/>{inc.category||"-"}</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
+                </div>
+              </div>
+            ))}
+            {(accidents||[]).map(acc=>(
+              <div key={acc.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'accident', data:acc}); setShowIncAcc(false); }}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-sm text-[#f0f6fc]">{acc.title||acc.type||"Accident"}</span>
+                  <Badge status={acc.status==="Open"?"Opened":acc.status==="Resolved"?"Closed":acc.status}/>
+                </div>
+                <div className="text-[11px] text-[#8b949e] mt-1 flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1"><IcPin size={11}/>{acc.siteName || "-"}</span>
+                  <span>{acc.reportedDate||acc.date}</span>
+                  <span className="flex items-center gap-1"><IcAlert size={11}/>{acc.type||"Accident"}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Modal>}
+      {viewItem && viewItem.type==='incident' && <Modal title="Incident Details" onClose={()=>setViewItem(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg text-[#f0f6fc]">{viewItem.data.title}</span>
+            <Badge status={viewItem.data.status}/>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewItem.data.severity)}`}>{viewItem.data.severity}</span>
+            <span className="ml-auto text-xs text-[#8b949e]">{viewItem.data.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Category</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.category||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Reported By</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Site</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.siteName||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Status</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">Description</div>
+            <p className="text-sm text-[#c9d1d9] bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>{viewItem.data.description||"No description."}</p>
+          </div>
+          {viewItem.data.history && viewItem.data.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewItem.data.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-[#161b22] rounded-lg p-2 border" style={{borderColor:"#30363d"}}>
+                    <span className="font-bold text-[#f0f6fc]">{h.at}</span> <span className="text-[#8b949e]">by {h.by}</span>
+                    <div className="text-[#c9d1d9] mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
+      {viewItem && viewItem.type==='accident' && <Modal title="Accident Details" onClose={()=>setViewItem(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg text-[#f0f6fc]">{viewItem.data.title||viewItem.data.type||"Accident"}</span>
+            <Badge status={viewItem.data.status==="Open"?"Opened":viewItem.data.status==="Resolved"?"Closed":viewItem.data.status}/>
+            <span className="ml-auto text-xs text-[#8b949e]">{viewItem.data.reportedDate||viewItem.data.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Type</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.type||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Reported By</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Site</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.siteName||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Reported Date</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.reportedDate||viewItem.data.date||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">Description</div>
+            <p className="text-sm text-[#c9d1d9] bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>{viewItem.data.description||"No description."}</p>
+          </div>
+          {viewItem.data.history && viewItem.data.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewItem.data.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-[#161b22] rounded-lg p-2 border" style={{borderColor:"#30363d"}}>
+                    <span className="font-bold text-[#f0f6fc]">{h.at}</span> <span className="text-[#8b949e]">by {h.by}</span>
+                    <div className="text-[#c9d1d9] mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
     </div>
   );
 }
