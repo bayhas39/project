@@ -2931,7 +2931,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
         <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col items-center justify-center gap-2 h-full cursor-pointer hover:bg-[#161b22] transition" style={{borderColor:"#30363d"}} onClick={()=>setShowIncAcc(true)}>
           <div className={`w-8 h-8 rounded-lg bg-[#f85149]/20 grid place-items-center shadow-xl`}><IcAlert size={16} className="text-[#f85149]"/></div>
           <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Total Incidents & Accidents</div>
-          <div className="text-2xl font-extrabold text-[#f0f6fc] leading-none">{incidents.length + (accidents||[]).length}</div>
+          <div className="text-[10px] text-[#c9d1d9] text-center line-clamp-2 px-1">{(incidents.length>0?incidents[0].title:(accidents||[]).length>0?(accidents[0].title||accidents[0].type):"No incidents or accidents")}</div>
           <div className="text-[8px] text-[#8b949e]">{incidents.length} incidents • {(accidents||[]).length} accidents</div>
         </div>
       </div>
@@ -2951,6 +2951,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
                   <span className="flex items-center gap-1"><IcFileText size={11}/>{inc.category||"-"}</span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
                 </div>
+                {inc.description && <div className="text-[11px] text-[#c9d1d9] mt-1.5 line-clamp-2">{inc.description}</div>}
               </div>
             ))}
             {(accidents||[]).map(acc=>(
@@ -2964,6 +2965,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
                   <span>{acc.reportedDate||acc.date}</span>
                   <span className="flex items-center gap-1"><IcAlert size={11}/>{acc.type||"Accident"}</span>
                 </div>
+                {acc.description && <div className="text-[11px] text-[#c9d1d9] mt-1.5 line-clamp-2">{acc.description}</div>}
               </div>
             ))}
           </div>
