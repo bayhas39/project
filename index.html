@@ -2813,6 +2813,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
 
   const [viewItem, setViewItem] = useState(null);
   const [timeFilter, setTimeFilter] = useState("day");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [viewSite, setViewSite] = useState(null);
   const [showAmcSites, setShowAmcSites] = useState(false);
   const [showSiraSites, setShowSiraSites] = useState(false);
@@ -2838,8 +2839,8 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
     else if (filter === "month") d.setMonth(d.getMonth() - 1);
     return d.toISOString().slice(0, 10);
   };
-  const filteredIncidents = incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter));
-  const filteredAccidents = (accidents||[]).filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter));
+  const filteredIncidents = (typeFilter === "all" || typeFilter === "incidents") ? incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter)) : [];
+  const filteredAccidents = (typeFilter === "all" || typeFilter === "accidents") ? (accidents||[]).filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter)) : [];
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0d1117] flex flex-col p-4 gap-4">
@@ -2945,6 +2946,11 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
         <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
           <div className="flex items-center justify-between">
             <div className="text-[10px] font-bold text-[#8b949e] uppercase tracking-wider">Incidents & Accidents ({filteredIncidents.length + filteredAccidents.length})</div>
+            <div className="flex gap-1">
+              {["all","accidents","incidents"].map(f=>(
+                <button key={f} onClick={(e)=>{e.stopPropagation(); setTypeFilter(f);}} className={`text-[8px] font-bold px-2 py-0.5 rounded-full border transition ${typeFilter===f?"bg-purple-600 text-white border-purple-600":"bg-[#161b22] text-[#8b949e] border-[#30363d] hover:bg-[#21262d]"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>
+              ))}
+            </div>
             <div className="flex gap-1">
               {["day","week","month"].map(f=>(
                 <button key={f} onClick={(e)=>{e.stopPropagation(); setTimeFilter(f);}} className={`text-[8px] font-bold px-2 py-0.5 rounded-full border transition ${timeFilter===f?"bg-blue-600 text-white border-blue-600":"bg-[#161b22] text-[#8b949e] border-[#30363d] hover:bg-[#21262d]"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>
