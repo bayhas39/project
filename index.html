@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DHRE Security Dashboard</title>
+    <title>DHRE Security Dashboard</title><!-- v3 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -15,15 +15,96 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./recharts.min.js"></script>
     <style>
-      body { font-family: 'Inter', system-ui, sans-serif; background:#f8fafc; color:#0f172a; }
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+      body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color:#c9d1d9; min-height:100vh; margin:0; -webkit-font-smoothing: antialiased; }
       .font-mono2 { font-family:'JetBrains Mono', monospace; }
-      ::-webkit-scrollbar{width:10px;height:10px} ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px;border:2px solid #f8fafc} ::-webkit-scrollbar-track{background:transparent}
-      @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+      ::-webkit-scrollbar{width:8px;height:8px} ::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px} ::-webkit-scrollbar-track{background:#0d1117}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
       @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-      .fade-up{animation:fadeUp .35s ease}
-      .page-fade{animation:fadeIn .3s ease}
+      .fade-up{animation:fadeUp .25s ease}
+      .page-fade{animation:fadeIn .2s ease}
       .line-clamp-1{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
       .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+      /* ===== Professional Black & Blue Office Theme ===== */
+      .bg-white { background:#161b22 !important; }
+      .bg-slate-50 { background:#0d1117 !important; }
+      .bg-slate-100 { background:#161b22 !important; }
+      .bg-slate-200 { background:#21262d !important; }
+      .bg-slate-900 { background:#0d1117 !important; }
+      .bg-sky-50 { background:#0d1520 !important; }
+      .bg-red-50 { background:#1a1215 !important; }
+      .bg-amber-50 { background:#1a1710 !important; }
+      .bg-emerald-50 { background:#0d1a15 !important; }
+      .bg-blue-50 { background:#0d1520 !important; }
+      .text-slate-900 { color:#f0f6fc !important; }
+      .text-slate-800 { color:#e6edf3 !important; }
+      .text-slate-700 { color:#c9d1d9 !important; }
+      .text-slate-600 { color:#8b949e !important; }
+      .text-slate-500 { color:#8b949e !important; }
+      .text-slate-400 { color:#6e7681 !important; }
+      .border { border-color:#30363d !important; }
+      .border-t, .border-b { border-color:#30363d !important; }
+      .border-slate-200 { border-color:#30363d !important; }
+      .border-slate-300 { border-color:#30363d !important; }
+      .border-sky-200 { border-color:#1f6feb !important; }
+      .border-red-200, .border-red-300 { border-color:#da3633 !important; }
+      .border-amber-200 { border-color:#d29922 !important; }
+      .border-emerald-200 { border-color:#238636 !important; }
+      .border-blue-200 { border-color:#1f6feb !important; }
+      .border-eef2f7, [style*="borderColor:#eef2f7"] { border-color:#30363d !important; }
+      .shadow, .shadow-sm, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: 0 3px 12px rgba(0,0,0,.4) !important; }
+      .backdrop-blur-sm { backdrop-filter: blur(8px); }
+      input, select, textarea { background:#0d1117 !important; color:#c9d1d9 !important; border:1px solid #30363d !important; border-radius:6px !important; font-family:'Inter', sans-serif !important; }
+      input::placeholder, textarea::placeholder { color:#6e7681 !important; }
+      .bg-slate-900.text-white, button.bg-slate-900 { background:#1f6feb !important; color:#ffffff !important; border:none !important; }
+      .bg-sky-600 { background:#1f6feb !important; color:#ffffff !important; }
+      .bg-red-600 { background:#da3633 !important; color:#ffffff !important; }
+      .bg-emerald-500 { background:#238636 !important; color:#ffffff !important; }
+      .bg-amber-500 { background:#d29922 !important; color:#ffffff !important; }
+      .bg-blue-500 { background:#1f6feb !important; color:#ffffff !important; }
+      .bg-violet-500 { background:#8957e5 !important; color:#ffffff !important; }
+      .bg-slate-700 { background:#21262d !important; color:#c9d1d9 !important; }
+      .text-sky-200 { color:#58a6ff !important; }
+      .text-sky-700 { color:#58a6ff !important; }
+      .text-red-600, .text-red-700 { color:#f85149 !important; }
+      .text-amber-600, .text-amber-700, .text-amber-800 { color:#d29922 !important; }
+      .text-emerald-700 { color:#3fb950 !important; }
+      .text-blue-700 { color:#58a6ff !important; }
+      .bg-red-100 { background:#1a1215 !important; color:#f85149 !important; }
+      .bg-amber-100 { background:#1a1710 !important; color:#d29922 !important; }
+      .bg-emerald-100 { background:#0d1a15 !important; color:#3fb950 !important; }
+      .bg-blue-100 { background:#0d1520 !important; color:#58a6ff !important; }
+      .bg-orange-100 { background:#1a1710 !important; color:#d29922 !important; }
+      .bg-slate-100 { background:#161b22 !important; }
+      .stroke-slate-200 { stroke:#30363d !important; }
+      .fill-slate-900 { fill:#1f6feb !important; }
+      .bg-gradient-to-r.from-slate-900 { background: linear-gradient(to right, #0d1117, #161b22) !important; }
+      .ring-white\/20 { --tw-ring-color: rgba(255,255,255,.08); }
+      .text-gradient { background: linear-gradient(90deg, #58a6ff, #1f6feb, #8957e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      /* Chart 3D depth - professional */
+      .recharts-wrapper { filter: drop-shadow(0 4px 12px rgba(31,111,235,.35)); border: 1px solid #1f6feb; border-radius: 8px; padding: 10px; background: #0d1520; }
+      .recharts-surface { border-radius: 8px; background:#0d1520; }
+      .recharts-bar-rectangle { filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); transition: filter .15s; }
+      .recharts-bar-rectangle:hover { filter: drop-shadow(0 4px 8px rgba(31,111,235,.5)); }
+      .recharts-pie { filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
+      .recharts-line { filter: drop-shadow(0 2px 6px rgba(31,111,235,.4)); }
+      .recharts-area { filter: drop-shadow(0 2px 8px rgba(31,111,235,.3)); }
+      .recharts-cartesian-grid-horizontal line, .recharts-cartesian-grid-vertical line { stroke: #1f6feb !important; stroke-width: 1px; opacity: 0.25; }
+      .recharts-text { fill: #8b949e !important; font-size: 11px !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip { background:#0d1520 !important; border:1px solid #1f6feb !important; border-radius:6px !important; box-shadow:0 8px 24px rgba(0,0,0,.5) !important; color:#c9d1d9 !important; padding:8px 12px !important; }
+      .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item { color:#c9d1d9 !important; font-size:12px !important; }
+      .recharts-legend-item-text { color:#8b949e !important; font-size:11px !important; }
+      .recharts-pie-label-text { fill:#8b949e !important; font-size:11px !important; }
+      .recharts-legend-wrapper { padding-top: 8px !important; }
+      /* Professional sidebar */
+      .sidebar-bg { background:#0d1117; border-right:1px solid #30363d; }
+      .header-bg { background:#161b22; border-bottom:1px solid #30363d; }
+      /* Buttons */
+      button { transition: all .15s ease; }
+      button:hover { opacity: .9; }
+      /* Professional cards */
+      .card-pro { background:#161b22; border:1px solid #30363d; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.3); transition: box-shadow .2s; }
+      .card-pro:hover { box-shadow:0 4px 16px rgba(0,0,0,.4); }
     </style>
   </head>
   <body>
@@ -104,15 +185,21 @@ const INC_STATUS = [
   { value:"Resolved",  label:"Resolved",  color:"bg-blue-100 text-blue-700 border-blue-200",    dot:"bg-blue-500" },
   { value:"Closed",    label:"Closed",    color:"bg-emerald-100 text-emerald-700 border-emerald-200", dot:"bg-emerald-500" },
 ];
+const ACC_STATUS = [
+  { value:"Opened",  label:"Opened",  color:"bg-red-100 text-red-700 border-red-200",       dot:"bg-red-500" },
+  { value:"Solving", label:"Solving", color:"bg-amber-100 text-amber-700 border-amber-200", dot:"bg-amber-500" },
+  { value:"Closed",  label:"Closed",  color:"bg-emerald-100 text-emerald-700 border-emerald-200", dot:"bg-emerald-500" },
+];
+const ACC_TYPES = ["Accident","Near Miss","Injury","Property Damage"];
 const SEVERITIES = ["Low","Medium","High","Critical"];
 const CATEGORIES = ["Safety","HVAC","Finishing","Electrical","Security","Civil","Plumbing"];
-const PALETTE = ["#0284c7","#ef4444","#7c3aed","#f59e0b","#0ea5e9","#1e293b","#06b6d4","#10b981"];
+const PALETTE = ["#1f6feb","#58a6ff","#3fb950","#d29922","#f85149","#8957e5","#39c5cf","#db6d28"];
 const PROB_KEYS = [
-  { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#0284c7" },
-  { key:"offlineANPR",    label:"Offline ANPR",          short:"ANPR Off", color:"#ef4444" },
-  { key:"notWorkingANPR", label:"Not Working ACS",       short:"ACS",      color:"#7c3aed" },
-  { key:"notWorkingGate", label:"Not Working Gate barrier", short:"Gate",  color:"#0ea5e9" },
-  { key:"notWorkingIntercom", label:"Not Working Intercom", short:"Intercom", color:"#1e293b" },
+  { key:"offlineCameras", label:"Offline CCTV",          short:"Cam Off",  color:"#3b82f6" },
+  { key:"offlineANPR",    label:"Offline ANPR",          short:"ANPR Off", color:"#f87171" },
+  { key:"notWorkingANPR", label:"Not Working ACS",       short:"ACS",      color:"#8b5cf6" },
+  { key:"notWorkingGate", label:"Not Working Gate barrier", short:"Gate",  color:"#60a5fa" },
+  { key:"notWorkingIntercom", label:"Not Working Intercom", short:"Intercom", color:"#334155" },
 ];
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -148,6 +235,9 @@ function makeSites(){
       totalANPR:totalA, offlineANPR:Math.min(offA,totalA),
       notWorkingANPR:Math.min(nwA,totalA), notWorkingGate:nwG, notWorkingIntercom:nwI,
       pincode:pin,
+      siraEligible: st!=="Completed",
+      siraCertified: st!=="Completed" && s%3===0,
+      siraExpired: st!=="Completed" && s%3!==0 && s%6===0,
     });
   }
   return out;
@@ -173,6 +263,8 @@ function makeIncidents(){
 const LS = {
   get(k, fb){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):fb; }catch(e){ return fb; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  /* Reads a string stored either JSON-encoded or as a raw value pasted into DevTools. */
+  str(k, fb){ try{ const v=localStorage.getItem(k); if(v==null) return fb; try{ const p=JSON.parse(v); return typeof p==="string"?p:v; }catch(e){ return v; } }catch(e){ return fb; } },
 };
 const COLLECTIONS = {
   sites:     { key:"site-inspection-sites-v80", mirror:"site-inspection-sites", label:"Sites" },
@@ -195,12 +287,17 @@ const postSync = (type, payload) => {
    The service bumps `rev` on every write. "__dhre_sync_rev" remembers the rev
    this browser already applied, so a pull is ignored unless the server really is
    newer -- that is what makes every account converge on the same data.
-   Empty by default: set localStorage "dhre_sync_url" to a working service to
-   turn shared sync on. With no URL the dashboard never leaves this browser.     */
+   The deployed app uses its same-origin database route by default. The URL can
+   still be overridden with localStorage "dhre_sync_url" for a separately hosted
+   sync service. Poll cadence is localStorage "dhre_sync_interval" in ms
+   (default 3000); raise it to spend fewer requests against the sync service's
+   plan.                                                                    */
 const SYNC_API = "/api/sync";
 const REV_KEY = "__dhre_sync_rev";
+const SYNC_INTERVAL = 3000;
 const REMOTE = {
-  url(){ return LS.get("dhre_sync_url", null) || SYNC_API; },
+  url(){ return LS.str("dhre_sync_url", null) || SYNC_API; },
+  interval(){ const n = Number(LS.get("dhre_sync_interval", SYNC_INTERVAL)); return Number.isFinite(n) && n >= 1000 ? n : SYNC_INTERVAL; },
   revs(){ return LS.get(REV_KEY, {}) || {}; },
   setRev(col, rev){ const r = this.revs(); r[col] = rev; LS.set(REV_KEY, r); },
   /* ok:true = the service answered. payload is non-null only when it is newer. */
@@ -317,7 +414,7 @@ const problemsOf = (s, incidents) => {
   if((s.notWorkingANPR||0)>0) p.push("Not Working ACS");
   if((s.notWorkingGate||0)>0) p.push("Not Working Gate barrier");
   if((s.notWorkingIntercom||0)>0) p.push("Not Working Intercom");
-  if((incidents||[]).some(i=>i.siteId===s.id && (i.status==="Open"||i.status==="In Review")) || s.status==="Issue Found") p.push("Incident Sites");
+  if((incidents||[]).some(i=>i.siteId===s.id && (i.status==="Opened"||i.status==="Solving")) || s.status==="Issue Found") p.push("Incident Sites");
   return p;
 };
 const uptimeOf = (s) => s.totalCameras ? Math.round(((s.totalCameras-(s.offlineCameras||0))/s.totalCameras)*100) : 100;
@@ -361,7 +458,18 @@ const ownerUrl = (s) => `${location.pathname || "index.html"}?owner=${encodeURIC
 /*                              APP                                 */
 /* ================================================================ */
 function App(){
-  const [sites, setSites] = useState(()=> LS.get(COLLECTIONS.sites.key, null) || makeSites());
+const [sites, setSites] = useState(()=> {
+  const loaded = LS.get(COLLECTIONS.sites.key, null);
+  if(!loaded) return makeSites();
+  return loaded.map((s,i)=> {
+    if(!s) return s;
+    const eligible = s.siraEligible!==undefined ? s.siraEligible : (s.status!=="Completed");
+    const certified = s.siraCertified!==undefined ? s.siraCertified : (eligible && (i+1)%3===0);
+    const expired = s.siraExpired!==undefined ? s.siraExpired : (eligible && !certified && (i+1)%6===0);
+    if(eligible===s.siraEligible && certified===s.siraCertified && expired===s.siraExpired) return s;
+    return {...s, siraEligible:eligible, siraCertified:certified, siraExpired:expired};
+  });
+});
   const [incidents, setIncidents] = useState(()=> LS.get(COLLECTIONS.incidents.key, null) || makeIncidents());
   const [accidents, setAccidents] = useState(()=> LS.get(COLLECTIONS.accidents.key, []));
   const [auth, setAuth] = useState(()=> initialAuth(sites));
@@ -484,7 +592,7 @@ function App(){
     };
 
     boot();
-    const iv = setInterval(pull, 3000);
+    const iv = setInterval(pull, REMOTE.interval());
     return ()=>{ alive = false; clearInterval(iv); };
   }, [remoteOn]);
 
@@ -497,8 +605,8 @@ function App(){
   const syncMode = !remoteOn ? "paused" : !hasRemote ? "local" : (syncInfo.ok ? "live" : "offline");
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
-  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} accidents={accidents} onLogout={logout} {...shared}/>;
-  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} onLogout={logout} {...shared}/>;
+  if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
+  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
@@ -531,11 +639,11 @@ function Login({sites, onAuth}){
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col">
-      <header className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900 border-b" style={{borderColor:"#0f172a"}}>
+    <div className="min-h-screen bg-[#0d1117] flex flex-col">
+      <header className="bg-gradient-to-r from-[#0d1117] via-[#161b22] to-[#161b22] border-b" style={{borderColor:"#0f172a"}}>
         <div className="max-w-[720px] mx-auto px-4 h-[64px] flex items-center gap-3">
           <div className="h-10 px-2 rounded-xl bg-white grid place-items-center">
-            <img src="./dhre-logo.svg" alt="DHRE" className="h-8 w-auto object-contain"
+            <img src="./dhre-logo.avif" alt="DHRE" className="h-8 w-auto object-contain"
               onError={e=>{ e.currentTarget.src="./dhre-logo.jpg"; e.currentTarget.onerror=null; }}/>
           </div>
           <div className="font-extrabold text-white leading-none text-[18px]">DHRE Security Dashboard</div>
@@ -577,7 +685,7 @@ function Login({sites, onAuth}){
                   <div className="text-center">
                     <div className="w-10 h-10 rounded-xl bg-slate-900 text-white grid place-items-center mx-auto"><IcShieldCk size={18}/></div>
                     <h2 className="mt-2 font-extrabold">Admin — Full dashboard</h2>
-                    <p className="text-sm text-slate-500">All 80 sites • cameras & ANPR • charts • AMC • attention • reports • AI report</p>
+                    <p className="text-sm text-slate-500">All 80 sites • cameras & ANPR • charts • AMC • attention • reports</p>
                   </div>
                   <Field label="Username *">
                     <div className="relative">
@@ -622,10 +730,10 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
   const sb = SYNC_BADGE[syncMode] || SYNC_BADGE.local;
   return (
     <header className="sticky top-0 z-30 border-b overflow-hidden" style={{borderColor:"#0f172a"}}>
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-sky-900">
-        <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#0d1117] via-[#161b22] to-[#161b22]">
+        <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[72px] flex items-center justify-between gap-4">
           <div className="h-12 px-3 rounded-xl bg-white grid place-items-center overflow-hidden shrink-0 shadow-lg ring-1 ring-white/20">
-            <img src="./dhre-logo.svg" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
+            <img src="./dhre-logo.avif" alt="DUBAI HOLDING REAL ESTATE" className="h-10 w-auto object-contain"
               onError={e=>{ e.currentTarget.src="./dhre-logo.jpg"; e.currentTarget.onerror=null; }}/>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center text-center">
@@ -654,17 +762,38 @@ function Header({title, subtitle, syncMode, onToggleLive, lastSync, right, child
 /* ================================================================ */
 /*                          ADMIN SHELL                             */
 /* ================================================================ */
-const PAGES = ["sites","charts","amc","attention","reports","ai"];
-const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", attention:"Attention", reports:"Reports", ai:"AI Report" };
-const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Attention", attention:"Reports", reports:"AI Report", ai:"Sites" };
+const PAGES = ["sites","charts","amc","accidents","reports","certified","fullscreen"];
+const PAGE_LABEL = { sites:"Sites", charts:"Charts", amc:"AMC", accidents:"Accidents", reports:"Reports", certified:"Certified Sites", fullscreen:"Fullscreen" };
+const NEXT_PAGE = { sites:"Charts", charts:"AMC", amc:"Accidents", accidents:"Reports", reports:"Certified Sites", certified:"Fullscreen", fullscreen:"Sites" };
 
-function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
+/* ================================================================ */
+/*                        ADMIN ACTIONS                             */
+/*  Admin • <name> | Logout  */
+/*  Rendered inside the nav strip.  */
+/* ================================================================ */
+function AdminTitleBar({ auth, onLogout }) {
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <span className="hidden xl:inline text-xs font-semibold text-slate-500 whitespace-nowrap">Admin • {auth.name}</span>
+      <button
+        onClick={onLogout}
+        className="px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 border text-xs font-bold hover:bg-slate-200 flex items-center gap-1.5 whitespace-nowrap"
+        style={{borderColor:"#e2e8f0"}}
+      >
+        <IcLogout size={13}/> Logout
+      </button>
+    </div>
+  );
+}
+
+function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const [page, setPage] = useState(()=> LS.get("dhre_current_page", "sites"));
   const [clock, setClock] = useState(()=> fmtTime());
+  const [editSite, setEditSite] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(()=> LS.get("dhre_sidebar_open", true) !== false);
   useEffect(()=>{ LS.set("dhre_current_page", page); }, [page]);
   useEffect(()=>{ const t=setInterval(()=>setClock(fmtTime()), 5000); return ()=>clearInterval(t); }, []);
-  const fileRef = useRef(null);
-
+  useEffect(()=>{ LS.set("dhre_sidebar_open", sidebarOpen); }, [sidebarOpen]);
   const stats = useMemo(()=>({
     total: sites.length,
     pending: sites.filter(s=>s.status==="Pending").length,
@@ -692,7 +821,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
     sites.forEach(site=>{
       const problems = problemsOf(site, incidents);
       if(problems.length===0) return;
-      const siteIncidents = incidents.filter(i=>i.siteId===site.id && (i.status==="Open"||i.status==="In Review"));
+      const siteIncidents = incidents.filter(i=>i.siteId===site.id && (i.status==="Opened"||i.status==="Solving"));
       let severity = "Low";
       if(site.status==="Issue Found" || siteIncidents.some(i=>i.severity==="Critical")) severity="Critical";
       else if(siteIncidents.some(i=>i.severity==="High") || problems.length>=2) severity="High";
@@ -709,86 +838,81 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
     return counts;
   }, [sites, incidents]);
 
-  const onExport = () => { download(`dhre-security-data-${new Date().toISOString().slice(0,10)}.json`, {sites, incidents, accidents, exportedAt:new Date().toISOString()}); toast.success("Exported data JSON"); };
-  const onImportFile = (e) => {
-    const file = e.target.files && e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const data = JSON.parse(reader.result);
-        if(Array.isArray(data.sites)) setSites(data.sites);
-        if(Array.isArray(data.incidents)) setIncidents(data.incidents);
-        toast.success("Imported data — dashboard updated");
-      }catch(err){ toast.error("Invalid JSON file"); }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  };
-
-  const HeaderRight = (
-    <>
-      <span className="hidden lg:inline text-xs text-sky-200 max-w-[160px] truncate">Admin • {auth.name}</span>
-      <button onClick={onLogout} className="px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/20 text-xs font-bold hover:bg-white/20 flex items-center gap-1.5">
-        <IcLogout size={13}/> Logout
-      </button>
-      <button onClick={()=>setPage("sites")} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
-        <IcPlus size={14}/> Add Site
-      </button>
-      <button onClick={onExport} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
-        <IcDownload size={14}/> Export Data
-      </button>
-      <button onClick={()=>fileRef.current && fileRef.current.click()} className="hidden sm:inline-flex items-center gap-2 px-3 lg:px-5 py-2 rounded-full bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow">
-        <IcUpload size={14}/> Import Data
-      </button>
-      <input ref={fileRef} type="file" accept="application/json" className="hidden" onChange={onImportFile}/>
-    </>
-  );
-
   const TABS = [
     { id:"sites",     icon:IcGrid,   label:"Sites" },
     { id:"charts",    icon:IcChart,  label:"Charts" },
     { id:"amc",       icon:IcVideo,  label:"AMC" },
-    { id:"attention", icon:IcAlert,  label:"Attention", count:attention.length },
+    { id:"accidents", icon:IcAlert,  label:"Accidents", count:(accidents||[]).length },
     { id:"reports",   icon:IcFileText, label:"Reports" },
-    { id:"ai",        icon:IcSparkles, label:"AI Report" },
+    { id:"certified", icon:IcShieldCk, label:"Certified Sites" },
+    { id:"fullscreen", icon:IcExternal, label:"Fullscreen" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900">
-      <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={HeaderRight}>
-        <div className="border-t bg-slate-50" style={{borderColor:"#eef2f7"}}>
-          <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[48px] flex items-center justify-center">
-            <nav className="flex p-1 rounded-full bg-white border shadow-sm overflow-auto max-w-full" style={{borderColor:"#e2e8f0"}}>
-              {TABS.map(t=>{
-                const Icon = t.icon;
-                return (
-                  <button key={t.id} onClick={()=>setPage(t.id)} className={`px-3 lg:px-5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 transition shrink-0 ${page===t.id?"bg-slate-900 text-white shadow":"text-slate-600 hover:text-slate-900"}`}>
-                    <Icon size={14}/> {t.label}
-                    {t.count!==undefined && <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs bg-red-100 text-red-700">{t.count}</span>}
-                  </button>
-                );
-              })}
-            </nav>
+    <div className="min-h-screen flex bg-[#0d1117] text-[#c9d1d9]">
+      <aside className={`${sidebarOpen ? "w-[232px]" : "w-0"} shrink-0 bg-[#0d1117] border-r flex flex-col overflow-hidden transition-all duration-300 ease-in-out`} style={{borderColor:"#30363d"}}>
+        <div className="px-4 py-4 border-b flex items-center gap-3 min-w-[232px]" style={{borderColor:"#30363d"}}>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0d1117] to-[#161b22] grid place-items-center text-white shadow-lg"><IcShieldCk size={18}/></div>
+          <div className="min-w-0">
+            <div className="font-extrabold text-sm text-white leading-none">DHRE</div>
+            <div className="text-[10px] text-[#8fb3a2] mt-0.5">Security Dashboard</div>
           </div>
         </div>
-      </Header>
-
-      <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
-        <div key={page} className="page-fade">
-          {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} stats={stats} setPage={setPage}/>}
-          {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
-          {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
-          {page==="attention" && <AttentionPage attention={attention} setPage={setPage}/>}
-          {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
-          {page==="ai"        && <AIReportPage live={syncMode==="live"}/>}
-        </div>
-        <p className="mt-8 text-center text-xs text-slate-400">
-          Page: {PAGE_LABEL[page]} •
-          <button onClick={()=>setPage(PAGES[(PAGES.indexOf(page)+1)%PAGES.length])} className="underline font-semibold hover:text-slate-700 ml-1">
-            Go to {NEXT_PAGE[page]} →
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-auto">
+          {TABS.map(t=>{
+            const Icon = t.icon;
+            return (
+              <button key={t.id} onClick={()=>setPage(t.id)} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition ${page===t.id?"bg-gradient-to-r from-[#0d1117] to-[#21262d] text-white shadow":"text-[#8b949e] hover:bg-[#161b22] hover:text-white"}`}>
+                <Icon size={16}/> {t.label}
+                {t.count!==undefined && <span className="ml-auto px-1.5 py-0.5 rounded-full text-[10px] bg-red-500/30 text-red-200">{t.count}</span>}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="px-3 py-4 border-t space-y-2" style={{borderColor:"#30363d"}}>
+          <div className="text-[11px] text-[#8fb3a2]">Admin • {auth.name}</div>
+          <button onClick={onLogout} className="w-full px-3 py-2 rounded-xl bg-[#161b22] text-[#c9d1d9] border text-xs font-bold hover:bg-[#21262d] flex items-center justify-center gap-1.5" style={{borderColor:"#30363d"}}>
+            <IcLogout size={13}/> Logout
           </button>
-        </p>
-      </main>
+        </div>
+      </aside>
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <Header syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync || clock} right={
+          <button onClick={()=>setSidebarOpen(v=>!v)} className="px-3 py-1.5 rounded-md bg-[#21262d] text-[#c9d1d9] border text-xs font-bold hover:bg-[#30363d] flex items-center gap-1.5" style={{borderColor:"#30363d"}} title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}>
+            {sidebarOpen ? <IcX size={14}/> : <IcList size={14}/>} {sidebarOpen ? "Close" : "Menu"}
+          </button>
+        }>
+          <div className="border-t" style={{borderColor:"#30363d", background:"#161b22"}}>
+            <div className="px-4 lg:px-6 h-[42px] flex items-center justify-between">
+              <div className="text-xs font-bold tracking-widest uppercase text-[#8b949e] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"/>
+                <span className="truncate">{PAGE_LABEL[page]} • Security Operations</span>
+              </div>
+              <span className="text-[11px] text-[#8fb3a2]">{clock}</span>
+            </div>
+          </div>
+        </Header>
+
+        <main className="flex-1 px-4 lg:px-6 py-6 lg:py-8 overflow-auto">
+          <div key={page} className="page-fade">
+            {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} stats={stats} setPage={setPage}/>}
+            {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
+            {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
+            {page==="accidents" && <AccidentsPage accidents={accidents} sites={sites} setAccidents={setAccidents} setPage={setPage}/>}
+            {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
+            {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
+            {page==="fullscreen" && <FullscreenPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage}/>}
+          </div>
+          <p className="mt-8 text-center text-xs text-[#6f9a86]">
+            Page: {PAGE_LABEL[page]} •
+            <button onClick={()=>setPage(PAGES[(PAGES.indexOf(page)+1)%PAGES.length])} className="underline font-semibold hover:text-[#8b949e] ml-1">
+              Go to {NEXT_PAGE[page]} →
+            </button>
+          </p>
+        </main>
+      </div>
+      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
       <Toaster/>
     </div>
   );
@@ -797,7 +921,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, o
 /* ================================================================ */
 /*                          SITES PAGE                              */
 /* ================================================================ */
-function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
+function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAccidents, stats, setPage}){
   const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [view, setView] = useState("grid");
   const [editSite, setEditSite] = useState(null); const [viewSite, setViewSite] = useState(null);
@@ -927,7 +1051,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, stats, setPage}){
       </div>
 
       {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
-      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
       {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
     </div>
@@ -971,14 +1095,17 @@ function SiteCard({site, onOpen, onEdit, onDelete, onReport}){
 }
 
 /* ------------- site details modal ------------- */
-function SiteDetailModal({site, incidents, setPage, onClose}){
+function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents, setPage, onClose}){
   const problems = problemsOf(site, incidents);
   const siteIncidents = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
+  const siteAccidents = (accidents||[]).filter(a=>a.siteId===site.id || a.siteName===site.name);
+  const [viewIncident, setViewIncident] = useState(null); const [viewAccident, setViewAccident] = useState(null);
   const uptime = uptimeOf(site);
   const camData = [{name:"Cameras", online:site.totalCameras-(site.offlineCameras||0), offline:site.offlineCameras||0}];
   return (
-    <Modal title={site.name} onClose={onClose} wide>
-      <div className="space-y-4">
+    <React.Fragment>
+      <Modal title={site.name} onClose={onClose} wide>
+        <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={site.status}/>
           <TypePill type={site.type}/>
@@ -1007,27 +1134,38 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
             <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Problems</div>
             <div className={`text-2xl font-extrabold mt-1 ${problems.length>0?"text-amber-600":""}`}>{problems.length}</div>
           </div>
+          <div className={`rounded-xl p-3 border ${site.siraCertified?"bg-emerald-50 border-emerald-200":"bg-slate-50"}`} style={site.siraCertified?{}:{borderColor:"#e2e8f0"}}>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">SIRA Certificate</div>
+            <div className={`text-2xl font-extrabold mt-1 ${site.siraCertified?"text-emerald-600":""}`}>{site.siraCertified?"Valid":"Not Certified"}</div>
+            {site.siraCertified && site.siraExpiryDate && (()=>{
+              const expiry = new Date(site.siraExpiryDate);
+              const today = new Date();
+              const diff = Math.ceil((expiry - today) / (1000*60*60*24));
+              const color = diff < 0 ? "text-red-600" : diff <= 30 ? "text-amber-600" : "text-emerald-600";
+              return <div className={`text-[11px] mt-0.5 ${color}`}>Expires: {site.siraExpiryDate} ({diff < 0 ? "Expired " + Math.abs(diff) + " days ago" : diff + " days remaining"})</div>;
+            })()}
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-3">
           <Card title="Cameras — This Site" subtitle="Total vs Offline" icon={IcCamera}>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={camData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-                <Bar dataKey="online" name="Online" fill="#0284c7" radius={[3,3,0,0]}/>
-                <Bar dataKey="offline" name="Offline" fill="#ef4444" radius={[3,3,0,0]}/>
+                <Bar dataKey="online" name="Online" fill="#1f6feb" radius={[6,6,0,0]}/>
+                <Bar dataKey="offline" name="Offline" fill="#1f6feb" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
           <Card title="ANPR — This Site" subtitle="Health" icon={IcScan}>
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height={260}>
               <BarChart data={[{name:"ANPR", online:(site.totalANPR||0)-(site.offlineANPR||0), offline:site.offlineANPR||0, nw:site.notWorkingANPR||0}]}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-                <Bar dataKey="online" name="Online" fill="#7c3aed" radius={[3,3,0,0]}/>
-                <Bar dataKey="offline" name="Offline" fill="#ef4444" radius={[3,3,0,0]}/>
-                <Bar dataKey="nw" name="Not Working" fill="#f59e0b" radius={[3,3,0,0]}/>
+                <Bar dataKey="online" name="Online" fill="#1f6feb" radius={[6,6,0,0]}/>
+                <Bar dataKey="offline" name="Offline" fill="#1f6feb" radius={[6,6,0,0]}/>
+                <Bar dataKey="nw" name="Not Working" fill="#1f6feb" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -1035,7 +1173,7 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
 
         <div>
           <h4 className="text-sm font-extrabold mb-2">Issues for this site • {problems.length} problems</h4>
-          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • 0 accidents</p>
+          <p className="text-[11px] text-slate-400 mb-2">{siteIncidents.length} incidents • {siteAccidents.length} accidents</p>
           {problems.length===0 ? <p className="text-sm text-slate-500 bg-emerald-50 border border-emerald-100 rounded-xl p-3">No problems — all systems online for this site.</p> : (
             <div className="flex flex-wrap gap-2">{problems.map(p=> <span key={p} className="text-xs font-semibold px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">{p}</span>)}</div>
           )}
@@ -1049,7 +1187,7 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
           {siteIncidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No incidents for this site.</p> : (
             <div className="space-y-2">
               {siteIncidents.map(i=>(
-                <div key={i.id} className="border rounded-xl p-3 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                <div key={i.id} className="border rounded-xl p-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition" style={{borderColor:"#eef2f7"}} onClick={()=>setViewIncident(i)}>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-sm">{i.title}</span>
                     <Badge status={i.status}/>
@@ -1064,11 +1202,111 @@ function SiteDetailModal({site, incidents, setPage, onClose}){
         </div>
 
         <div>
-          <h4 className="text-sm font-extrabold mb-2">Accidents (0)</h4>
-          <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p>
+          <h4 className="text-sm font-extrabold mb-2">Accidents ({siteAccidents.length})</h4>
+          {siteAccidents.length===0 ? <p className="text-xs text-slate-500 text-center py-4">No accidents for this site.</p> : (
+            <div className="space-y-2">
+              {siteAccidents.map(a=>(
+                <div key={a.id} className="border rounded-xl p-3 bg-slate-50 cursor-pointer hover:bg-slate-100 transition" style={{borderColor:"#eef2f7"}} onClick={()=>setViewAccident(a)}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-sm">{a.title||a.type||"Accident"}</span>
+                    <span className="ml-auto text-[11px] text-slate-400">{a.status} • {a.date}</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">{a.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Modal>
+      {viewIncident && <Modal title="Incident Details" onClose={()=>setViewIncident(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewIncident.title}</span>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewIncident.severity)}`}>{viewIncident.severity}</span>
+            <Badge status={viewIncident.status}/>
+            <span className="ml-auto text-xs text-slate-400">{viewIncident.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Category</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.category||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.siteName||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setIncidents(list=>list.map(x=>x.id===viewIncident.id?{...x,status:s}:x)); setViewIncident({...viewIncident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewIncident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewIncident.description||"No description."}</p>
+          </div>
+          {viewIncident.history && viewIncident.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewIncident.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
+                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
+                    <div className="text-slate-600 mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
+      {viewAccident && <Modal title="Accident Details" onClose={()=>setViewAccident(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewAccident.title||viewAccident.type||"Accident"}</span>
+            <span className="ml-auto text-xs text-slate-400">{viewAccident.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Type</div>
+              <div className="text-sm font-semibold mt-1">{viewAccident.type||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewAccident.status||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setAccidents(list=>list.map(x=>x.id===viewAccident.id?{...x,status:s}:x)); setViewAccident({...viewAccident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewAccident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewAccident.siteName||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewAccident.description||"No description."}</p>
+          </div>
+        </div>
+      </Modal>}
+    </React.Fragment>
   );
 }
 
@@ -1078,12 +1316,14 @@ function SiteFormModal({site, sites, setSites, onClose}){
   const [form, setForm] = useState(()=> isNew ? {
     name:"", location:"", type:"Construction", status:"Pending", date:new Date().toISOString().slice(0,10),
     inspector:"", notes:"", totalCameras:8, offlineCameras:0, totalANPR:2, offlineANPR:0,
-    notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0,
+    notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0, siraCertified:false, siraExpiryDate:"", amcCertified:false,
     pincode:String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"),
-  } : {...site});
+  } : {...site, siraExpiryDate: site.siraExpiryDate||"", amcCertified: site.amcCertified||false});
   const set = (k, v) => setForm(f=>({...f, [k]: v}));
   const save = () => {
     if(!form.name.trim() || !form.location.trim()){ toast.error("Site name and location are required"); return; }
+    if(form.siraEligible===false){ form.siraCertified = false; form.siraExpired = false; }
+    if(form.siraCertified) form.siraExpired = false;
     if(isNew){
       const maxNum = Math.max(0, ...sites.map(s=>{ const m=/^Site (\d+)/.exec(s.name); return m? +m[1] : 0; }));
       const id = siteCode(maxNum+1);
@@ -1110,7 +1350,11 @@ function SiteFormModal({site, sites, setSites, onClose}){
         <Field label="Location / Address *"><input value={form.location} onChange={e=>set("location", e.target.value)} placeholder="e.g. Dubai Marina, Block B" className={inputCls}/></Field>
         <Field label="Type"><select value={form.type} onChange={e=>set("type", e.target.value)} className={inputCls}>{TYPES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select></Field>
         <Field label="Status"><select value={form.status} onChange={e=>set("status", e.target.value)} className={inputCls}>{STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}</select></Field>
-        <Field label="Inspection Date"><input type="date" value={form.date} onChange={e=>set("date", e.target.value)} className={inputCls}/></Field>
+        <Field label="SIRA Certified"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={!!form.siraCertified} onChange={e=>set("siraCertified", e.target.checked)} className="w-4 h-4"/> Site has valid SIRA certificate</label></Field>
+        {form.siraCertified && <Field label="SIRA Expiry Date"><input type="date" value={form.siraExpiryDate||""} onChange={e=>set("siraExpiryDate", e.target.value)} className={inputCls}/></Field>}
+        <Field label="SIRA Eligible"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={form.siraEligible!==false} onChange={e=>set("siraEligible", e.target.checked)} className="w-4 h-4"/> Site is eligible for SIRA certification</label></Field>
+        <Field label="SIRA Expired"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={!!form.siraExpired} onChange={e=>set("siraExpired", e.target.checked)} className="w-4 h-4"/> Site SIRA certificate has expired</label></Field>
+<Field label="AMC Certified"><label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" checked={!!form.amcCertified} onChange={e=>set("amcCertified", e.target.checked)} className="w-4 h-4"/> Site has valid AMC certificate</label></Field>
         <Field label="Inspector"><input value={form.inspector} onChange={e=>set("inspector", e.target.value)} placeholder="e.g. Ahmed R." className={inputCls}/></Field>
         <div className="sm:col-span-2"><Field label="Notes"><textarea value={form.notes} onChange={e=>set("notes", e.target.value)} placeholder="Findings, remarks, next action..." rows={2} className={inputCls}/></Field></div>
         {num("totalCameras","Total Cameras")}
@@ -1192,9 +1436,13 @@ function PincodeAccessModal({sites, onClose}){
 /*                          CHARTS PAGE                             */
 /* ================================================================ */
 function ChartsPage({sites, incidents, accidents, stats, perSite, attention, problemTotals, setPage}){
+  const [selectedInspector, setSelectedInspector] = useState(null);
   const totalProblems = Object.values(problemTotals).reduce((a,b)=>a+b,0);
   const completion = stats.total ? Math.round((stats.completed/stats.total)*100) : 0;
   const criticalCount = attention.filter(a=>a.severity==="Critical").length;
+  const offlineCamSites = sites.filter(s=>(s.offlineCameras||0)>0).length;
+  const offlineAnprSites = sites.filter(s=>(s.offlineANPR||0)>0).length;
+  const offlineAcsSites = sites.filter(s=>(s.notWorkingANPR||0)>0).length;
 
   const byStatus = STATUS.map((st,i)=>({ name:st.value, value:sites.filter(s=>s.status===st.value).length, color:PALETTE[i%PALETTE.length] })).filter(x=>x.value>0);
   const byType = TYPES.map((t,i)=>({ name:t.value, value:sites.filter(s=>s.type===t.value).length, color:PALETTE[i%PALETTE.length] })).filter(x=>x.value>0);
@@ -1202,12 +1450,16 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
     .map(([name,value])=>({name, value})).sort((a,b)=>b.value-a.value);
   const probData = PROB_KEYS.map(k=>({ name:k.label, short:k.short, value:problemTotals[k.label]||0, color:k.color }));
   const incidentSites = sites.filter(s=>problemsOf(s, incidents).includes("Incident Sites"));
-  probData.push({ name:"Incident Sites", short:"Incidents", value:incidentSites.length, color:"#f59e0b" });
+  probData.push({ name:"Incident Sites", short:"Incidents", value:incidentSites.length, color:"#fbbf24" });
   const topProblem = [...probData].sort((a,b)=>b.value-a.value)[0];
 
   const worst = [...perSite].sort((a,b)=>
     (b.offlineCameras+b.offlineANPR+b.notWorkingANPR+b.notWorkingGate+b.notWorkingIntercom) -
     (a.offlineCameras+a.offlineANPR+a.notWorkingANPR+a.notWorkingGate+a.notWorkingIntercom)).slice(0,10);
+  const topOfflineCamSites = [...perSite].filter(s=>(s.offlineCameras||0)>0).sort((a,b)=>(b.offlineCameras||0)-(a.offlineCameras||0)).slice(0,10);
+  const topOfflineAnprSites = [...perSite].filter(s=>(s.offlineANPR||0)>0).sort((a,b)=>(b.offlineANPR||0)-(a.offlineANPR||0)).slice(0,10);
+  const top5AnprSites = [...perSite].filter(s=>(s.offlineANPR||0)>0).sort((a,b)=>(b.offlineANPR||0)-(a.offlineANPR||0)).slice(0,5);
+  const top5GateSites = [...perSite].filter(s=>(s.notWorkingGate||0)>0).sort((a,b)=>(b.notWorkingGate||0)-(a.notWorkingGate||0)).slice(0,5);
 
   return (
     <div className="space-y-4">
@@ -1222,21 +1474,82 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
         <KPI label="Total Sites" value={stats.total} sub={`${stats.total} sites`} icon={IcBuilding} color="bg-slate-900 text-white"/>
-        <button onClick={()=>setPage("attention")} className="text-left">
-          <KPI label="Attention Needed" value={attention.length} sub={`${criticalCount} critical • Tap to see sites + problems`} icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+        <button onClick={()=>setPage("accidents")} className="text-left">
+          <KPI label="Total Sites with Offline Camera" value={offlineCamSites} sub={`${stats.offlineCameras} offline cameras • Tap to see sites + problems`} icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
         </button>
-        <KPI label="Total Problems" value={totalProblems} icon={IcAlert} color="bg-amber-500 text-white" top="bg-amber-500"/>
-        <KPI label="Completion Rate" value={`${completion}%`} sub={`${stats.completed} of ${stats.total} completed`} icon={IcTrend} color="bg-emerald-500 text-white"/>
+        <button onClick={()=>setPage("accidents")} className="text-left">
+          <KPI label="Sites with Offline ANPR" value={offlineAnprSites} sub={`${stats.offlineANPR} offline ANPR • Tap to see sites + problems`} icon={IcWifiOff} color="bg-amber-500 text-white" top="bg-amber-500"/>
+        </button>
+        <button onClick={()=>setPage("accidents")} className="text-left">
+          <KPI label="Total Sites with Offline Access Control" value={offlineAcsSites} sub={`${stats.nwACS} not-working ACS • Tap to see sites + problems`} icon={IcLock} color="bg-emerald-500 text-white" top="bg-emerald-500"/>
+        </button>
+      </div>
+
+      <Card title="Top 10 Sites — Highest Offline Cameras" subtitle="Sites with the most offline CCTV cameras" icon={IcCamOff}>
+        <ResponsiveContainer width="100%" height={340}>
+          <BarChart data={topOfflineCamSites} margin={{top:8,right:12,left:0,bottom:60}}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
+            <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+            <Tooltip/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
+              {topOfflineCamSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+
+      <Card title="Top 10 Sites — Highest Offline ANPR" subtitle="Sites with the most offline ANPR cameras" icon={IcWifiOff}>
+        <ResponsiveContainer width="100%" height={340}>
+          <BarChart data={topOfflineAnprSites} margin={{top:8,right:12,left:0,bottom:60}}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
+            <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+            <Tooltip/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
+              {topOfflineAnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card title="Top 5 Sites — Highest Offline ANPR" subtitle="Sites with the most offline ANPR cameras" icon={IcWifiOff}>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={top5AnprSites} margin={{top:8,right:12,left:0,bottom:60}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+              <Tooltip/>
+              <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
+                {top5AnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+        <Card title="Top 5 Sites — Highest Offline Gate Barrier" subtitle="Sites with the most offline gate barriers" icon={IcLock}>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={top5GateSites} margin={{top:8,right:12,left:0,bottom:60}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false}/>
+              <Tooltip/>
+              <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
+                {top5GateSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
       </div>
 
       <Card title="Problems by Category" subtitle={`${totalProblems} total • Top: ${topProblem? topProblem.name : "—"} (${topProblem? topProblem.value : 0})`} icon={IcAlert}>
-        <ResponsiveContainer width="100%" height={260}>
+        <ResponsiveContainer width="100%" height={320}>
           <BarChart data={probData} layout="vertical" margin={{top:0,right:24,left:10,bottom:0}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
             <XAxis type="number" allowDecimals={false} tick={{fontSize:11}}/>
             <YAxis type="category" dataKey="name" width={150} tick={{fontSize:11}}/>
             <Tooltip/>
-            <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={16}>
+            <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={28}>
               {probData.map((x,i)=><Cell key={i} fill={x.color}/>)}
             </Bar>
           </BarChart>
@@ -1245,7 +1558,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card title="Sites by Status" subtitle="Distribution" icon={IcGrid}>
-          <ResponsiveContainer width="100%" height={180}>
+          <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie data={byStatus} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={2} strokeWidth={2} stroke="#fff">
                 {byStatus.map((x,i)=><Cell key={i} fill={x.color}/>)}
@@ -1263,23 +1576,38 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
           </div>
         </Card>
         <Card title="Assigned Sites per Person" subtitle="Workload distribution" icon={IcUser}>
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart data={byInspector} layout="vertical" margin={{top:0,right:12,left:30,bottom:0}}>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={byInspector} layout="vertical" margin={{top:0,right:12,left:30,bottom:0}} onClick={(e)=>{ if(e && e.activePayload && e.activePayload[0]) setSelectedInspector(e.activePayload[0].payload.name); }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis type="number" allowDecimals={false} tick={{fontSize:11}}/>
               <YAxis type="category" dataKey="name" width={90} tick={{fontSize:11}}/>
-              <Tooltip/>
-              <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={14}>
-                {byInspector.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+              <Tooltip cursor={{fill:'rgba(0,0,0,0.05)'}}/>
+              <Bar dataKey="value" name="Sites" radius={[0,8,8,0]} barSize={14} cursor="pointer" onClick={(data)=>{ if(data && data.name) setSelectedInspector(data.name); }}>
+                {byInspector.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]} onClick={()=>setSelectedInspector(x.name)}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          <p className="text-[11px] text-slate-400 mt-2 text-center">Click a bar to see assigned sites</p>
+          {selectedInspector && <Modal title={"Sites assigned to " + selectedInspector} onClose={()=>setSelectedInspector(null)} wide>
+            <div className="space-y-2">
+              {sites.filter(s=>s.inspector===selectedInspector).map(s=>(
+                <div key={s.id} className="flex items-center justify-between gap-2 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+                  <div>
+                    <div className="font-bold text-sm">{s.name}</div>
+                    <div className="text-[11px] text-slate-500">{s.location} • {s.type} • {s.status}</div>
+                  </div>
+                  <button onClick={()=>{ setSelectedInspector(null); setPage("sites"); }} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border bg-white hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>View</button>
+                </div>
+              ))}
+              {sites.filter(s=>s.inspector===selectedInspector).length===0 && <p className="text-sm text-slate-500">No sites assigned.</p>}
+            </div>
+          </Modal>}
         </Card>
       </div>
 
       <Card title="Sites by Type" subtitle="Inspection categories" icon={IcGrid}>
         <div className="grid lg:grid-cols-2 gap-4 items-center">
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie data={byType} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={68} paddingAngle={2} strokeWidth={2} stroke="#fff">
                 {byType.map((x,i)=><Cell key={i} fill={x.color}/>)}
@@ -1299,17 +1627,17 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       </Card>
 
       <Card title="Security — Device Health" subtitle="Offline CCTV • Offline ANPR • Not Working ACS/Gate/Intercom — worst 10 sites" icon={IcShield}>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={340}>
           <BarChart data={worst} margin={{top:8,right:12,left:0,bottom:60}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={70} tick={{fontSize:9}} interval={0}/>
+            <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/><Legend wrapperStyle={{fontSize:11}}/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" stackId="a" fill="#0284c7"/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" stackId="a" fill="#ef4444"/>
-            <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#7c3aed"/>
-            <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#0ea5e9"/>
-            <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#1e293b"/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#1f6feb"/>
           </BarChart>
         </ResponsiveContainer>
       </Card>
@@ -1323,6 +1651,46 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
 function AMCPage({sites, stats, perSite, setPage}){
   const offlineCamPct = stats.totalCameras ? Math.round((stats.offlineCameras/stats.totalCameras)*100) : 0;
   const offlineAnprPct = stats.totalANPR ? Math.round((stats.offlineANPR/stats.totalANPR)*100) : 0;
+  const nwACS = stats.nwACS||0, nwGate = stats.nwGate||0, nwIntercom = stats.nwIntercom||0;
+  const totalNW = nwACS + nwGate + nwIntercom;
+  const totalDevices = (stats.totalCameras||0) + (stats.totalANPR||0);
+  const totalOffline = (stats.offlineCameras||0) + (stats.offlineANPR||0);
+  const onlineDevices = Math.max(0, totalDevices - totalOffline);
+  const siteCount = sites.length || 1;
+
+  const healthData = [
+    { name:"Online",      value: onlineDevices, color:"#10b981" },
+    { name:"Offline",     value: totalOffline,   color:"#f87171" },
+    { name:"Not Working", value: totalNW,        color:"#fbbf24" },
+  ];
+
+  const camOnlinePct = stats.totalCameras ? Math.round(((stats.totalCameras-stats.offlineCameras)/stats.totalCameras)*100) : 100;
+  const anprOnlinePct = stats.totalANPR ? Math.round(((stats.totalANPR-stats.offlineANPR)/stats.totalANPR)*100) : 100;
+  const acsOkPct  = Math.round(((siteCount - perSite.filter(s=>s.notWorkingANPR>0).length)/siteCount)*100);
+  const gateOkPct = Math.round(((siteCount - perSite.filter(s=>s.notWorkingGate>0).length)/siteCount)*100);
+  const interOkPct= Math.round(((siteCount - perSite.filter(s=>s.notWorkingIntercom>0).length)/siteCount)*100);
+  const rateData = [
+    { name:"Cameras",   pct: camOnlinePct, color:"#3b82f6" },
+    { name:"ANPR",      pct: anprOnlinePct, color:"#8b5cf6" },
+    { name:"ACS",       pct: acsOkPct,  color:"#10b981" },
+    { name:"Gate",      pct: gateOkPct, color:"#60a5fa" },
+    { name:"Intercom",  pct: interOkPct,color:"#334155" },
+  ];
+
+  const offCamSites  = perSite.filter(s=>s.offlineCameras>0).sort((a,b)=>b.offlineCameras-a.offlineCameras);
+  const offAnprSites = perSite.filter(s=>s.offlineANPR>0).sort((a,b)=>b.offlineANPR-a.offlineANPR);
+  const nwSites = perSite.filter(s=>(s.notWorkingANPR+s.notWorkingGate+s.notWorkingIntercom)>0)
+    .map(s=>({...s, nwTotal: s.notWorkingANPR+s.notWorkingGate+s.notWorkingIntercom}))
+    .sort((a,b)=>b.nwTotal-a.nwTotal);
+
+  const nwLabel = (s)=> {
+    const bits=[];
+    if(s.notWorkingANPR>0) bits.push(`${s.notWorkingANPR} ACS`);
+    if(s.notWorkingGate>0) bits.push(`${s.notWorkingGate} Gate`);
+    if(s.notWorkingIntercom>0) bits.push(`${s.notWorkingIntercom} Intercom`);
+    return bits.join(" • ");
+  };
+
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-2xl border p-4 flex items-center gap-3" style={{borderColor:"#e2e8f0"}}>
@@ -1341,20 +1709,104 @@ function AMCPage({sites, stats, perSite, setPage}){
         <KPI label="Offline ANPR" value={stats.offlineANPR} sub={`${offlineAnprPct}% offline of ${stats.totalANPR}`} icon={IcWifiOff} color="bg-amber-500 text-white" top="bg-amber-500"/>
       </div>
 
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+        <KPI label="Not Working ACS" value={nwACS} sub={`${perSite.filter(s=>s.notWorkingANPR>0).length} sites affected`} icon={IcLock} color="bg-emerald-500 text-white"/>
+        <KPI label="Not Working Gate" value={nwGate} sub={`${perSite.filter(s=>s.notWorkingGate>0).length} sites affected`} icon={IcLock} color="bg-sky-600 text-white"/>
+        <KPI label="Not Working Intercom" value={nwIntercom} sub={`${perSite.filter(s=>s.notWorkingIntercom>0).length} sites affected`} icon={IcWifiOff} color="bg-orange-500 text-white"/>
+        <KPI label="Total Devices" value={totalDevices} sub={`${onlineDevices} online • ${totalOffline} offline`} icon={IcBuilding} color="bg-slate-900 text-white"/>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div>
+          <Card title="Device Health" subtitle="Online vs Offline vs Not Working" icon={IcShield}>
+            <div className="flex items-center gap-4">
+              <div className="w-[240px] shrink-0">
+                <ResponsiveContainer width="100%" height={280}>
+                  <PieChart>
+                    <Pie data={healthData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={44} outerRadius={72} paddingAngle={2} strokeWidth={2} stroke="#fff">
+                      {healthData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+                    </Pie>
+                    <Tooltip/>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-2 min-w-0">
+                {healthData.map(x=>(
+                  <div key={x.name} className="flex items-center gap-2 text-sm">
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:x.color}}/>
+                    <span className="font-semibold truncate">{x.name}</span>
+                    <span className="ml-auto text-slate-400 font-bold">{x.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+        <Card title="AMC Health Rate" subtitle="Percentage of each system operating normally" icon={IcChart}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={rateData} margin={{top:16,right:12,left:-10,bottom:4}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="name" tick={{fontSize:11}}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
+              <Tooltip formatter={(v)=>[`${v}%`, "Healthy"]}/>
+              <Bar dataKey="pct" name="Healthy %" radius={[8,8,0,0]} barSize={54} label={{position:"top", fontSize:11, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+                {rateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card title="Sites with Offline Cameras" subtitle={`${offCamSites.length} sites affected`} icon={IcCamOff}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {offCamSites.length===0 ? <p className="text-xs text-slate-500">All cameras are online.</p> : offCamSites.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-red-50/60 px-2.5 py-1.5" style={{borderColor:"#fecaca"}}>
+                <IcCamOff size={12} className="text-red-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.shortName}</span>
+                <span className="ml-auto text-[10px] font-bold text-red-600 shrink-0">{s.offlineCameras} off</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card title="Sites with Offline ANPR" subtitle={`${offAnprSites.length} sites affected`} icon={IcWifiOff}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {offAnprSites.length===0 ? <p className="text-xs text-slate-500">All ANPR are online.</p> : offAnprSites.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-amber-50/60 px-2.5 py-1.5" style={{borderColor:"#fde68a"}}>
+                <IcWifiOff size={12} className="text-amber-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.shortName}</span>
+                <span className="ml-auto text-[10px] font-bold text-amber-600 shrink-0">{s.offlineANPR} off</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card title="Sites with Not Working Devices" subtitle={`${nwSites.length} sites affected`} icon={IcLock}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {nwSites.length===0 ? <p className="text-xs text-slate-500">All devices are working.</p> : nwSites.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-orange-50/60 px-2.5 py-1.5" style={{borderColor:"#fed7aa"}}>
+                <IcLock size={12} className="text-orange-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.shortName}</span>
+                <span className="ml-auto text-[10px] text-slate-500 shrink-0 truncate">{nwLabel(s)}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
       <Card title="All Sites — Cameras & ANPR" subtitle={`${sites.length} sites • Total vs Offline — one chart • Scroll →`} icon={IcChart}>
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height={380}>
           <BarChart data={perSite.slice(0,30)} margin={{top:8,right:12,left:0,bottom:80}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-            <XAxis dataKey="shortName" angle={-35} textAnchor="end" height={90} tick={{fontSize:10}} interval={0}/>
+            <XAxis dataKey="shortName" angle={-35} textAnchor="end" height={140} tick={{fontSize:10}} interval={0}/>
             <YAxis tick={{fontSize:11}}/>
             <Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
-            <Bar dataKey="totalCameras" name="Total Cameras" fill="#0284c7" radius={[3,3,0,0]} barGap={2}/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" fill="#ef4444" radius={[3,3,0,0]}/>
-            <Bar dataKey="totalANPR" name="Total ANPR" fill="#7c3aed" radius={[3,3,0,0]}/>
-            <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#f59e0b" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#0ea5e9" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#1e293b" radius={[3,3,0,0]}/>
-            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#06b6d4" radius={[3,3,0,0]}/>
+            <Bar dataKey="totalCameras" name="Total Cameras" fill="#1f6feb" radius={[6,6,0,0]} barGap={2}/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="totalANPR" name="Total ANPR" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="offlineANPR" name="Offline ANPR" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="notWorkingANPR" name="Not Working ACS" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="notWorkingGate" name="Not Working Gate barrier" fill="#1f6feb" radius={[6,6,0,0]}/>
+            <Bar dataKey="notWorkingIntercom" name="Not Working Intercom" fill="#1f6feb" radius={[6,6,0,0]}/>
           </BarChart>
         </ResponsiveContainer>
         {perSite.length>30 && <p className="text-xs text-slate-400 text-center mt-1">Showing first 30 of {perSite.length} sites — use search/filters to narrow down</p>}
@@ -1366,94 +1818,190 @@ function AMCPage({sites, stats, perSite, setPage}){
 /* ================================================================ */
 /*                         ATTENTION PAGE                           */
 /* ================================================================ */
-function AttentionPage({attention, setPage}){
-  const [mode, setMode] = useState({});
+function AccidentsPage({accidents, sites, setAccidents, setPage}){
+  const [q, setQ] = useState(""); const [fType, setFType] = useState("All"); const [fStatus, setFStatus] = useState("All");
+  const [quickSite, setQuickSite] = useState("");
+  const [viewAcc, setViewAcc] = useState(null);
+
+  const normalizeStatus = (s) => {
+    if (s === "Open") return "Opened";
+    if (s === "Resolved" || s === "In Review") return "Solving";
+    return s || "Opened";
+  };
+
+  const filtered = useMemo(()=> (accidents||[]).filter(a=>{
+    const qq=q.trim().toLowerCase();
+    const okQ = !qq || (a.title||"").toLowerCase().includes(qq) || (a.siteName||"").toLowerCase().includes(qq) || (a.description||"").toLowerCase().includes(qq);
+    const okT = fType==="All" || a.type===fType;
+    const okSt = fStatus==="All" || normalizeStatus(a.status)===fStatus;
+    return okQ && okT && okSt;
+  }), [accidents, q, fType, fStatus]);
+
+  const counts = {
+    total: (accidents||[]).length,
+    sites: new Set((accidents||[]).map(a=>a.siteName)).size,
+    opened: (accidents||[]).filter(a=>normalizeStatus(a.status)==="Opened").length,
+    solving: (accidents||[]).filter(a=>normalizeStatus(a.status)==="Solving").length,
+    closed: (accidents||[]).filter(a=>normalizeStatus(a.status)==="Closed").length,
+  };
+
+  const changeStatus = (acc, st) => {
+    setAccidents(list=>list.map(x=> x.id===acc.id ? {...x, status:st, history:[...(x.history||[]), {at:new Date().toISOString().slice(0,16).replace("T"," "), by:"Admin", change:`Status ${normalizeStatus(x.status)} → ${st}`}] } : x));
+    setViewAcc(v=> v && v.id===acc.id ? {...v, status:st} : v);
+    toast.success(`Status → ${st}`);
+  };
+  const del = (acc) => {
+    if(!window.confirm("Delete accident " + (acc.title||acc.type) + "?")) return;
+    setAccidents(list=>list.filter(x=>x.id!==acc.id));
+    toast.success("Accident deleted");
+  };
+
+  const quickSiteObj = sites.find(s=>s.id===quickSite);
+
+  const statusColor = (s) => {
+    const ns = normalizeStatus(s);
+    if (ns === "Opened") return "bg-red-700";
+    if (ns === "Solving") return "bg-amber-500";
+    if (ns === "Closed") return "bg-emerald-500";
+    return "bg-slate-900";
+  };
+
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
-        <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
-          <div className="w-8 h-8 rounded-lg bg-red-600 grid place-items-center text-white"><IcAlert size={16}/></div>
-          <div>
-            <h2 className="text-[16px] font-extrabold tracking-tight leading-none">Attention Needed</h2>
-            <p className="text-xs text-slate-500">{attention.length} site{attention.length!==1?"s":""} require action • Click any to jump to report</p>
-          </div>
-          <button onClick={()=>setPage("charts")} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border text-xs font-semibold hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>Back to Charts</button>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <KPI label="Total Sites with Accidents" value={counts.sites} sub="sites affected" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+        <KPI label="Total Accidents" value={counts.total} sub="all reports" icon={IcAlert} color="bg-slate-900 text-white"/>
+        <KPI label="Opened" value={counts.opened} sub="needs action" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/>
+        <KPI label="Solving" value={counts.solving} sub="in progress" icon={IcClock} color="bg-amber-500 text-white"/>
+        <KPI label="Closed" value={counts.closed} sub="fixed" icon={IcCheck} color="bg-emerald-500 text-white"/>
+      </div>
+
+      <div className="bg-white rounded-2xl border p-3 flex flex-wrap items-center gap-2" style={{borderColor:"#e2e8f0"}}>
+        <div className="relative flex-1 min-w-[220px]">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcSearch size={15}/></span>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search accidents by title, site, description..."
+            className="w-full pl-9 pr-3 py-2.5 rounded-full border bg-slate-50 focus:bg-white outline-none focus:border-slate-400 text-sm" style={{borderColor:"#e2e8f0"}}/>
         </div>
+        <select value={fStatus} onChange={e=>setFStatus(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+          <option value="All">All Status</option>
+          {ACC_STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}
+        </select>
+        <select value={fType} onChange={e=>setFType(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+          <option value="All">All Types</option>
+          {ACC_TYPES.map(t=><option key={t} value={t}>{t}</option>)}
+        </select>
+        <select value={quickSite} onChange={e=>setQuickSite(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none max-w-[260px]" style={{borderColor:"#e2e8f0"}}>
+          <option value="">Quick: Report for site...</option>
+          {sites.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+        </select>
+      </div>
 
-        {attention.length===0 ? (
-          <div className="py-14 text-center">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 grid place-items-center mx-auto"><IcCheck size={20}/></div>
-            <h3 className="mt-3 font-bold">All clear — no attention needed</h3>
-            <p className="text-sm text-slate-500 mt-1">Every site is completed or has no open problems/incidents.</p>
-            <button onClick={()=>setPage("sites")} className="mt-4 px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-bold">Go to Sites</button>
-          </div>
-        ) : (
-          <div className="divide-y" style={{borderColor:"#f1f5f9"}}>
-            {attention.map(({site, problems, incidents:si, severity})=>{
-              const tab = mode[site.id] || "site";
-              return (
-                <div key={site.id} className={`p-4 border-l-4 ${severity==="Critical"?"border-red-600":severity==="High"?"border-red-400":severity==="Medium"?"border-amber-400":"border-blue-400"}`}>
-                  <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <div className="min-w-0">
-                      <div className="font-bold text-sm flex items-center gap-2 flex-wrap">{site.name} <StatusBadge status={site.status}/></div>
-                      <div className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                        <span className="flex items-center gap-1"><IcPin size={11}/>{site.location}</span> • <span className="flex items-center gap-1"><IcUser size={11}/>{site.inspector}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-[11px] font-bold px-2 py-1 rounded-full ${severity==="Critical"?"bg-red-600 text-white":severity==="High"?"bg-red-100 text-red-700":severity==="Medium"?"bg-amber-100 text-amber-700":"bg-blue-100 text-blue-700"}`}>
-                        {severity} attention
-                      </span>
-                      <div className="flex p-0.5 rounded-full bg-slate-100 border text-[11px] font-bold" style={{borderColor:"#e2e8f0"}}>
-                        <button onClick={()=>setMode(m=>({...m,[site.id]:"site"}))} className={`px-2.5 py-1 rounded-full ${tab==="site"?"bg-white shadow":""}`}>Site</button>
-                        <button onClick={()=>setMode(m=>({...m,[site.id]:"reports"}))} className={`px-2.5 py-1 rounded-full ${tab==="reports"?"bg-white shadow":""}`}>Reports ({si.length})</button>
-                      </div>
-                    </div>
+      {quickSiteObj && <AccidentFormModal site={quickSiteObj} accidents={accidents} setAccidents={setAccidents} onClose={()=>setQuickSite("")}/>}
+
+      {filtered.length===0 ? (
+        <div className="bg-white rounded-2xl border py-14 text-center" style={{borderColor:"#e2e8f0"}}>
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 grid place-items-center mx-auto"><IcAlert size={20}/></div>
+          <h3 className="mt-3 font-bold">No accidents</h3>
+          <p className="text-sm text-slate-500 mt-1">Nothing matches your filters.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {filtered.map(acc=>(
+            <div key={acc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition" style={{borderColor:"#e2e8f0"}} onClick={()=>setViewAcc(acc)}>
+              <div className={`absolute top-0 left-0 w-full h-1 ${statusColor(acc.status)}`}/>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-red-600 text-white grid place-items-center shrink-0"><IcAlert size={15}/></div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-sm">{acc.title||acc.type||"Accident"}</h3>
+                    <Badge status={normalizeStatus(acc.status)}/>
                   </div>
-
-                  {tab==="site" ? (
-                    <div className="mt-3 space-y-2">
-                      <div>
-                        <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Problems on site ({problems.length})</div>
-                        <div className="mt-1 flex flex-wrap gap-1.5">
-                          {problems.map(p=> <span key={p} className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100">{p}</span>)}
-                        </div>
-                      </div>
-                      <div className="text-[11px] text-slate-500">Note: {site.notes || "—"}</div>
-                    </div>
-                  ) : (
-                    <div className="mt-3 space-y-2">
-                      <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400">Open incidents ({si.length})</div>
-                      {si.length===0 ? <div className="text-xs text-slate-500">No open incidents — but status indicates attention.</div> : si.map(i=>(
-                        <div key={i.id} className="border rounded-xl p-3 bg-slate-50" style={{borderColor:"#eef2f7"}}>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold text-sm">{i.title}</span>
-                            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(i.severity)}`}>{i.severity}</span>
-                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{i.category}</span>
-                            <span className="ml-auto text-[11px] text-slate-400">{i.date}</span>
-                          </div>
-                          <p className="text-xs text-slate-500 mt-1">{i.description}</p>
-                        </div>
+                  <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span className="flex items-center gap-1"><IcPin size={11}/>{acc.siteName || "-"}</span>
+                    <span className="flex items-center gap-1"><IcUser size={11}/>{acc.reportedBy||"-"}</span>
+                    <span>{acc.reportedDate||acc.date}</span>
+                    <span className="flex items-center gap-1"><IcAlert size={11}/>{acc.type||"Accident"}</span>
+                  </div>
+                  <p className="text-xs text-slate-600 mt-2">{acc.description||""}</p>
+                  {acc.history && acc.history.length>0 && (
+                    <div className="mt-3 border-t pt-2" style={{borderColor:"#f1f5f9"}}>
+                      <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Change History</div>
+                      {acc.history.slice(-2).map((h,i)=>(
+                        <div key={i} className="text-[11px] text-slate-500 flex gap-2"><span className="font-mono2 shrink-0">{h.at}</span><span className="truncate">{h.by} — {h.change}</span></div>
                       ))}
+                      {acc.history.length>2 && <div className="text-[10px] text-slate-400">+{acc.history.length-2} earlier</div>}
                     </div>
                   )}
-                  <button onClick={()=>setPage("reports")} className="mt-3 text-[11px] font-bold px-3 py-1.5 rounded-full bg-slate-900 text-white">Open in Reports →</button>
+                  <div className="mt-3 flex gap-1.5 flex-wrap">
+                    <button onClick={(e)=>{e.stopPropagation(); del(acc);}} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border text-red-600 hover:bg-red-50" style={{borderColor:"#fecaca"}}><IcTrash size={11}/></button>
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {viewAcc && <Modal title="Accident Details" onClose={()=>setViewAcc(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewAcc.title||viewAcc.type||"Accident"}</span>
+            <Badge status={normalizeStatus(viewAcc.status)}/>
+            <span className="ml-auto text-xs text-slate-400">{viewAcc.reportedDate||viewAcc.date}</span>
           </div>
-        )}
-      </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Type</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.type||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.siteName||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported Date</div>
+              <div className="text-sm font-semibold mt-1">{viewAcc.reportedDate||viewAcc.date||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>changeStatus(viewAcc, s)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${normalizeStatus(viewAcc.status)===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewAcc.description||"No description."}</p>
+          </div>
+          {viewAcc.history && viewAcc.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewAcc.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
+                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
+                    <div className="text-slate-600 mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
     </div>
   );
 }
 
-/* ================================================================ */
-/*                         REPORTS PAGE                             */
-/* ================================================================ */
 function ReportsPage({sites, incidents, setIncidents}){
   const [q, setQ] = useState(""); const [fSev, setFSev] = useState("All"); const [fStatus, setFStatus] = useState("All");
   const [editInc, setEditInc] = useState(null); const [quickSite, setQuickSite] = useState("");
+  const [viewInc, setViewInc] = useState(null);
 
   const filtered = useMemo(()=> incidents.filter(i=>{
     const qq=q.trim().toLowerCase();
@@ -1524,7 +2072,7 @@ function ReportsPage({sites, incidents, setIncidents}){
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
           {filtered.map(inc=>(
-            <div key={inc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden" style={{borderColor:"#e2e8f0"}}>
+            <div key={inc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden cursor-pointer hover:shadow-lg transition" style={{borderColor:"#e2e8f0"}} onClick={()=>setViewInc(inc)}>
               <div className={`absolute top-0 left-0 w-full h-1 ${inc.severity==="Critical"?"bg-red-700":inc.severity==="High"?"bg-red-500":inc.severity==="Medium"?"bg-amber-500":"bg-slate-900"}`}/>
               <div className="flex items-start gap-3">
                 <div className="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center shrink-0"><IcFileText size={15}/></div>
@@ -1554,10 +2102,6 @@ function ReportsPage({sites, incidents, setIncidents}){
                     </div>
                   )}
                   <div className="mt-3 flex gap-1.5 flex-wrap">
-                    {INC_STATUS.filter(s=>s.value!==inc.status).map(s=>(
-                      <button key={s.value} onClick={()=>changeStatus(inc, s.value)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>→ {s.value}</button>
-                    ))}
-                    <button onClick={()=>setEditInc(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full bg-slate-900 text-white flex items-center gap-1"><IcEdit size={11}/> Edit</button>
                     <button onClick={()=>del(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border text-red-600 hover:bg-red-50" style={{borderColor:"#fecaca"}}><IcTrash size={11}/></button>
                   </div>
                 </div>
@@ -1568,6 +2112,51 @@ function ReportsPage({sites, incidents, setIncidents}){
       )}
 
       {editInc && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} existing={editInc} onClose={()=>setEditInc(null)}/>}
+      {viewInc && <Modal title="Report Details" onClose={()=>setViewInc(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewInc.title}</span>
+            <Badge status={viewInc.status}/>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewInc.severity)}`}>{viewInc.severity}</span>
+            <span className="ml-auto text-xs text-slate-400">{viewInc.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Category</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.category||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.siteName||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewInc.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewInc.description||"No description."}</p>
+          </div>
+          {viewInc.history && viewInc.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewInc.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
+                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
+                    <div className="text-slate-600 mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
     </div>
   );
 }
@@ -1622,86 +2211,226 @@ function IncidentFormModal({sites, incidents, setIncidents, existing, preSite, f
 }
 
 /* ================================================================ */
-/*                          AI REPORT                               */
+/*                        ACCIDENT FORM MODAL                       */
 /* ================================================================ */
-function AIReportPage({live}){
-  const [range, setRange] = useState("Day");
-  const [synced, setSynced] = useState(()=> fmtTime());
-  const ranges = ["Day","Week","Month","Year"];
-  const insights = [
-    { level:"WARNING", cls:"bg-amber-100 text-amber-700 border-amber-200", text:"Unusual login activity from 192.168.x.x between 02:00-04:00 UTC. 47 failed attempts followed by 1 successful authentication." },
-    { level:"CRITICAL", cls:"bg-red-100 text-red-700 border-red-200", text:"Critical vulnerability CVE-2026-xxxx detected on server node-03. Immediate patching recommended." },
-    { level:"INFO", cls:"bg-sky-100 text-sky-700 border-sky-200", text:"All firewall rules passed integrity check. No unauthorized modifications detected." },
-    { level:"WARNING", cls:"bg-amber-100 text-amber-700 border-amber-200", text:"SSL certificate for api.dhre.io expires in 12 days. Auto-renewal not configured." },
-  ];
-  const stats = [
-    { label:"Events Analyzed", value:"2,847" },
-    { label:"Alerts Triggered", value:"14" },
-    { label:"Critical Issues", value:"3" },
-    { label:"Uptime", value:"99.2%" },
-  ];
+function AccidentFormModal({site, accidents, setAccidents, onClose}){
+  const [form, setForm] = useState(()=>({
+    siteId: site?.id || "", siteName: site?.name || "", title:"", type:"Accident", description:"", status:"Opened", date:new Date().toISOString().slice(0,10), reportedBy:"", reportedDate:new Date().toISOString().slice(0,10),
+  }));
+  const set = (k,v)=>setForm(f=>({...f,[k]:v}));
+  const save = () => {
+    if(!form.title.trim()){ toast.error("Title required"); return; }
+    setAccidents(list=>[{ ...form, id:uid(), siteId: site?.id || form.siteId, siteName: site?.name || form.siteName }, ...list]);
+    toast.success("Accident reported");
+    onClose();
+  };
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border bg-gradient-to-br from-slate-900 via-slate-900 to-sky-900 p-5 text-white" style={{borderColor:"#0f172a"}}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 grid place-items-center"><IcSparkles size={18}/></div>
-          <div>
-            <div className="text-[11px] font-bold tracking-widest uppercase text-sky-200">AI Generated Report</div>
-            <h2 className="text-xl font-extrabold leading-none mt-0.5">Today's Security Summary</h2>
-            <p className="text-xs text-sky-200 mt-1">Intelligent analysis of security events, alerts, and system health</p>
-          </div>
-          <button onClick={()=>setSynced(fmtTime())} className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 border border-white/20 text-xs font-bold hover:bg-white/25">
-            <IcRefresh size={13}/> Refresh
-          </button>
-        </div>
-        <div className="mt-4 flex items-center gap-3 flex-wrap text-xs text-sky-200">
-          <span className="font-semibold text-white">{new Date().toLocaleDateString([], {weekday:"long", year:"numeric", month:"long", day:"numeric"})}</span>
-          <span>Synced {synced}</span>
-          <span>· {live ? "Auto-refresh enabled" : "Auto-refresh paused"}</span>
-          <div className="ml-auto flex p-0.5 rounded-full bg-white/10 border border-white/20">
-            {ranges.map(r=>(
-              <button key={r} onClick={()=>setRange(r)} className={`px-3 py-1 rounded-full text-[11px] font-bold ${range===r?"bg-white text-slate-900":""}`}>{r}</button>
-            ))}
-          </div>
-        </div>
+    <Modal title="New Accident Report" onClose={onClose} wide>
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="sm:col-span-2"><Field label="Title *">
+          <input value={form.title} onChange={e=>set("title", e.target.value)} placeholder="e.g. Slip and fall on level 2" className={inputCls}/>
+        </Field></div>
+        <Field label="Type"><select value={form.type} onChange={e=>set("type", e.target.value)} className={inputCls}>
+          <option value="Accident">Accident</option>
+          <option value="Near Miss">Near Miss</option>
+          <option value="Injury">Injury</option>
+          <option value="Property Damage">Property Damage</option>
+        </select></Field>
+        <Field label="Status"><select value={form.status} onChange={e=>set("status", e.target.value)} className={inputCls}>
+          <option value="Opened">Opened</option>
+          <option value="Solving">Solving</option>
+          <option value="Closed">Closed</option>
+        </select></Field>
+        <Field label="Date"><input type="date" value={form.date} onChange={e=>set("date", e.target.value)} className={inputCls}/></Field>
+        <Field label="Reported By"><input value={form.reportedBy} onChange={e=>set("reportedBy", e.target.value)} placeholder="e.g. Ahmed R." className={inputCls}/></Field>
+        <Field label="Reported Date"><input type="date" value={form.reportedDate||""} onChange={e=>set("reportedDate", e.target.value)} className={inputCls}/></Field>
+        <div className="sm:col-span-2"><Field label="Description">
+          <textarea value={form.description} onChange={e=>set("description", e.target.value)} placeholder="What happened? Include details..." rows={3} className={inputCls}/>
+        </Field></div>
       </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-        {stats.map((s,i)=>(
-          <div key={s.label} className="bg-white rounded-2xl border p-4" style={{borderColor:"#e2e8f0"}}>
-            <div className="text-3xl font-extrabold">{s.value}</div>
-            <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-widest">{s.label}</div>
-          </div>
-        ))}
+      <div className="mt-4 flex gap-2 justify-end">
+        <button onClick={onClose} className="px-5 py-2.5 rounded-full border font-bold text-sm" style={{borderColor:"#e2e8f0"}}>Cancel</button>
+        <button onClick={save} className="px-5 py-2.5 rounded-full bg-red-600 text-white font-bold text-sm hover:bg-red-700">Report</button>
       </div>
-
-      <Card title="Key Insights" subtitle="AI-detected anomalies and recommendations" icon={IcSparkles}>
-        <div className="space-y-3">
-          {insights.map((it,i)=>(
-            <div key={i} className="flex items-start gap-3 border rounded-xl p-3" style={{borderColor:"#eef2f7"}}>
-              <span className={`shrink-0 text-[10px] font-bold tracking-widest px-2 py-1 rounded-full border ${it.cls}`}>{it.level}</span>
-              <p className="text-sm text-slate-600">{it.text}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      <Card title="Executive Summary" subtitle="Generated by DHRE AI Security Analyst" icon={IcFileText}>
-        <p className="text-sm text-slate-600 leading-relaxed">
-          Today's security posture shows elevated threat activity during early morning hours. A coordinated brute-force attempt was blocked by rate-limiting rules, though one credential compromise was confirmed. The critical CVE on node-03 requires immediate attention. Overall system resilience remains strong with 99.2% uptime.
-        </p>
-        <p className="text-[11px] text-slate-400 mt-3">DHRE AI Security Analyst · Generated {synced}</p>
-      </Card>
-    </div>
+    </Modal>
   );
 }
 
 /* ================================================================ */
 /*                        OWNER DASHBOARD                           */
 /* ================================================================ */
-function OwnerView({auth, sites, setSites, incidents, accidents, onLogout, setRemoteOn, syncMode, lastSync}){
+function CertifiedSitesPage({sites, setPage}){
+  const certified = sites.filter(s=> s.siraCertified);
+  const eligible = sites.filter(s=> s.siraEligible!==false);
+  const notEligible = sites.filter(s=> s.siraEligible===false);
+  const expired = eligible.filter(s=> s.siraExpired && !s.siraCertified);
+  const withoutCert = eligible.filter(s=> !s.siraCertified && !s.siraExpired);
+  const certData = [
+    { name:"SIRA Certified", value: certified.length, color:"#10b981" },
+    { name:"Not Certified", value: withoutCert.length + expired.length, color:"#f87171" },
+  ];
+  const total = sites.length || 1;
+  const pct = (n)=> Math.round((n/total)*100);
+  const rateData = [
+    { name:"SIRA Certified", pct: pct(certified.length), count: certified.length, color:"#10b981" },
+    { name:"Expired SIRA",   pct: pct(expired.length), count: expired.length, color:"#f97316" },
+    { name:"Without SIRA",   pct: pct(withoutCert.length), count: withoutCert.length, color:"#fbbf24" },
+    { name:"Not Eligible",   pct: pct(notEligible.length), count: notEligible.length, color:"#64748b" },
+  ];
+  const amcCertified = sites.filter(s=>s.amcCertified);
+  const amcNotCertified = sites.filter(s=>!s.amcCertified);
+  const amcCertData = [
+    { name:"AMC Certified", value: amcCertified.length, color:"#3b82f6" },
+    { name:"Not Certified", value: amcNotCertified.length, color:"#f87171" },
+  ];
+  const amcRateData = [
+    { name:"AMC Certified", pct: pct(amcCertified.length), count: amcCertified.length, color:"#3b82f6" },
+    { name:"Without AMC", pct: pct(amcNotCertified.length), count: amcNotCertified.length, color:"#f87171" },
+  ];
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 lg:grid-cols-7 gap-3 lg:gap-4">
+        <KPI label="SIRA Certified Sites" value={certified.length} icon={IcShieldCk} color="bg-emerald-500 text-white"/>
+        <KPI label="Expired SIRA" value={expired.length} icon={IcClock} color="bg-orange-500 text-white"/>
+        <KPI label="Sites without SIRA" value={withoutCert.length} icon={IcAlert} color="bg-amber-500 text-white"/>
+        <KPI label="Sites not eligible for SIRA" value={notEligible.length} icon={IcX} color="bg-slate-500 text-white"/>
+        <KPI label="Total Sites" value={sites.length} icon={IcBuilding} color="bg-slate-900 text-white"/>
+        <KPI label="AMC CERTIFIED Sites" value={sites.filter(s=>s.amcCertified).length} icon={IcShieldCk} color="bg-blue-500 text-white"/>
+        <KPI label="Sites without AMC" value={sites.filter(s=>!s.amcCertified).length} icon={IcAlert} color="bg-red-500 text-white"/>
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div>
+          <Card title="SIRA Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
+            <div className="flex items-center gap-4">
+              <div className="w-[260px] shrink-0">
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie data={certData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={48} outerRadius={78} paddingAngle={2} strokeWidth={2} stroke="#fff">
+                      {certData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+                    </Pie>
+                    <Tooltip/>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-2 min-w-0">
+                {certData.map(x=>(
+                  <div key={x.name} className="flex items-center gap-2 text-sm">
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:x.color}}/>
+                    <span className="font-semibold truncate">{x.name}</span>
+                    <span className="ml-auto text-slate-400 font-bold">{x.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+        <Card title="SIRA Rate" subtitle="Percentage of sites with and without SIRA" icon={IcChart}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={rateData} margin={{top:16,right:12,left:-10,bottom:4}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="name" tick={{fontSize:11}}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
+              <Tooltip formatter={(v,n,p)=>[`${v}% (${p.payload.count} sites)`, n]}/>
+              <Bar dataKey="pct" name="Rate %" radius={[8,8,0,0]} barSize={54} label={{position:"top", fontSize:12, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+                {rateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+        <Card title="Sites without SIRA certificate" subtitle={`${withoutCert.length} eligible sites need certification`} icon={IcAlert}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {withoutCert.length===0 ? <p className="text-xs text-slate-500">All eligible sites are SIRA certified.</p> : withoutCert.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-amber-50/60 px-2.5 py-1.5" style={{borderColor:"#fde68a"}}>
+                <IcAlert size={12} className="text-amber-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.name}</span>
+                <span className="ml-auto text-[10px] text-slate-400 shrink-0 font-mono2">{s.pincode}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card title="Sites not eligible for SIRA" subtitle={`${notEligible.length} sites outside the SIRA scope`} icon={IcX}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {notEligible.length===0 ? <p className="text-xs text-slate-500">All sites are eligible for SIRA.</p> : notEligible.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-slate-50 px-2.5 py-1.5" style={{borderColor:"#e2e8f0"}}>
+                <IcX size={12} className="text-slate-500 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.name}</span>
+                <span className="ml-auto text-[10px] text-slate-400 shrink-0 font-mono2">{s.pincode}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div>
+          <Card title="AMC Certification" subtitle="Certified vs Not Certified" icon={IcShieldCk}>
+            <div className="flex items-center gap-4">
+              <div className="w-[260px] shrink-0">
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie data={amcCertData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={48} outerRadius={78} paddingAngle={2} strokeWidth={2} stroke="#fff">
+                      {amcCertData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+                    </Pie>
+                    <Tooltip/>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-2 min-w-0">
+                {amcCertData.map(x=>(
+                  <div key={x.name} className="flex items-center gap-2 text-sm">
+                    <span className="w-2.5 h-2.5 rounded-sm shrink-0" style={{background:x.color}}/>
+                    <span className="font-semibold truncate">{x.name}</span>
+                    <span className="ml-auto text-slate-400 font-bold">{x.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+        <Card title="AMC Rate" subtitle="Percentage of sites with and without AMC" icon={IcChart}>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={amcRateData} margin={{top:16,right:12,left:-10,bottom:4}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+              <XAxis dataKey="name" tick={{fontSize:11}}/>
+              <YAxis tick={{fontSize:11}} allowDecimals={false} unit="%" domain={[0,100]}/>
+              <Tooltip formatter={(v,n,p)=>[`${v}% (${p.payload.count} sites)`, n]}/>
+              <Bar dataKey="pct" name="Rate %" radius={[8,8,0,0]} barSize={54} label={{position:"top", fontSize:12, fontWeight:"bold", formatter:(v)=>`${v}%`}}>
+                {amcRateData.map((x,i)=><Cell key={i} fill={x.color}/>)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+        <Card title="Sites without AMC certification" subtitle={`${amcNotCertified.length} sites need AMC certification`} icon={IcAlert}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {amcNotCertified.length===0 ? <p className="text-xs text-slate-500">All sites are AMC certified.</p> : amcNotCertified.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-blue-50/60 px-2.5 py-1.5" style={{borderColor:"#bfdbfe"}}>
+                <IcAlert size={12} className="text-blue-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.name}</span>
+                <span className="ml-auto text-[10px] text-slate-400 shrink-0 font-mono2">{s.pincode}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card title="Sites with AMC certification" subtitle={`${amcCertified.length} sites have valid AMC`} icon={IcShieldCk}>
+          <div className="space-y-1.5 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1">
+            {amcCertified.length===0 ? <p className="text-xs text-slate-500">No sites are AMC certified.</p> : amcCertified.map(s=>(
+              <div key={s.id} className="flex items-center gap-2 rounded-lg border bg-blue-50/60 px-2.5 py-1.5" style={{borderColor:"#bfdbfe"}}>
+                <IcShieldCk size={12} className="text-blue-600 shrink-0"/>
+                <span className="text-xs font-semibold truncate">{s.name}</span>
+                <span className="ml-auto text-[10px] text-slate-400 shrink-0 font-mono2">{s.pincode}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, setAccidents, onLogout, setRemoteOn, syncMode, lastSync}){
   const site = sites.find(s=>s.id===auth.siteId);
   const [editOpen, setEditOpen] = useState(false);
+  const [page, setPage] = useState(()=> LS.get("dhre_owner_page", "overview")); const [newIncOpen, setNewIncOpen] = useState(false); const [newAccOpen, setNewAccOpen] = useState(false);
+  const [viewIncident, setViewIncident] = useState(null); const [viewAccident, setViewAccident] = useState(null);
   if(!site) return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="bg-white rounded-2xl border p-8 text-center max-w-[420px]" style={{borderColor:"#e2e8f0"}}>
@@ -1727,32 +2456,39 @@ function OwnerView({auth, sites, setSites, incidents, accidents, onLogout, setRe
   );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900">
+    <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
       <Header title="My Site Website" syncMode={syncMode} onToggleLive={()=>setRemoteOn(v=>!v)} lastSync={lastSync} right={HeaderRight}>
         <div className="border-t bg-sky-50" style={{borderColor:"#e0f2fe"}}>
-          <div className="max-w-[1280px] mx-auto px-4 lg:px-6 h-[44px] flex items-center justify-center">
+          <div className="max-w-[1600px] mx-auto px-4 lg:px-6 h-[44px] flex items-center justify-center">
             <div className="text-xs font-bold tracking-widest uppercase text-sky-700 flex items-center gap-2 w-full">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"/>
               <span className="truncate">My Site Website — {site.name} • One dashboard • All things for this site</span>
-              <button onClick={()=>setEditOpen(true)} className="ml-auto px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold shrink-0">Edit</button>
+              <div className="ml-auto flex gap-1"><button onClick={()=>setEditOpen(true)} className="px-3 py-1 rounded-full bg-slate-900 text-white text-[11px] font-bold hover:bg-slate-800">Edit</button></div>
             </div>
           </div>
         </div>
       </Header>
 
-      <main className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6 lg:py-8 space-y-4">
-        {/* site info card */}
-        <div className="bg-white rounded-2xl border p-4 flex items-center justify-between gap-3" style={{borderColor:"#e2e8f0"}}>
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-xl grid place-items-center text-white bg-blue-500"><IcHome size={18}/></div>
-            <div className="min-w-0">
-              <div className="font-extrabold leading-none truncate">{site.name}</div>
-              <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
-                <IcPin size={11}/>{site.location} • {site.type} • <StatusBadge status={site.status}/> • <span className="font-mono2 font-bold">{site.pincode}</span>
+      <main className="max-w-[1600px] mx-auto px-4 lg:px-6 py-6 lg:py-8">
+        <div key={page} className="page-fade">
+          {page==="overview" && (
+          <>
+          {/* site info card */}
+          <div className="bg-white rounded-2xl border p-4 flex items-center justify-between gap-3" style={{borderColor:"#e2e8f0"}}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl grid place-items-center text-white bg-blue-500"><IcHome size={18}/></div>
+              <div className="min-w-0">
+                <div className="font-extrabold leading-none truncate">{site.name}</div>
+                <div className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap mt-0.5">
+                  <IcPin size={11}/>{site.location} • {site.type} • <StatusBadge status={site.status}/> • <span className="font-mono2 font-bold">{site.pincode}</span>
+                </div>
               </div>
             </div>
+            <span className="hidden sm:inline-flex text-xs px-2 py-1 rounded-full bg-sky-50 border border-sky-200 font-bold text-sky-700">My Site Website — All things in one dashboard</span>
           </div>
-          <span className="hidden sm:inline-flex text-xs px-2 py-1 rounded-full bg-sky-50 border border-sky-200 font-bold text-sky-700">My Site Website — All things in one dashboard</span>
+          </>
+          )}
+          {page==="reports" && <OwnerReportsPage site={site} incidents={siteIncidents} setIncidents={setIncidents} onBack={()=>setPage("overview")}/>}
         </div>
 
         {/* KPIs */}
@@ -1792,14 +2528,14 @@ function OwnerView({auth, sites, setSites, incidents, accidents, onLogout, setRe
               {problems.length===0 ? <span className="px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-700">All systems online</span> :
                 problems.map(p=> <span key={p} className="px-2 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs font-bold text-amber-800">{p}</span>)}
             </div>
-            <div className="mt-2 h-[100px]">
-              <ResponsiveContainer width="100%" height={100}>
+            <div className="mt-2 h-[160px]">
+              <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={probBars} margin={{top:5,right:5,left:-20,bottom:0}}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
                   <XAxis dataKey="name" tick={{fontSize:10, fill:"#64748b"}}/>
                   <YAxis tick={{fontSize:10, fill:"#64748b"}} allowDecimals={false}/>
                   <Tooltip/>
-                  <Bar dataKey="value" name="Count" radius={[3,3,0,0]}>
+                  <Bar dataKey="value" name="Count" radius={[6,6,0,0]}>
                     {probBars.map((x,i)=><Cell key={i} fill={x.color}/>)}
                   </Bar>
                 </BarChart>
@@ -1813,11 +2549,14 @@ function OwnerView({auth, sites, setSites, incidents, accidents, onLogout, setRe
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-slate-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#eef2f7"}}>
               <span className="flex items-center gap-1.5"><IcFileText size={14}/> Incidents — {siteIncidents.length}</span>
-              <span className="text-xs underline text-slate-500">View all →</span>
+              <div className="flex items-center gap-1.5">
+                <button onClick={()=>setPage("reports")} className="text-xs underline text-slate-500">View all →</button>
+                <button onClick={()=>setNewIncOpen(true)} className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
+              </div>
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteIncidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No incidents for this site.</div> : siteIncidents.map(i=>(
-                <div key={i.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                <div key={i.id} className="border rounded-xl p-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition" style={{borderColor:"#eef2f7"}} onClick={()=>setViewIncident(i)}>
                   <div className="text-xs font-bold">{i.title}</div>
                   <div className="text-xs text-slate-600 line-clamp-2">{i.description}</div>
                   <div className="mt-1 flex gap-1">
@@ -1831,11 +2570,14 @@ function OwnerView({auth, sites, setSites, incidents, accidents, onLogout, setRe
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-red-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#fecaca"}}>
               <span className="flex items-center gap-1.5"><IcAlert size={14}/> Accidents — {siteAccidents.length}</span>
-              <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs px-2 py-1 rounded-full bg-white border" style={{borderColor:"#fecaca"}}>{siteAccidents.filter(a=>a.status!=="Closed").length} open</span>
+                <button onClick={()=>setNewAccOpen(true)} className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 shadow-sm"><IcPlus size={12}/> Add</button>
+              </div>
             </div>
             <div className="p-3 space-y-2 max-h-[320px] overflow-auto">
               {siteAccidents.length===0 ? <div className="text-xs text-slate-500 text-center py-6">No accidents for this site.</div> : siteAccidents.map(a=>(
-                <div key={a.id} className="border rounded-xl p-2.5 bg-slate-50" style={{borderColor:"#eef2f7"}}>
+                <div key={a.id} className="border rounded-xl p-2.5 bg-slate-50 cursor-pointer hover:bg-slate-100 transition" style={{borderColor:"#eef2f7"}} onClick={()=>setViewAccident(a)}>
                   <div className="text-xs font-bold">{a.title||a.type||"Accident"}</div>
                   <div className="text-xs text-slate-600">{a.description||""}</div>
                 </div>
@@ -1846,7 +2588,522 @@ function OwnerView({auth, sites, setSites, incidents, accidents, onLogout, setRe
       </main>
 
       {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
+      {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
+      {newAccOpen && <AccidentFormModal site={site} accidents={accidents} setAccidents={setAccidents} onClose={()=>setNewAccOpen(false)}/>}
+      {viewIncident && <Modal title="Incident Details" onClose={()=>setViewIncident(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewIncident.title}</span>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewIncident.severity)}`}>{viewIncident.severity}</span>
+            <Badge status={viewIncident.status}/>
+            <span className="ml-auto text-xs text-slate-400">{viewIncident.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Category</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.category||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Reported By</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.siteName||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewIncident.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setIncidents(list=>list.map(x=>x.id===viewIncident.id?{...x,status:s}:x)); setViewIncident({...viewIncident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewIncident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewIncident.description||"No description."}</p>
+          </div>
+          {viewIncident.history && viewIncident.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewIncident.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-slate-50 rounded-lg p-2 border" style={{borderColor:"#e2e8f0"}}>
+                    <span className="font-bold text-slate-700">{h.at}</span> <span className="text-slate-400">by {h.by}</span>
+                    <div className="text-slate-600 mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
+      {viewAccident && <Modal title="Accident Details" onClose={()=>setViewAccident(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg">{viewAccident.title||viewAccident.type||"Accident"}</span>
+            <span className="ml-auto text-xs text-slate-400">{viewAccident.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Type</div>
+              <div className="text-sm font-semibold mt-1">{viewAccident.type||"-"}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Status</div>
+              <div className="text-sm font-semibold mt-1">{viewAccident.status||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-2">Change Status</div>
+            <div className="flex gap-2">
+              {["Opened","Solving","Closed"].map(s=>(
+                <button key={s} onClick={()=>{ setAccidents(list=>list.map(x=>x.id===viewAccident.id?{...x,status:s}:x)); setViewAccident({...viewAccident,status:s}); }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${viewAccident.status===s?"bg-sky-600 text-white border-sky-600":"bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"}`}>{s}</button>
+              ))}
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Site</div>
+              <div className="text-sm font-semibold mt-1">{viewAccident.siteName||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500 mb-1">Description</div>
+            <p className="text-sm text-slate-700 bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>{viewAccident.description||"No description."}</p>
+          </div>
+        </div>
+      </Modal>}
       <Toaster/>
+    </div>
+  );
+}
+
+/* ---------------- owner reports page ---------------- */
+function OwnerReportsPage({site, incidents, setIncidents, onBack}){
+  const bySite = incidents.filter(i=>i.siteId===site.id || i.siteName===site.name);
+  const [q, setQ] = useState(""); const [fSev, setFSev] = useState("All"); const [fStatus, setFStatus] = useState("All");
+  const [newOpen, setNewOpen] = useState(false);
+  const [editInc, setEditInc] = useState(null);
+  const filtered = useMemo(()=> bySite.filter(i=>{
+    const qq=q.trim().toLowerCase();
+    const okQ = !qq || (i.title||"").toLowerCase().includes(qq) || (i.description||"").toLowerCase().includes(qq);
+    const okS = fSev==="All" || i.severity===fSev;
+    const okSt = fStatus==="All" || i.status===fStatus;
+    return okQ && okS && okSt;
+  }), [bySite, q, fSev, fStatus]);
+  const counts = {
+    total: bySite.length,
+    open: bySite.filter(i=>i.status==="Open").length,
+    resolved: bySite.filter(i=>i.status==="Resolved").length,
+    critical: bySite.filter(i=>i.severity==="Critical").length,
+  };
+  const changeStatus = (inc, st) => {
+    setIncidents(list=>list.map(x=> x.id===inc.id ? {...x, status:st, history:[...(x.history||[]), {at:new Date().toISOString().slice(0,16).replace("T"," "), by:"Owner", change:`Status ${x.status} → ${st}`}]} : x));
+    toast.success(`Status → ${st}`);
+  };
+  const del = (inc) => {
+    if(!window.confirm(`Delete incident "${inc.title}"? This cannot be undone.`)) return;
+    setIncidents(list=>list.filter(x=>x.id!==inc.id));
+    toast.success("Incident deleted");
+  };
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <button onClick={onBack} className="px-3 py-1.5 rounded-full bg-white border text-xs font-bold hover:bg-slate-100" style={{borderColor:"#e2e8f0"}}>← Back to overview</button>
+        <span className="text-[11px] text-slate-500">Incidents for <b className="font-bold">{site.name}</b></span>
+        <button onClick={()=>setNewOpen(true)} className="ml-auto px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-bold hover:bg-red-700 shadow-sm"><IcPlus size={13}/> New incident</button>
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KPI label="Total incidents" value={counts.total} icon={IcFileText} color="bg-slate-900 text-white"/>
+        <button onClick={()=>setPage("reports")} className="text-left"><KPI label="Open" value={counts.open} sub="needs action" icon={IcAlert} color="bg-red-600 text-white" top="bg-red-500"/></button>
+        <KPI label="Resolved" value={counts.resolved} icon={IcCheck} color="bg-emerald-500 text-white"/>
+        <KPI label="Critical" value={counts.critical} icon={IcAlert} color="bg-red-800 text-white"/>
+      </div>
+      <div className="bg-white rounded-2xl border p-3 flex flex-wrap items-center gap-2" style={{borderColor:"#e2e8f0"}}>
+        <div className="relative flex-1 min-w-[220px]">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcSearch size={15}/></span>
+          <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Search incidents..." className="w-full pl-9 pr-3 py-2.5 rounded-full border bg-slate-50 focus:bg-white outline-none focus:border-slate-400 text-sm" style={{borderColor:"#e2e8f0"}}/>
+        </div>
+        <select value={fStatus} onChange={e=>setFStatus(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+          <option value="All">All Status</option>
+          {INC_STATUS.map(s=><option key={s.value} value={s.value}>{s.label}</option>)}
+        </select>
+        <select value={fSev} onChange={e=>setFSev(e.target.value)} className="px-4 py-2.5 rounded-full border bg-slate-50 text-sm font-medium outline-none" style={{borderColor:"#e2e8f0"}}>
+          <option value="All">All Severity</option>
+          {SEVERITIES.map(s=><option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+      {newOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewOpen(false)}/>}
+      {editInc && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} existing={editInc} onClose={()=>setEditInc(null)}/>}
+      {filtered.length===0 ? (
+        <div className="bg-white rounded-2xl border py-14 text-center" style={{borderColor:"#e2e8f0"}}>
+          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-400 grid place-items-center mx-auto"><IcFileText size={20}/></div>
+          <h3 className="mt-3 font-bold">No incidents yet</h3>
+          <p className="text-sm text-slate-500 mt-1">Report the first incident for your site.</p>
+          <button onClick={()=>setNewOpen(true)} className="mt-4 px-4 py-2 rounded-full bg-red-600 text-white text-sm font-bold">New incident</button>
+        </div>
+      ) : (
+        <div className="space-y-3">{filtered.map(inc=>(
+          <div key={inc.id} className="bg-white rounded-2xl border p-4 relative overflow-hidden" style={{borderColor:"#e2e8f0"}}>
+            <div className={`absolute top-0 left-0 w-full h-1 ${inc.severity==="Critical"?"bg-red-700":inc.severity==="High"?"bg-red-500":inc.severity==="Medium"?"bg-amber-500":"bg-slate-900"}`}/>
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-slate-900 text-white grid place-items-center shrink-0"><IcFileText size={15}/></div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-sm">{inc.title}</h3>
+                  <Badge status={inc.status}/>
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                  <span className="flex items-center gap-1"><IcPin size={11}/>{inc.siteName || "—"}</span>
+                  <span className="flex items-center gap-1"><IcUser size={11}/>{inc.reportedBy||"Owner"}</span>
+                  <span>{inc.date}</span>
+                  <span className="flex items-center gap-1"><IcFileText size={11}/>{inc.category}</span>
+                </div>
+                <p className="text-xs text-slate-600 mt-2">{inc.description||"—"}</p>
+                <div className="mt-2 flex items-center gap-2 flex-wrap">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${severityCls(inc.severity)}`}>{inc.severity}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{inc.history?.length||0} changes</span>
+                </div>
+                {inc.history && inc.history.length>0 && (
+                  <div className="mt-3 border-t pt-2" style={{borderColor:"#f1f5f9"}}>
+                    <div className="text-[10px] font-bold tracking-widest uppercase text-slate-400 mb-1">Change History</div>
+                    {inc.history.slice(-2).map((h,i)=>(
+                      <div key={i} className="text-[11px] text-slate-500 flex gap-2"><span className="font-mono2 shrink-0">{h.at}</span><span className="truncate">{h.by} — {h.change}</span></div>
+                    ))}
+                    {inc.history.length>2 && <div className="text-[10px] text-slate-400">+{inc.history.length-2} earlier</div>}
+                  </div>
+                )}
+                <div className="mt-3 flex gap-1.5 flex-wrap">
+                  {INC_STATUS.filter(s=>s.value!==inc.status).map(s=>(
+                    <button key={s.value} onClick={()=>changeStatus(inc, s.value)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border hover:bg-slate-50" style={{borderColor:"#e2e8f0"}}>→ {s.value}</button>
+                  ))}
+                  <button onClick={()=>setEditInc(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full bg-slate-900 text-white flex items-center gap-1"><IcEdit size={11}/> Edit</button>
+                  <button onClick={()=>del(inc)} className="text-[11px] font-bold px-2.5 py-1.5 rounded-full border text-red-600 hover:bg-red-50" style={{borderColor:"#fecaca"}}><IcTrash size={11}/></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}</div>
+      )}
+    </div>
+  );
+}
+
+
+/* ================================================================ */
+/*                        FULLSCREEN PAGE                           */
+/* ================================================================ */
+function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAccidents, setPage}){
+  const totalSites = sites.length;
+  const totalCameras = sites.reduce((a,s)=>a+(s.totalCameras||0),0);
+  const offlineCameras = sites.reduce((a,s)=>a+(s.offlineCameras||0),0);
+  const sitesWithOfflineCam = sites.filter(s=>(s.offlineCameras||0)>0).length;
+  const sitesWithOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).length;
+  const amcCertifiedCount = sites.filter(s=>s.amcCertified).length;
+  const amcNotCertifiedCount = sites.filter(s=>!s.amcCertified).length;
+  const siraCertifiedCount = sites.filter(s=>s.siraCertified).length;
+  const siraNotCertifiedCount = sites.filter(s=>!s.siraCertified).length;
+  const totalANPR = sites.reduce((a,s)=>a+(s.totalANPR||0),0);
+  const openIncidents = incidents.filter(i=>i.status==="Opened"||i.status==="Solving").length;
+  const attentionSites = sites.filter(s=>problemsOf(s,incidents).length>0).length;
+
+  const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
+  const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
+
+  const [viewItem, setViewItem] = useState(null);
+  const [timeFilter, setTimeFilter] = useState("day");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [viewSite, setViewSite] = useState(null);
+  const [showAmcSites, setShowAmcSites] = useState(false);
+  const [showSiraSites, setShowSiraSites] = useState(false);
+
+const Box = ({icon, color, bg, label, value, label2, value2}) => (
+    <div className="bg-[#0d1117] border rounded-2xl p-2 flex flex-col items-center justify-center gap-1 h-full" style={{borderColor:"#30363d"}}>
+      <div className={`w-8 h-8 rounded-lg ${bg} grid place-items-center shadow-xl`}>{icon}</div>
+      <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">{label}</div>
+      <div className="text-2xl font-extrabold text-[#f0f6fc] leading-none">{value}</div>
+      {label2 && <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center mt-0.5">{label2}</div>}
+      {label2 && <div className="text-lg font-extrabold text-[#58a6ff] leading-none">{value2}</div>}
+    </div>
+  );
+
+  const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
+  const bySiteOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineANPR||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
+
+  const now = new Date();
+  const cutoffDate = (filter) => {
+    const d = new Date(now);
+    if (filter === "day") d.setDate(d.getDate() - 1);
+    else if (filter === "week") d.setDate(d.getDate() - 7);
+    else if (filter === "month") d.setMonth(d.getMonth() - 1);
+    return d.toISOString().slice(0, 10);
+  };
+  const filteredIncidents = (typeFilter === "all" || typeFilter === "incidents") ? incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter)) : [];
+  const filteredAccidents = (typeFilter === "all" || typeFilter === "accidents") ? (accidents||[]).filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter)) : [];
+
+  return (
+    <div className="fixed inset-0 z-50 bg-[#0d1117] flex flex-col p-4 gap-4">
+      <div className="flex items-center justify-between shrink-0">
+        <h1 className="text-xl font-extrabold text-[#f0f6fc]">DHRE Security Dashboard - Fullscreen</h1>
+        <div className="flex gap-2">
+          <button onClick={enterFs} className="px-4 py-2 rounded-md bg-[#21262d] text-[#c9d1d9] border text-xs font-bold hover:bg-[#30363d]" style={{borderColor:"#30363d"}}>Enter Fullscreen</button>
+          <button onClick={()=>{ exitFs(); setPage("sites"); }} className="px-4 py-2 rounded-md bg-[#21262d] text-[#c9d1d9] border text-xs font-bold hover:bg-[#30363d]" style={{borderColor:"#30363d"}}>Exit</button>
+        </div>
+      </div>
+      <div className="flex-1 grid grid-cols-3 gap-4 min-h-0 auto-rows-fr">
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[9px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Total Sites</div>
+              <div className="text-xl font-extrabold text-[#f0f6fc] leading-none">{totalSites}</div>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Sites with Offline Cameras</div>
+              <div className="text-xl font-extrabold text-[#58a6ff] leading-none">{sitesWithOfflineCam}</div>
+            </div>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={bySiteOffline} margin={{top:4,right:2,left:0,bottom:16}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#30363d"/>
+                <XAxis dataKey="name" tick={{fontSize:8, fill:"#8b949e"}} angle={-30} textAnchor="end" height={30}/>
+                <YAxis tick={{fontSize:9, fill:"#8b949e"}} allowDecimals={false}/>
+                <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
+                <Bar dataKey="value" name="Offline Cameras" fill="#1f6feb" radius={[4,4,0,0]} onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }} cursor="pointer"/>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[9px] font-bold text-[#8b949e] uppercase tracking-wider text-center">AMC Certified</div>
+              <div className="text-xl font-extrabold text-emerald-400 leading-none">{amcCertifiedCount}</div>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Not Certified</div>
+              <div className="text-xl font-extrabold text-red-400 leading-none">{amcNotCertifiedCount}</div>
+            </div>
+          </div>
+          <div className="flex-1 min-h-0 cursor-pointer" onClick={()=>setShowAmcSites(true)}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={[{name:"Certified", value:amcCertifiedCount, color:"#1f6feb"},{name:"Not Certified", value:amcNotCertifiedCount, color:"#f85149"}]} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={95} paddingAngle={2} strokeWidth={2} stroke="#0d1117" label={({name, percent})=>`${name}: ${(percent*100).toFixed(0)}%`} labelLine={false}>
+                  {[{name:"Certified", value:amcCertifiedCount, color:"#1f6feb"},{name:"Not Certified", value:amcNotCertifiedCount, color:"#f85149"}].map((x,i)=><Cell key={i} fill={x.color}/>)}
+                </Pie>
+                <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <Box icon={<IcCamOff size={16} className="text-[#58a6ff]"/>} bg="bg-[#58a6ff]/20" label="Offline CCTV" value={offlineCameras}/>
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[9px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Total Sites</div>
+              <div className="text-xl font-extrabold text-[#f0f6fc] leading-none">{totalSites}</div>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Sites with Offline ANPR</div>
+              <div className="text-xl font-extrabold text-[#58a6ff] leading-none">{sitesWithOfflineAnpr}</div>
+            </div>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={bySiteOfflineAnpr} margin={{top:4,right:2,left:0,bottom:16}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#30363d"/>
+                <XAxis dataKey="name" tick={{fontSize:8, fill:"#8b949e"}} angle={-30} textAnchor="end" height={30}/>
+                <YAxis tick={{fontSize:9, fill:"#8b949e"}} allowDecimals={false}/>
+                <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
+                <Bar dataKey="value" name="Offline ANPR" fill="#8957e5" radius={[4,4,0,0]} onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }} cursor="pointer"/>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[9px] font-bold text-[#8b949e] uppercase tracking-wider text-center">SIRA Certified</div>
+              <div className="text-xl font-extrabold text-emerald-400 leading-none">{siraCertifiedCount}</div>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center gap-0">
+              <div className="text-[8px] font-bold text-[#8b949e] uppercase tracking-wider text-center">Not Certified</div>
+              <div className="text-xl font-extrabold text-purple-400 leading-none">{siraNotCertifiedCount}</div>
+            </div>
+          </div>
+          <div className="flex-1 min-h-0 cursor-pointer" onClick={()=>setShowSiraSites(true)}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={[{name:"Certified", value:siraCertifiedCount, color:"#1f6feb"},{name:"Not Certified", value:siraNotCertifiedCount, color:"#8b5cf6"}]} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} strokeWidth={2} stroke="#0d1117" label={({name, percent})=>`${name}: ${(percent*100).toFixed(0)}%`} labelLine={false}>
+                  {[{name:"Certified", value:siraCertifiedCount, color:"#1f6feb"},{name:"Not Certified", value:siraNotCertifiedCount, color:"#8b5cf6"}].map((x,i)=><Cell key={i} fill={x.color}/>)}
+                </Pie>
+                <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
+          <div className="flex items-center justify-between">
+            <div className="text-[10px] font-bold text-[#8b949e] uppercase tracking-wider">Incidents & Accidents ({filteredIncidents.length + filteredAccidents.length})</div>
+            <div className="flex gap-1">
+              {["all","accidents","incidents"].map(f=>(
+                <button key={f} onClick={(e)=>{e.stopPropagation(); setTypeFilter(f);}} className={`text-[8px] font-bold px-2 py-0.5 rounded-full border transition ${typeFilter===f?"bg-purple-600 text-white border-purple-600":"bg-[#161b22] text-[#8b949e] border-[#30363d] hover:bg-[#21262d]"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>
+              ))}
+            </div>
+            <div className="flex gap-1">
+              {["day","week","month"].map(f=>(
+                <button key={f} onClick={(e)=>{e.stopPropagation(); setTimeFilter(f);}} className={`text-[8px] font-bold px-2 py-0.5 rounded-full border transition ${timeFilter===f?"bg-blue-600 text-white border-blue-600":"bg-[#161b22] text-[#8b949e] border-[#30363d] hover:bg-[#21262d]"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-1.5 max-h-[200px] overflow-y-auto overflow-x-hidden pr-1">
+            {[...filteredAccidents.map(a=>({...a, _type:'accident'})), ...filteredIncidents.map(i=>({...i, _type:'incident'}))].sort((a,b)=> (b.reportedDate||b.date||"").localeCompare(a.reportedDate||a.date||"")).map(item=>(
+              item._type==='accident' ? (
+                <div key={item.id} className="flex items-center gap-2 rounded-lg border bg-[#161b22] px-2.5 py-1.5 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'accident', data:item}); }}>
+                  <IcAlert size={12} className="text-red-400 shrink-0"/>
+                  <span className="text-xs font-semibold truncate text-[#f0f6fc]">{item.title||item.type||"Accident"}</span>
+                  <span className="ml-auto text-[10px] text-[#8b949e] shrink-0">{item.reportedDate||item.date}</span>
+                </div>
+              ) : (
+                <div key={item.id} className="flex items-center gap-2 rounded-lg border bg-[#161b22] px-2.5 py-1.5 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'incident', data:item}); }}>
+                  <IcFileText size={12} className="text-blue-400 shrink-0"/>
+                  <span className="text-xs font-semibold truncate text-[#f0f6fc]">{item.title}</span>
+                  <span className="ml-auto text-[10px] text-[#8b949e] shrink-0">{item.date}</span>
+                </div>
+              )
+            ))}
+            {filteredIncidents.length===0 && filteredAccidents.length===0 && <p className="text-xs text-[#8b949e]">No incidents or accidents in this period.</p>}
+          </div>
+        </div>
+      </div>
+      {viewItem && viewItem.type==='incident' && <Modal title="Incident Details" onClose={()=>setViewItem(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg text-[#f0f6fc]">{viewItem.data.title}</span>
+            <Badge status={viewItem.data.status}/>
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${severityCls(viewItem.data.severity)}`}>{viewItem.data.severity}</span>
+            <span className="ml-auto text-xs text-[#8b949e]">{viewItem.data.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Category</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.category||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Reported By</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Site</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.siteName||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Status</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.status}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">Description</div>
+            <p className="text-sm text-[#c9d1d9] bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>{viewItem.data.description||"No description."}</p>
+          </div>
+          {viewItem.data.history && viewItem.data.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewItem.data.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-[#161b22] rounded-lg p-2 border" style={{borderColor:"#30363d"}}>
+                    <span className="font-bold text-[#f0f6fc]">{h.at}</span> <span className="text-[#8b949e]">by {h.by}</span>
+                    <div className="text-[#c9d1d9] mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
+      {viewItem && viewItem.type==='accident' && <Modal title="Accident Details" onClose={()=>setViewItem(null)} wide>
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-lg text-[#f0f6fc]">{viewItem.data.title||viewItem.data.type||"Accident"}</span>
+            <Badge status={viewItem.data.status==="Open"?"Opened":viewItem.data.status==="Resolved"?"Closed":viewItem.data.status}/>
+            <span className="ml-auto text-xs text-[#8b949e]">{viewItem.data.reportedDate||viewItem.data.date}</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Type</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.type||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Reported By</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.reportedBy||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Site</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.siteName||"-"}</div>
+            </div>
+            <div className="bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e]">Reported Date</div>
+              <div className="text-sm font-semibold mt-1 text-[#f0f6fc]">{viewItem.data.reportedDate||viewItem.data.date||"-"}</div>
+            </div>
+          </div>
+          <div>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">Description</div>
+            <p className="text-sm text-[#c9d1d9] bg-[#161b22] rounded-xl p-3 border" style={{borderColor:"#30363d"}}>{viewItem.data.description||"No description."}</p>
+          </div>
+          {viewItem.data.history && viewItem.data.history.length>0 && (
+            <div>
+              <div className="text-[11px] font-bold tracking-widest uppercase text-[#8b949e] mb-1">History</div>
+              <div className="space-y-1.5">
+                {viewItem.data.history.map((h,idx)=>(
+                  <div key={idx} className="text-xs bg-[#161b22] rounded-lg p-2 border" style={{borderColor:"#30363d"}}>
+                    <span className="font-bold text-[#f0f6fc]">{h.at}</span> <span className="text-[#8b949e]">by {h.by}</span>
+                    <div className="text-[#c9d1d9] mt-0.5">{h.change}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
+      {showAmcSites && <Modal title="AMC Certified Sites" onClose={()=>setShowAmcSites(false)} wide>
+        <div className="space-y-3">
+          <div className="text-sm font-bold text-[#8b949e]">Total: {sites.length} ({amcCertifiedCount} certified, {amcNotCertifiedCount} not certified)</div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {sites.slice().sort((a,b)=> (b.amcCertified?1:0) - (a.amcCertified?1:0)).map(s=>(
+              <div key={s.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition flex items-center gap-3" style={{borderColor:"#30363d"}} onClick={()=>{ setViewSite(s); setShowAmcSites(false); }}>
+                <div className={`w-3 h-3 rounded-full shrink-0 ${s.amcCertified ? "bg-blue-500" : "bg-red-500"}`}/>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-sm text-[#f0f6fc] truncate">{s.name}</div>
+                  <div className="text-[11px] text-[#8b949e]">{s.location} • {s.type} • {s.status}</div>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.amcCertified ? "bg-blue-500/20 text-blue-400" : "bg-red-500/20 text-red-400"}`}>{s.amcCertified ? "Certified" : "Not Certified"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Modal>}
+      {showSiraSites && <Modal title="SIRA Certified Sites" onClose={()=>setShowSiraSites(false)} wide>
+        <div className="space-y-3">
+          <div className="text-sm font-bold text-[#8b949e]">Total: {sites.length} ({siraCertifiedCount} certified, {siraNotCertifiedCount} not certified)</div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {sites.slice().sort((a,b)=> (b.siraCertified?1:0) - (a.siraCertified?1:0)).map(s=>(
+              <div key={s.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition flex items-center gap-3" style={{borderColor:"#30363d"}} onClick={()=>{ setViewSite(s); setShowSiraSites(false); }}>
+                <div className={`w-3 h-3 rounded-full shrink-0 ${s.siraCertified ? "bg-blue-500" : "bg-purple-500"}`}/>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-sm text-[#f0f6fc] truncate">{s.name}</div>
+                  <div className="text-[11px] text-[#8b949e]">{s.location} • {s.type} • {s.status}</div>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.siraCertified ? "bg-blue-500/20 text-blue-400" : "bg-purple-500/20 text-purple-400"}`}>{s.siraCertified ? "Certified" : "Not Certified"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Modal>}
     </div>
   );
 }
