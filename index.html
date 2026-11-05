@@ -2826,7 +2826,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
   );
 
   const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
-  const bySiteOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineANPR||0})).sort((a,b)=>b.value-a.value).slice(0,5);
+  const bySiteOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineANPR||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
 
   const now = new Date();
   const cutoffDate = (filter) => {
@@ -2913,7 +2913,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
                 <XAxis dataKey="name" tick={{fontSize:8, fill:"#8b949e"}} angle={-30} textAnchor="end" height={30}/>
                 <YAxis tick={{fontSize:9, fill:"#8b949e"}} allowDecimals={false}/>
                 <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
-                <Bar dataKey="value" name="Offline ANPR" fill="#8957e5" radius={[4,4,0,0]}/>
+                <Bar dataKey="value" name="Offline ANPR" fill="#8957e5" radius={[4,4,0,0]} onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }} cursor="pointer"/>
               </BarChart>
             </ResponsiveContainer>
           </div>
