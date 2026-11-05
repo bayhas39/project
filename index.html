@@ -2813,6 +2813,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setPage}){
 
   const [viewItem, setViewItem] = useState(null);
   const [timeFilter, setTimeFilter] = useState("day");
+  const [viewSite, setViewSite] = useState(null);
 
 const Box = ({icon, color, bg, label, value, label2, value2}) => (
     <div className="bg-[#0d1117] border rounded-2xl p-2 flex flex-col items-center justify-center gap-1 h-full" style={{borderColor:"#30363d"}}>
@@ -2824,7 +2825,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
     </div>
   );
 
-  const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineCameras||0})).sort((a,b)=>b.value-a.value).slice(0,5);
+  const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
   const bySiteOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).map(s=>({name:s.name.length>12?s.name.slice(0,12):s.name, value:s.offlineANPR||0})).sort((a,b)=>b.value-a.value).slice(0,5);
 
   const now = new Date();
@@ -2866,7 +2867,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
                 <XAxis dataKey="name" tick={{fontSize:8, fill:"#8b949e"}} angle={-30} textAnchor="end" height={30}/>
                 <YAxis tick={{fontSize:9, fill:"#8b949e"}} allowDecimals={false}/>
                 <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
-                <Bar dataKey="value" name="Offline Cameras" fill="#1f6feb" radius={[4,4,0,0]}/>
+                <Bar dataKey="value" name="Offline Cameras" fill="#1f6feb" radius={[4,4,0,0]} onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }} cursor="pointer"/>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -3056,6 +3057,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
           )}
         </div>
       </Modal>}
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
     </div>
   );
 }
