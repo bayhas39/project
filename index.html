@@ -899,7 +899,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
             {page==="accidents" && <AccidentsPage accidents={accidents} sites={sites} setAccidents={setAccidents} setPage={setPage}/>}
             {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
             {page==="certified" && <CertifiedSitesPage sites={sites} setPage={setPage}/>}
-            {page==="fullscreen" && <FullscreenPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} setPage={setPage}/>}
+            {page==="fullscreen" && <FullscreenPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage}/>}
           </div>
           <p className="mt-8 text-center text-xs text-[#6f9a86]">
             Page: {PAGE_LABEL[page]} •
@@ -2794,7 +2794,7 @@ function OwnerReportsPage({site, incidents, setIncidents, onBack}){
 /* ================================================================ */
 /*                        FULLSCREEN PAGE                           */
 /* ================================================================ */
-function FullscreenPage({sites, incidents, accidents, stats, setPage}){
+function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAccidents, setPage}){
   const totalSites = sites.length;
   const totalCameras = sites.reduce((a,s)=>a+(s.totalCameras||0),0);
   const offlineCameras = sites.reduce((a,s)=>a+(s.offlineCameras||0),0);
