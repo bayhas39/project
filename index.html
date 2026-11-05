@@ -2952,18 +2952,18 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
             </div>
           </div>
           <div className="space-y-1.5 max-h-[120px] overflow-y-auto overflow-x-hidden pr-1">
-            {filteredIncidents.map(inc=>(
-              <div key={inc.id} className="flex items-center gap-2 rounded-lg border bg-[#161b22] px-2.5 py-1.5 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'incident', data:inc}); }}>
-                <IcFileText size={12} className="text-blue-400 shrink-0"/>
-                <span className="text-xs font-semibold truncate text-[#f0f6fc]">{inc.title}</span>
-                <span className="ml-auto text-[10px] text-[#8b949e] shrink-0">{inc.date}</span>
-              </div>
-            ))}
             {filteredAccidents.map(acc=>(
               <div key={acc.id} className="flex items-center gap-2 rounded-lg border bg-[#161b22] px-2.5 py-1.5 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'accident', data:acc}); }}>
                 <IcAlert size={12} className="text-red-400 shrink-0"/>
                 <span className="text-xs font-semibold truncate text-[#f0f6fc]">{acc.title||acc.type||"Accident"}</span>
                 <span className="ml-auto text-[10px] text-[#8b949e] shrink-0">{acc.reportedDate||acc.date}</span>
+              </div>
+            ))}
+            {filteredIncidents.map(inc=>(
+              <div key={inc.id} className="flex items-center gap-2 rounded-lg border bg-[#161b22] px-2.5 py-1.5 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'incident', data:inc}); }}>
+                <IcFileText size={12} className="text-blue-400 shrink-0"/>
+                <span className="text-xs font-semibold truncate text-[#f0f6fc]">{inc.title}</span>
+                <span className="ml-auto text-[10px] text-[#8b949e] shrink-0">{inc.date}</span>
               </div>
             ))}
             {filteredIncidents.length===0 && filteredAccidents.length===0 && <p className="text-xs text-[#8b949e]">No incidents or accidents in this period.</p>}
