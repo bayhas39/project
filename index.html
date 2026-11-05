@@ -2710,7 +2710,7 @@ function OwnerReportsPage({site, incidents, setIncidents, onBack}){
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="px-3 py-1.5 rounded-full bg-white border text-xs font-bold hover:bg-slate-100" style={{borderColor:"#e2e8f0"}}>< IcArrowLeft size={13}/> Back to overview</button>
+        <button onClick={onBack} className="px-3 py-1.5 rounded-full bg-white border text-xs font-bold hover:bg-slate-100" style={{borderColor:"#e2e8f0"}}>← Back to overview</button>
         <span className="text-[11px] text-slate-500">Incidents for <b className="font-bold">{site.name}</b></span>
         <button onClick={()=>setNewOpen(true)} className="ml-auto px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-bold hover:bg-red-700 shadow-sm"><IcPlus size={13}/> New incident</button>
       </div>
