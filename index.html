@@ -2951,7 +2951,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
               ))}
             </div>
           </div>
-          <div className="space-y-1.5 max-h-[200px] overflow-y-auto overflow-x-hidden pr-1 flex-1">
+          <div className="space-y-1.5 max-h-[120px] overflow-y-auto overflow-x-hidden pr-1">
             {filteredIncidents.map(inc=>(
               <div key={inc.id} className="flex items-center gap-2 rounded-lg border bg-[#161b22] px-2.5 py-1.5 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewItem({type:'incident', data:inc}); }}>
                 <IcFileText size={12} className="text-blue-400 shrink-0"/>
