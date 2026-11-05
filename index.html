@@ -2815,6 +2815,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
   const [timeFilter, setTimeFilter] = useState("day");
   const [viewSite, setViewSite] = useState(null);
   const [showAmcSites, setShowAmcSites] = useState(false);
+  const [showSiraSites, setShowSiraSites] = useState(false);
 
 const Box = ({icon, color, bg, label, value, label2, value2}) => (
     <div className="bg-[#0d1117] border rounded-2xl p-2 flex flex-col items-center justify-center gap-1 h-full" style={{borderColor:"#30363d"}}>
@@ -2930,7 +2931,7 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
               <div className="text-xl font-extrabold text-purple-400 leading-none">{siraNotCertifiedCount}</div>
             </div>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 cursor-pointer" onClick={()=>setShowSiraSites(true)}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={[{name:"Certified", value:siraCertifiedCount, color:"#1f6feb"},{name:"Not Certified", value:siraNotCertifiedCount, color:"#8b5cf6"}]} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} strokeWidth={2} stroke="#0d1117" label={({name, percent})=>`${name}: ${(percent*100).toFixed(0)}%`} labelLine={false}>
@@ -3071,6 +3072,23 @@ const Box = ({icon, color, bg, label, value, label2, value2}) => (
                   <div className="text-[11px] text-[#8b949e]">{s.location} • {s.type} • {s.status}</div>
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.amcCertified ? "bg-blue-500/20 text-blue-400" : "bg-red-500/20 text-red-400"}`}>{s.amcCertified ? "Certified" : "Not Certified"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Modal>}
+      {showSiraSites && <Modal title="SIRA Certified Sites" onClose={()=>setShowSiraSites(false)} wide>
+        <div className="space-y-3">
+          <div className="text-sm font-bold text-[#8b949e]">Total: {sites.length} ({siraCertifiedCount} certified, {siraNotCertifiedCount} not certified)</div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {sites.slice().sort((a,b)=> (b.siraCertified?1:0) - (a.siraCertified?1:0)).map(s=>(
+              <div key={s.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition flex items-center gap-3" style={{borderColor:"#30363d"}} onClick={()=>{ setViewSite(s); setShowSiraSites(false); }}>
+                <div className={`w-3 h-3 rounded-full shrink-0 ${s.siraCertified ? "bg-blue-500" : "bg-purple-500"}`}/>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-sm text-[#f0f6fc] truncate">{s.name}</div>
+                  <div className="text-[11px] text-[#8b949e]">{s.location} • {s.type} • {s.status}</div>
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.siraCertified ? "bg-blue-500/20 text-blue-400" : "bg-purple-500/20 text-purple-400"}`}>{s.siraCertified ? "Certified" : "Not Certified"}</span>
               </div>
             ))}
           </div>
