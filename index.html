@@ -804,6 +804,9 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
     nwACS: sites.reduce((a,s)=>a+(s.notWorkingANPR||0),0),
     nwGate: sites.reduce((a,s)=>a+(s.notWorkingGate||0),0),
     nwIntercom: sites.reduce((a,s)=>a+(s.notWorkingIntercom||0),0),
+    onlineACS: sites.reduce((a,s)=>a+(s.onlineACS||0),0),
+    workingGate: sites.reduce((a,s)=>a+(s.workingGate||0),0),
+    workingIntercom: sites.reduce((a,s)=>a+(s.workingIntercom||0),0),
   }), [sites]);
 
   const perSite = useMemo(()=> sites.map(s=>({
@@ -811,6 +814,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
     totalCameras:s.totalCameras||0, offlineCameras:s.offlineCameras||0,
     totalANPR:s.totalANPR||0, offlineANPR:s.offlineANPR||0,
     notWorkingANPR:s.notWorkingANPR||0, notWorkingGate:s.notWorkingGate||0, notWorkingIntercom:s.notWorkingIntercom||0,
+    onlineACS:s.onlineACS||0, workingGate:s.workingGate||0, workingIntercom:s.workingIntercom||0,
   })), [sites]);
 
   const attention = useMemo(()=>{
@@ -1142,6 +1146,21 @@ function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents
               return <div className={`text-[11px] mt-0.5 ${color}`}>Expires: {site.siraExpiryDate} ({diff < 0 ? "Expired " + Math.abs(diff) + " days ago" : diff + " days remaining"})</div>;
             })()}
           </div>
+          <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Online ACS</div>
+            <div className="text-2xl font-extrabold mt-1 text-emerald-600">{site.onlineACS||0}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">working access control</div>
+          </div>
+          <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Working Gate Barrier</div>
+            <div className="text-2xl font-extrabold mt-1 text-emerald-600">{site.workingGate||0}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">operational gates</div>
+          </div>
+          <div className="bg-slate-50 rounded-xl p-3 border" style={{borderColor:"#e2e8f0"}}>
+            <div className="text-[11px] font-bold tracking-widest uppercase text-slate-500">Working Intercom</div>
+            <div className="text-2xl font-extrabold mt-1 text-emerald-600">{site.workingIntercom||0}</div>
+            <div className="text-[11px] text-slate-500 mt-0.5">operational intercoms</div>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-3">
@@ -1163,6 +1182,16 @@ function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents
                 <Bar dataKey="online" name="Online" fill="#1f6feb" radius={[6,6,0,0]}/>
                 <Bar dataKey="offline" name="Offline" fill="#1f6feb" radius={[6,6,0,0]}/>
                 <Bar dataKey="nw" name="Not Working" fill="#1f6feb" radius={[6,6,0,0]}/>
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+          <Card title="ACS / Gate / Intercom — This Site" subtitle="Working vs Not Working" icon={IcLock}>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={[{name:"ACS", working:site.onlineACS||0, notWorking:site.notWorkingANPR||0},{name:"Gate", working:site.workingGate||0, notWorking:site.notWorkingGate||0},{name:"Intercom", working:site.workingIntercom||0, notWorking:site.notWorkingIntercom||0}]} barSize={40}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+                <XAxis dataKey="name" tick={{fontSize:11}}/><YAxis allowDecimals={false} tick={{fontSize:11}}/><Tooltip/><Legend wrapperStyle={{fontSize:12}}/>
+                <Bar dataKey="working" name="Working" fill="#3fb950" radius={[6,6,0,0]}/>
+                <Bar dataKey="notWorking" name="Not Working" fill="#f85149" radius={[6,6,0,0]}/>
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -1507,6 +1536,12 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
         </button>
       </div>
 
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+        <KPI label="Online ACS" value={stats.onlineACS} sub={`${stats.onlineACS} working access control`} icon={IcLock} color="bg-blue-500 text-white" top="bg-blue-500"/>
+        <KPI label="Working Gate Barrier" value={stats.workingGate} sub={`${stats.workingGate} operational gates`} icon={IcLock} color="bg-purple-500 text-white" top="bg-purple-500"/>
+        <KPI label="Working Intercom" value={stats.workingIntercom} sub={`${stats.workingIntercom} operational intercoms`} icon={IcAlert} color="bg-emerald-500 text-white" top="bg-emerald-500"/>
+      </div>
+
       <Card title="Top 10 Sites — Highest Offline Cameras" subtitle="Sites with the most offline CCTV cameras" icon={IcCamOff}>
         <ResponsiveContainer width="100%" height={340}>
           <BarChart data={topOfflineCamSites} margin={{top:8,right:12,left:0,bottom:60}}>
@@ -1649,7 +1684,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
       </Card>
 
       <Card title="Security — Device Health" subtitle="Offline CCTV • Offline ANPR • Not Working ACS/Gate/Intercom — worst 10 sites" icon={IcShield}>
-        <ResponsiveContainer width="100%" height={340}>
+        <ResponsiveContainer width="100%" height={420}>
           <BarChart data={worst} margin={{top:8,right:12,left:0,bottom:60}}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
@@ -1660,6 +1695,9 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
             <Bar dataKey="notWorkingANPR" name="Not Working ACS" stackId="a" fill="#1f6feb"/>
             <Bar dataKey="notWorkingGate" name="Gate barrier" stackId="a" fill="#1f6feb"/>
             <Bar dataKey="notWorkingIntercom" name="Intercom" stackId="a" fill="#1f6feb"/>
+            <Bar dataKey="onlineACS" name="Online ACS" stackId="b" fill="#3fb950"/>
+            <Bar dataKey="workingGate" name="Working Gate" stackId="b" fill="#8957e5"/>
+            <Bar dataKey="workingIntercom" name="Working Intercom" stackId="b" fill="#39c5cf"/>
           </BarChart>
         </ResponsiveContainer>
       </Card>
