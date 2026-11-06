@@ -2451,6 +2451,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
   const [page, setPage] = useState(()=> LS.get("dhre_owner_page", "overview")); const [newIncOpen, setNewIncOpen] = useState(false); const [newAccOpen, setNewAccOpen] = useState(false);
   const [viewIncident, setViewIncident] = useState(null); const [viewAccident, setViewAccident] = useState(null);
   const [viewAllAccidents, setViewAllAccidents] = useState(false);
+  if(!site) return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="bg-white rounded-2xl border p-8 text-center max-w-[420px]" style={{borderColor:"#e2e8f0"}}>
         <h2 className="font-extrabold text-lg">Site not found</h2>
