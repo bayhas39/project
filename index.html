@@ -1335,9 +1335,9 @@ function SiteFormModal({site, sites, setSites, onClose}){
   const [form, setForm] = useState(()=> isNew ? {
     name:"", location:"", type:"Construction", status:"Pending", date:new Date().toISOString().slice(0,10),
     inspector:"", notes:"", totalCameras:8, offlineCameras:0, totalANPR:2, offlineANPR:0,
-    notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0, siraCertified:false, siraExpiryDate:"", amcCertified:false,
+    notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0, onlineACS:0, workingGate:0, workingIntercom:0, siraCertified:false, siraExpiryDate:"", amcCertified:false,
     pincode:String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"),
-  } : {...site, siraExpiryDate: site.siraExpiryDate||"", amcCertified: site.amcCertified||false});
+  } : {...site, siraExpiryDate: site.siraExpiryDate||"", amcCertified: site.amcCertified||false, onlineACS: site.onlineACS||0, workingGate: site.workingGate||0, workingIntercom: site.workingIntercom||0});
   const set = (k, v) => setForm(f=>({...f, [k]: v}));
   const save = () => {
     if(!form.name.trim() || !form.location.trim()){ toast.error("Site name and location are required"); return; }
@@ -1382,6 +1382,9 @@ function SiteFormModal({site, sites, setSites, onClose}){
         {num("offlineANPR","Offline ANPR")}
         {num("notWorkingANPR","Not Working ACS")}
         {num("notWorkingGate","Not Working Gate barrier")}
+        {num("onlineACS","Online ACS")}
+        {num("workingGate","Working Gate barrier")}
+        {num("workingIntercom","Working Intercom")}
         <Field label="Pincode">
           <div className="flex gap-2">
             <input value={form.pincode} onChange={e=>set("pincode", e.target.value.slice(0,4))} className={`${inputCls} font-mono2 tracking-[0.3em] w-32`}/>
