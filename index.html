@@ -1332,28 +1332,6 @@ function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents
           </div>
         </div>
       </Modal>}
-      {viewAllAccidents && <Modal title="All Accidents" onClose={()=>setViewAllAccidents(false)} wide>
-        <div className="space-y-3">
-          <div className="text-sm font-bold text-[#8b949e]">Total: {siteAccidents.length} accidents</div>
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {siteAccidents.map(a=>(
-              <div key={a.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition" style={{borderColor:"#30363d"}} onClick={()=>{ setViewAccident(a); setViewAllAccidents(false); }}>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-sm text-[#f0f6fc]">{a.title||a.type||"Accident"}</span>
-                  <Badge status={a.status==="Open"?"Opened":a.status==="Resolved"?"Closed":a.status}/>
-                </div>
-                <div className="text-[11px] text-[#8b949e] mt-1 flex items-center gap-2 flex-wrap">
-                  <span className="flex items-center gap-1"><IcPin size={11}/>{a.siteName || "-"}</span>
-                  <span>{a.reportedDate||a.date}</span>
-                  <span className="flex items-center gap-1"><IcAlert size={11}/>{a.type||"Accident"}</span>
-                </div>
-                {a.description && <div className="text-[11px] text-[#c9d1d9] mt-1.5 line-clamp-2">{a.description}</div>}
-              </div>
-            ))}
-            {siteAccidents.length===0 && <p className="text-xs text-[#8b949e]">No accidents for this site.</p>}
-          </div>
-        </div>
-      </Modal>}
     </React.Fragment>
   );
 }
