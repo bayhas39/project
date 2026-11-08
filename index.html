@@ -2873,6 +2873,17 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
   const siraNotCertifiedCount = sites.filter(s=>!s.siraCertified).length;
   const totalANPR = sites.reduce((a,s)=>a+(s.totalANPR||0),0);
   const openIncidents = incidents.filter(i=>i.status==="Opened"||i.status==="Solving").length;
+  const now = new Date();
+  const cutoffDate = (filter) => {
+    const d = new Date(now);
+    if (filter === "day") d.setDate(d.getDate() - 1);
+    else if (filter === "week") d.setDate(d.getDate() - 7);
+    else if (filter === "month") d.setMonth(d.getMonth() - 1);
+    return d.toISOString().slice(0, 10);
+  };
+  const [timeFilter, setTimeFilter] = useState("day");
+  const filteredIncidents = incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter));
+  const filteredAccidents = accidents.filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter));
 
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
