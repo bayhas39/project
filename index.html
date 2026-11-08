@@ -2888,6 +2888,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
 
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
+  const [viewSite, setViewSite] = useState(null);
 
   const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>10?s.name.slice(0,10)+"..":s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
   const bySiteOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).map(s=>({name:s.name.length>10?s.name.slice(0,10)+"..":s.name, value:s.offlineANPR||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
@@ -2921,7 +2922,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                 <XAxis dataKey="name" tick={{fontSize:9, fill:"#6b7280"}} angle={-30} textAnchor="end" height={50}/>
                 <YAxis tick={{fontSize:9, fill:"#6b7280"}} allowDecimals={false} width={32}/>
                 <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
-                <Bar dataKey="value" name="Offline Cameras" fill="#3b82f6" radius={[4,4,0,0]}/>
+                <Bar dataKey="value" name="Offline Cameras" fill="#3b82f6" radius={[4,4,0,0]} cursor="pointer" onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -3037,6 +3038,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           </div>
         </div>
       </div>
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
     </div>
   );
 }
