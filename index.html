@@ -2882,9 +2882,9 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
     return d.toISOString().slice(0, 10);
   };
   const [timeFilter, setTimeFilter] = useState("day");
-  const [typeFilter, setTypeFilter] = useState("all");
-  const filteredIncidents = incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter));
-  const filteredAccidents = accidents.filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter));
+  const [typeFilter, setTypeFilter] = useState("All");
+  const filteredIncidents = (typeFilter === "All" || typeFilter === "incidents") ? incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter)) : [];
+  const filteredAccidents = (typeFilter === "All" || typeFilter === "accidents") ? accidents.filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter)) : [];
 
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
@@ -3018,8 +3018,8 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               <div className="text-[10px] font-bold text-[#f87171]">{filteredIncidents.length + filteredAccidents.length}</div>
             </div>
             <div className="flex gap-1">
-              {["All","accidents","incidents"].map((f,k)=><button key={k} onClick={()=>{}} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition ${typeFilter===f?"bg-[#3b82f6] text-white border-[#3b82f6]":"bg-[#1f2937] text-[#6b7280] border-[#30363d] hover:bg-[#1f2937]"}`}>{f}</button>)}
-              {["day","week","month"].map((f,k)=><button key={k+3} onClick={()=>{}} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition ${timeFilter===f?"bg-[#3b82f6] text-white border-[#3b82f6]":"bg-[#1f2937] text-[#6b7280] border-[#30363d] hover:bg-[#1f2937]"}`}>{f}</button>)}
+              {["All","accidents","incidents"].map((f,k)=><button key={k} onClick={()=>setTypeFilter(f)} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition ${typeFilter===f?"bg-[#3b82f6] text-white border-[#3b82f6]":"bg-[#1f2937] text-[#6b7280] border-[#30363d] hover:bg-[#1f2937]"}`}>{f}</button>)}
+              {["day","week","month"].map((f,k)=><button key={k+3} onClick={()=>setTimeFilter(f)} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition ${timeFilter===f?"bg-[#3b82f6] text-white border-[#3b82f6]":"bg-[#1f2937] text-[#6b7280] border-[#30363d] hover:bg-[#1f2937]"}`}>{f}</button>)}
             </div>
           </div>
           <div className="flex-1 min-h-0 space-y-2 overflow-y-auto overflow-x-hidden pr-1">
