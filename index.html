@@ -2993,7 +2993,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -3047,33 +3047,6 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">AMC</div>
                   <div className="text-[11px] font-extrabold">{Math.round((amcCertifiedCount/totalSites)*100)}%</div>
                 </div>
-              </div>
-            </div>
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                  <div className="text-xs font-bold text-slate-300">Incidents Over Time</div>
-                </div>
-                <div className="flex gap-1">
-                  {["day","week","month"].map(f=><button key={f} onClick={(e)=>{e.stopPropagation(); setTimeFilter(f);}} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition ${timeFilter===f?"bg-blue-600 text-white border-blue-600":"bg-slate-700 text-slate-400 border-slate-600 hover:bg-slate-600"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>)}
-                </div>
-              </div>
-              <div className="h-[220px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={monthlyData} margin={{top:8,right:20,left:0,bottom:24}}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
-                    <XAxis dataKey="name" tick={{fontSize:9, fill:"#64748b"}}/>
-                    <YAxis tick={{fontSize:9, fill:"#64748b"}} allowDecimals={false} width={30}/>
-                    <Tooltip contentStyle={{background:"#0f172a", border:"1px solid #334155", color:"#f1f5f9", fontSize:11, padding:6, borderRadius:8}}/>
-                    <Line type="monotone" dataKey="incidents" stroke="#3b82f6" strokeWidth={2} dot={{fill:"#3b82f6", stroke:"#fff", strokeWidth:1}} activeDot={{r:4}}/>
-                    <Line type="monotone" dataKey="accidents" stroke="#ef4444" strokeWidth={2} dot={{fill:"#ef4444", stroke:"#fff", strokeWidth:1}} activeDot={{r:4}}/>
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-3 text-[10px] text-slate-500 flex justify-between">
-                <span>{filteredIncidents.length + filteredAccidents.length} events this period</span>
-                <span className="flex gap-2"><span className="w-2 h-2 rounded-full bg-blue-500 inline mr-1"></span>Incidents <span className="w-2 h-2 rounded-full bg-rose-500 inline mr-1"></span>Accidents</span>
               </div>
             </div>
           </div>
