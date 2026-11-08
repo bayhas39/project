@@ -2882,6 +2882,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
     return d.toISOString().slice(0, 10);
   };
   const [timeFilter, setTimeFilter] = useState("day");
+  const [typeFilter, setTypeFilter] = useState("all");
   const filteredIncidents = incidents.filter(inc => (inc.date || "") >= cutoffDate(timeFilter));
   const filteredAccidents = accidents.filter(acc => (acc.reportedDate || acc.date || "") >= cutoffDate(timeFilter));
 
