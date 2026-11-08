@@ -2889,6 +2889,8 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
   const [viewSite, setViewSite] = useState(null);
+  const [showAmcSites, setShowAmcSites] = useState(false);
+  const [showSiraSites, setShowSiraSites] = useState(false);
 
   const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>10?s.name.slice(0,10)+"..":s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
   const bySiteOfflineAnpr = sites.filter(s=>(s.offlineANPR||0)>0).map(s=>({name:s.name.length>10?s.name.slice(0,10)+"..":s.name, value:s.offlineANPR||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
@@ -2928,7 +2930,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           </div>
         </div>
         {/* Box 2: AMC Donut */}
-        <div className="bg-[#0d1117] border rounded-2xl p-4 flex flex-col" style={{borderColor:"#30363d"}}>
+        <div className="bg-[#0d1117] border rounded-2xl p-4 flex flex-col cursor-pointer hover:bg-[#161b22] transition" style={{borderColor:"#30363d"}} onClick={()=>setShowAmcSites(true)}>
           <div className="flex justify-between items-start mb-3">
             <div className="flex flex-col">
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">AMC Certified</div>
@@ -2984,7 +2986,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           </div>
         </div>
         {/* Box 5: SIRA Donut */}
-        <div className="bg-[#0d1117] border rounded-2xl p-4 flex flex-col" style={{borderColor:"#30363d"}}>
+        <div className="bg-[#0d1117] border rounded-2xl p-4 flex flex-col cursor-pointer hover:bg-[#161b22] transition" style={{borderColor:"#30363d"}} onClick={()=>setShowSiraSites(true)}>
           <div className="flex justify-between items-start mb-3">
             <div className="flex flex-col">
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">SIRA Certified</div>
@@ -3038,6 +3040,36 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           </div>
         </div>
       </div>
+      {showAmcSites && <Modal title="AMC Certified Sites" onClose={()=>setShowAmcSites(false)} wide>
+        <div className="space-y-3">
+          <div className="text-sm font-bold text-[#8b949e]">Total: {sites.length} ({amcCertifiedCount} certified, {amcNotCertifiedCount} not certified)</div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {sites.slice().sort((a,b)=> (b.amcCertified?1:0) - (a.amcCertified?1:0)).map(s=>(<div key={s.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition flex items-center gap-3" style={{borderColor:"#30363d"}} onClick={()=>{ setViewSite(s); setShowAmcSites(false); }}>
+              <div className={`w-3 h-3 rounded-full shrink-0 ${s.amcCertified ? "bg-blue-500" : "bg-red-500"}`}/>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm text-[#f0f6fc] truncate">{s.name}</div>
+                <div className="text-[11px] text-[#8b949e]">{s.location} • {s.type} • {s.status}</div>
+              </div>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.amcCertified ? "bg-blue-500/20 text-blue-400" : "bg-red-500/20 text-red-400"}`}>{s.amcCertified ? "Certified" : "Not Certified"}</span>
+            </div>))}
+          </div>
+        </div>
+      </Modal>}
+      {showSiraSites && <Modal title="SIRA Certified Sites" onClose={()=>setShowSiraSites(false)} wide>
+        <div className="space-y-3">
+          <div className="text-sm font-bold text-[#8b949e]">Total: {sites.length} ({siraCertifiedCount} certified, {siraNotCertifiedCount} not certified)</div>
+          <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            {sites.slice().sort((a,b)=> (b.siraCertified?1:0) - (a.siraCertified?1:0)).map(s=>(<div key={s.id} className="bg-[#161b22] border rounded-xl p-3 cursor-pointer hover:bg-[#21262d] transition flex items-center gap-3" style={{borderColor:"#30363d"}} onClick={()=>{ setViewSite(s); setShowSiraSites(false); }}>
+              <div className={`w-3 h-3 rounded-full shrink-0 ${s.siraCertified ? "bg-blue-500" : "bg-purple-500"}`}/>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm text-[#f0f6fc] truncate">{s.name}</div>
+                <div className="text-[11px] text-[#8b949e]">{s.location} • {s.type} • {s.status}</div>
+              </div>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.siraCertified ? "bg-blue-500/20 text-blue-400" : "bg-purple-500/20 text-purple-400"}`}>{s.siraCertified ? "Certified" : "Not Certified"}</span>
+            </div>))}
+          </div>
+        </div>
+      </Modal>}
       {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
     </div>
   );
