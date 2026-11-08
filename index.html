@@ -2894,7 +2894,6 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
   const [showAmcSites, setShowAmcSites] = useState(false);
   const [showSiraSites, setShowSiraSites] = useState(false);
 
-  /* monthly incident/accident trend for line chart */
   const monthlyData = [];
   const monthLabels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   const now2 = new Date();
@@ -2925,7 +2924,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0f172a] text-[#f1f5f9] flex flex-col p-0">
-<div className="bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0 z-10">
+      <div className="bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-slate-900 font-extrabold text-xs shadow-lg shadow-blue-500/30">D</div>
           <div>
@@ -2934,19 +2933,15 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           </div>
         </div>
         <div className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-400">
-          {navItems.map(n=>(<div key={n} className="flex items-center gap-1 cursor-pointer hover:text-white transition px-2 py-1 rounded-md hover:bg-slate-800/50"><span className="text-[10px]">{n}</span><span className="w-1 h-1 rounded-full bg-slate-500"></span></div>))}
+          {navItems.map(n=><div key={n} className="flex items-center gap-1 cursor-pointer hover:text-white transition px-2 py-1 rounded-md hover:bg-slate-800/50"><span className="text-[10px]">{n}</span><span className="w-1 h-1 rounded-full bg-slate-500"></span></div>)}
         </div>
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-full text-xs">
             <span className="text-slate-400">Last year</span>
             <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/></svg>
           </div>
-          <button className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg shadow-blue-500/30 transition flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-slate-200"></span> AI Assistant
-          </button>
-          <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 overflow-hidden cursor-pointer hover:scale-105 transition">
-            <img src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=fff" className="w-full h-full object-cover"/>
-          </div>
+          <button className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg shadow-blue-500/30 transition flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-slate-200"></span> AI Assistant</button>
+          <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 overflow-hidden cursor-pointer hover:scale-105 transition"><img src="https://ui-avatars.com/api/?name=Admin&background=3b82f6&color=fff" className="w-full h-full object-cover"/></div>
         </div>
       </div>
 
@@ -2959,12 +2954,11 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
             </div>
             <div className="flex items-center gap-2">
               <button className="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-slate-800/50"><span className="w-3 h-3 rounded-full bg-slate-500"></span> Filters</button>
-              <button className="bg-slate-800 border border-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span> Export Report
-              </button>
+              <button className="bg-slate-800 border border-slate-700 text-xs font-bold px-3 py-1.5 rounded-lg text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span> Export Report</button>
             </div>
           </div>
-<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
             <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Sites</div>
@@ -2998,8 +2992,9 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               <div className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">{openIncidents > 0 ? openIncidents + " active" : "All clear"}</div>
             </div>
           </div>
-<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-<div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -3023,14 +3018,14 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                 <span className="text-blue-400">Click a bar to view site details</span>
               </div>
             </div>
-<div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                   <div className="text-xs font-bold text-slate-300">Incidents Over Time</div>
                 </div>
                 <div className="flex gap-1">
-                  {["day","week","month"].map(f=>(<button key={f} onClick={(e)=>{e.stopPropagation(); setTimeFilter(f);}} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition ${timeFilter===f?"bg-blue-600 text-white border-blue-600":"bg-slate-700 text-slate-400 border-slate-600 hover:bg-slate-600"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>))}
+                  {["day","week","month"].map(f=><button key={f} onClick={(e)=>{e.stopPropagation(); setTimeFilter(f);}} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition ${timeFilter===f?"bg-blue-600 text-white border-blue-600":"bg-slate-700 text-slate-400 border-slate-600 hover:bg-slate-600"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>)}
                 </div>
               </div>
               <div className="h-[220px]">
@@ -3051,8 +3046,9 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               </div>
             </div>
           </div>
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-<div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-purple-500"></div>
@@ -3094,7 +3090,8 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                 </div>
               </div>
             </div>
-<div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
+
+            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
@@ -3107,33 +3104,34 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                   <div className="text-right text-sm font-bold">{onlineACS}</div>
                 </div>
                 <div className="w-full bg-slate-700/30 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-blue-500 h-full rounded-full" style={{width: acsWidth + "%"}}/></div>
+                  <div className="bg-blue-500 h-full rounded-full" style={{width: acsWidth + "%"}}/>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-slate-400">Working Gate Barrier</div>
                   <div className="text-right text-sm font-bold">{workingGate}</div>
                 </div>
                 <div className="w-full bg-slate-700/30 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-indigo-500 h-full rounded-full" style={{width: gateWidth + "%"}}/></div>
+                  <div className="bg-indigo-500 h-full rounded-full" style={{width: gateWidth + "%"}}/>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-slate-400">Working Intercom</div>
                   <div className="text-right text-sm font-bold">{workingIntercom}</div>
                 </div>
                 <div className="w-full bg-slate-700/30 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full rounded-full" style={{width: intercomWidth + "%"}}/></div>
+                  <div className="bg-emerald-500 h-full rounded-full" style={{width: intercomWidth + "%"}}/>
                 </div>
               </div>
             </div>
           </div>
-<div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+
+          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-slate-400"></div>
-                <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">Recent Incidents & Accidents</div>
+                <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">Recent Incidents and Accidents</div>
               </div>
               <div className="flex gap-1">
-                {["all","accidents","incidents"].map(f=>(<button key={f} onClick={(e)=>{e.stopPropagation(); setTypeFilter(f);}} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition ${typeFilter===f?"bg-purple-600 text-white border-purple-600":"bg-slate-700 text-slate-400 border-slate-600 hover:bg-slate-600"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>))}
+                {["all","accidents","incidents"].map(f=><button key={f} onClick={(e)=>{e.stopPropagation(); setTypeFilter(f);}} className={`text-[10px] font-bold px-2 py-0.5 rounded-md border transition ${typeFilter===f?"bg-purple-600 text-white border-purple-600":"bg-slate-700 text-slate-400 border-slate-600 hover:bg-slate-600"}`}>{f.charAt(0).toUpperCase()+f.slice(1)}</button>)}
               </div>
             </div>
             <div className="space-y-2 max-h-[340px] overflow-y-auto overflow-x-hidden pr-1">
@@ -3143,7 +3141,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                     <IcAlert size={14} className="text-rose-500 shrink-0"/>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-sm text-f1f5f9 truncate">{item.title||item.type||"Accident"}</span>
+                        <span className="font-bold text-sm text-[#f1f5f9] truncate">{item.title||item.type||"Accident"}</span>
                         <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-rose-900/40 text-rose-300 border border-rose-800">{item.status==="Open"?"Opened":item.status==="Resolved"?"Closed":item.status}</span>
                       </div>
                       <div className="text-[10px] text-slate-500 mt-0.5 flex gap-2 flex-wrap">
@@ -3213,7 +3211,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
             <div>
               <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-1">History</div>
               <div className="space-y-1.5">
-                {viewItem.data.history.map((h,idx)=>(<div key={idx} className="text-xs bg-slate-900/50 rounded-lg p-2 border" style={{borderColor:"#334155"}}><span className="font-bold text-slate-300">{h.at}</span> <span className="text-slate-500">by {h.by}</span><div className="text-slate-400 mt-0.5">{h.change}</div></div>))}
+                {viewItem.data.history.map((h,idx)=><div key={idx} className="text-xs bg-slate-900/50 rounded-lg p-2 border" style={{borderColor:"#334155"}}><span className="font-bold text-slate-300">{h.at}</span> <span className="text-slate-500">by {h.by}</span><div className="text-slate-400 mt-0.5">{h.change}</div></div>)}
               </div>
             </div>
           )}
@@ -3252,7 +3250,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
             <div>
               <div className="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-1">History</div>
               <div className="space-y-1.5">
-                {viewItem.data.history.map((h,idx)=>(<div key={idx} className="text-xs bg-slate-900/50 rounded-lg p-2 border" style={{borderColor:"#334155"}}><span className="font-bold text-slate-300">{h.at}</span> <span className="text-slate-500">by {h.by}</span><div className="text-slate-400 mt-0.5">{h.change}</div></div>))}
+                {viewItem.data.history.map((h,idx)=><div key={idx} className="text-xs bg-slate-900/50 rounded-lg p-2 border" style={{borderColor:"#334155"}}><span className="font-bold text-slate-300">{h.at}</span> <span className="text-slate-500">by {h.by}</span><div className="text-slate-400 mt-0.5">{h.change}</div></div>)}
               </div>
             </div>
           )}
@@ -3263,14 +3261,14 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
         <div className="space-y-3">
           <div className="text-sm font-bold text-slate-300">Total: {sites.length} ({amcCertifiedCount} certified, {amcNotCertifiedCount} not certified)</div>
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {sites.slice().sort((a,b)=> (b.amcCertified?1:0) - (a.amcCertified?1:0)).map(s=>(<div key={s.id} className="bg-slate-900/50 border rounded-xl p-3 cursor-pointer hover:bg-slate-800/50 transition flex items-center gap-3" style={{borderColor:"#334155"}} onClick={()=>{ setViewSite(s); setShowAmcSites(false); }}>
+            {sites.slice().sort((a,b)=> (b.amcCertified?1:0) - (a.amcCertified?1:0)).map(s=><div key={s.id} className="bg-slate-900/50 border rounded-xl p-3 cursor-pointer hover:bg-slate-800/50 transition flex items-center gap-3" style={{borderColor:"#334155"}} onClick={()=>{ setViewSite(s); setShowAmcSites(false); }}>
               <div className={`w-3 h-3 rounded-full shrink-0 ${s.amcCertified ? "bg-blue-500" : "bg-rose-500"}`}/>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm text-[#f1f5f9] truncate">{s.name}</div>
                 <div className="text-[11px] text-slate-500">{s.location} • {s.type} • {s.status}</div>
               </div>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.amcCertified ? "bg-blue-900/40 text-blue-300" : "bg-rose-900/40 text-rose-300"}`}>{s.amcCertified ? "Certified" : "Not Certified"}</span>
-            </div>))}
+            </div>)}
           </div>
         </div>
       </Modal>}
@@ -3278,14 +3276,14 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
         <div className="space-y-3">
           <div className="text-sm font-bold text-slate-300">Total: {sites.length} ({siraCertifiedCount} certified, {siraNotCertifiedCount} not certified)</div>
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {sites.slice().sort((a,b)=> (b.siraCertified?1:0) - (a.siraCertified?1:0)).map(s=>(<div key={s.id} className="bg-slate-900/50 border rounded-xl p-3 cursor-pointer hover:bg-slate-800/50 transition flex items-center gap-3" style={{borderColor:"#334155"}} onClick={()=>{ setViewSite(s); setShowSiraSites(false); }}>
+            {sites.slice().sort((a,b)=> (b.siraCertified?1:0) - (a.siraCertified?1:0)).map(s=><div key={s.id} className="bg-slate-900/50 border rounded-xl p-3 cursor-pointer hover:bg-slate-800/50 transition flex items-center gap-3" style={{borderColor:"#334155"}} onClick={()=>{ setViewSite(s); setShowSiraSites(false); }}>
               <div className={`w-3 h-3 rounded-full shrink-0 ${s.siraCertified ? "bg-blue-500" : "bg-purple-500"}`}/>
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-sm text-[#f1f5f9] truncate">{s.name}</div>
                 <div className="text-[11px] text-slate-500">{s.location} • {s.type} • {s.status}</div>
               </div>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${s.siraCertified ? "bg-blue-900/40 text-blue-300" : "bg-purple-900/40 text-purple-300"}`}>{s.siraCertified ? "Certified" : "Not Certified"}</span>
-            </div>))}
+            </div>)}
           </div>
         </div>
       </Modal>}
