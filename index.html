@@ -2993,7 +2993,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -3047,34 +3047,6 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">AMC</div>
                   <div className="text-[11px] font-extrabold">{Math.round((amcCertifiedCount/totalSites)*100)}%</div>
                 </div>
-              </div>
-            </div>
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div className="text-center flex-1">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Sites</div>
-                  <div className="text-2xl font-extrabold text-blue-400">{totalSites}</div>
-                </div>
-                <div className="w-px h-6 bg-slate-700"></div>
-                <div className="text-center flex-1">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sites with Offline ANPR</div>
-                  <div className="text-2xl font-extrabold text-purple-400">{sitesWithOfflineAnpr}</div>
-                </div>
-              </div>
-              <div className="h-[160px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={bySiteOfflineAnpr} margin={{top:4,right:8,left:0,bottom:28}}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
-                    <XAxis dataKey="name" tick={{fontSize:9, fill:"#64748b"}} angle={-35} textAnchor="end" height={56}/>
-                    <YAxis tick={{fontSize:9, fill:"#64748b"}} allowDecimals={false} width={32}/>
-                    <Tooltip contentStyle={{background:"#0f172a", border:"1px solid #334155", color:"#f1f5f9", fontSize:11, padding:6, borderRadius:8}}/>
-                    <Bar dataKey="value" name="Offline ANPR" fill="#a855f7" barSize={44} radius={[6,6,0,0]} onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }} cursor="pointer"/>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-3 text-[10px] text-slate-500 flex justify-between">
-                <span>{totalANPR} total ANPR cameras</span>
-                <span className="text-purple-400">Click a bar to view site details</span>
               </div>
             </div>
             <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
@@ -3147,6 +3119,34 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                   <span className="text-slate-300">SIRA Certified</span>
                   <span className="ml-auto font-bold">{siraCertifiedCount}</span>
                 </div>
+              </div>
+            </div>
+            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div className="text-center flex-1">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Sites</div>
+                  <div className="text-2xl font-extrabold text-blue-400">{totalSites}</div>
+                </div>
+                <div className="w-px h-6 bg-slate-700"></div>
+                <div className="text-center flex-1">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Sites with Offline ANPR</div>
+                  <div className="text-2xl font-extrabold text-purple-400">{sitesWithOfflineAnpr}</div>
+                </div>
+              </div>
+              <div className="h-[170px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={bySiteOfflineAnpr} margin={{top:4,right:8,left:0,bottom:28}}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b"/>
+                    <XAxis dataKey="name" tick={{fontSize:9, fill:"#64748b"}} angle={-35} textAnchor="end" height={56}/>
+                    <YAxis tick={{fontSize:9, fill:"#64748b"}} allowDecimals={false} width={32}/>
+                    <Tooltip contentStyle={{background:"#0f172a", border:"1px solid #334155", color:"#f1f5f9", fontSize:11, padding:6, borderRadius:8}}/>
+                    <Bar dataKey="value" name="Offline ANPR" fill="#a855f7" barSize={44} radius={[6,6,0,0]} onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }} cursor="pointer"/>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 text-[10px] text-slate-500 flex justify-between">
+                <span>{totalANPR} total ANPR cameras</span>
+                <span className="text-purple-400">Click a bar to view site details</span>
               </div>
             </div>
 
