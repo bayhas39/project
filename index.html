@@ -2966,8 +2966,8 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
 
       <div className="grid grid-cols-3 gap-4 min-h-0 mt-4">
         {/* Card 4: Offline ANPR */}
-        <div className="bg-[#0d1117] border rounded-2xl p-4 flex flex-col gap-3 h-full" style={{borderColor:"#30363d"}}>
-          <div className="flex justify-between items-center mb-2">
+        <div className="bg-[#0d1117] border rounded-2xl p-3 flex flex-col gap-2 h-full" style={{borderColor:"#30363d"}}>
+          <div className="flex justify-between items-center mb-1">
             <div className="flex flex-col">
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Sites</div>
               <div className="text-2xl font-extrabold text-[#3b82f6]">{totalSites}</div>
@@ -2979,10 +2979,10 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bySiteOfflineAnpr} margin={{top:8,right:12,left:0,bottom:40}}>
+              <BarChart data={bySiteOfflineAnpr} margin={{top:4,right:8,left:0,bottom:30}}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1f2937"/>
-                <XAxis dataKey="name" tick={{fontSize:9, fill:"#6b7280"}} angle={-30} textAnchor="end" height={50}/>
-                <YAxis tick={{fontSize:10, fill:"#6b7280"}} allowDecimals={false} width={32}/>
+                <XAxis dataKey="name" tick={{fontSize:9, fill:"#6b7280"}} angle={-30} textAnchor="end" height={42}/>
+                <YAxis tick={{fontSize:9, fill:"#6b7280"}} allowDecimals={false} width={28}/>
                 <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
                 <Bar dataKey="value" name="Offline ANPR" fill="#a855f7" radius={[4,4,0,0]} cursor="pointer" onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }}/>
               </BarChart>
