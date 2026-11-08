@@ -945,9 +945,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
         <KPI label="In Progress" value={stats.progress} icon={IcHardHat} color="bg-blue-500 text-white"/>
         <KPI label="Completed" value={stats.completed} icon={IcCheck} color="bg-emerald-500 text-white"/>
       </div>
-
-      {/* filters */}
-      <div className="mt-6 bg-white rounded-2xl border p-3 lg:p-4" style={{borderColor:"#e2e8f0"}}>
+<div className="mt-6 bg-white rounded-2xl border p-3 lg:p-4" style={{borderColor:"#e2e8f0"}}>
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcSearch size={16}/></span>
@@ -976,9 +974,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
           </div>
         </div>
       </div>
-
-      {/* sites */}
-      {view==="grid" ? (
+{view==="grid" ? (
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
           {filtered.map(s=>(
             <SiteCard key={s.id} site={s} onOpen={()=>setViewSite(s)} onEdit={()=>setEditSite(s)}
@@ -1030,9 +1026,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
         </div>
       )}
       {filtered.length===0 && view==="grid" && <div className="text-center text-sm text-slate-400 py-10">No sites match your filters</div>}
-
-      {/* pincode panel */}
-      <div className="mt-6 bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
+<div className="mt-6 bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
         <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
           <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-900 grid place-items-center"><IcKey size={15}/></div>
           <div>
@@ -2512,8 +2506,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
         <div key={page} className="page-fade">
           {page==="overview" && (
           <>
-          {/* site info card */}
-          <div className="bg-white rounded-2xl border p-4 flex items-center justify-between gap-3" style={{borderColor:"#e2e8f0"}}>
+<div className="bg-white rounded-2xl border p-4 flex items-center justify-between gap-3" style={{borderColor:"#e2e8f0"}}>
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl grid place-items-center text-white bg-blue-500"><IcHome size={18}/></div>
               <div className="min-w-0">
@@ -2559,9 +2552,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             <div className="text-xs text-slate-500">{site.workingIntercom||0} working • {site.notWorkingIntercom||0} not working</div>
           </div>
         </div>
-
-        {/* not working + problems */}
-        <div className="grid lg:grid-cols-3 gap-3">
+<div className="grid lg:grid-cols-3 gap-3">
           <div className="bg-white rounded-xl border p-3" style={{borderColor:"#e2e8f0"}}>
             <div className="text-xs font-bold tracking-widest uppercase text-slate-500">Not Working</div>
             <div className="mt-2 space-y-1 text-xs">
@@ -2591,9 +2582,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
             </div>
           </div>
         </div>
-
-        {/* incidents + accidents */}
-        <div className="grid lg:grid-cols-2 gap-3">
+<div className="grid lg:grid-cols-2 gap-3">
           <div className="bg-white rounded-xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
             <div className="px-3 py-2 border-b bg-slate-50 font-bold text-sm flex items-center justify-between" style={{borderColor:"#eef2f7"}}>
               <span className="flex items-center gap-1.5"><IcFileText size={14}/> Incidents — {siteIncidents.length}</span>
@@ -2936,8 +2925,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0f172a] text-[#f1f5f9] flex flex-col p-0">
-      {/* Header */}
-      <div className="bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0 z-10">
+<div className="bg-[#0f172a]/80 backdrop-blur-md border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-blue-600 grid place-items-center text-slate-900 font-extrabold text-xs shadow-lg shadow-blue-500/30">D</div>
           <div>
@@ -2976,9 +2964,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               </button>
             </div>
           </div>
-
-          {/* KPI Row */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
             <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Sites</div>
@@ -3012,11 +2998,8 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               <div className="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">{openIncidents > 0 ? openIncidents + " active" : "All clear"}</div>
             </div>
           </div>
-
-          {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            {/* Bar Chart - wide */}
-            <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-blue-500"></div>
@@ -3040,9 +3023,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                 <span className="text-blue-400">Click a bar to view site details</span>
               </div>
             </div>
-
-            {/* Line Chart - Incidents Over Time */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+<div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
@@ -3070,11 +3051,8 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               </div>
             </div>
           </div>
-
-          {/* Donut + Metrics Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Certification Donut */}
-            <div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+<div className="lg:col-span-2 bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-purple-500"></div>
@@ -3116,9 +3094,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                 </div>
               </div>
             </div>
-
-            {/* Device Health Mini */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
+<div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
@@ -3150,9 +3126,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               </div>
             </div>
           </div>
-
-          {/* Incidents and Accidents List */}
-          <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+<div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-slate-400"></div>
