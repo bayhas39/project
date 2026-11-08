@@ -2898,12 +2898,12 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
               {["Weekly","Monthly","Yearly"].map((f,k)=><button key={k} onClick={()=>{}} className={`text-[10px] font-bold px-2 py-0.5 rounded-full border transition ${k===0?"bg-[#3b82f6] text-white border-[#3b82f6]":"bg-[#1f2937] text-[#6b7280] border-[#30363d] hover:bg-[#1f2937]"}`}>{f}</button>)}
             </div>
           </div>
-          <div className="flex-1 min-h-0">
+          <div className="h-[120px] min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={bySiteOffline} margin={{top:8,right:8,left:0,bottom:40}}>
+              <BarChart data={bySiteOffline} margin={{top:4,right:8,left:0,bottom:32}}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1f2937"/>
-                <XAxis dataKey="name" tick={{fontSize:9, fill:"#6b7280"}} angle={-30} textAnchor="end" height={44}/>
-                <YAxis tick={{fontSize:9, fill:"#6b7280"}} allowDecimals={false} width={28}/>
+                <XAxis dataKey="name" tick={{fontSize:8, fill:"#6b7280"}} angle={-30} textAnchor="end" height={36}/>
+                <YAxis tick={{fontSize:8, fill:"#6b7280"}} allowDecimals={false} width={24}/>
                 <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
                 <Bar dataKey="value" name="Offline Cameras" fill="#3b82f6" radius={[4,4,0,0]}/>
               </BarChart>
