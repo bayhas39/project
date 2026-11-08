@@ -2978,7 +2978,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
                 <XAxis dataKey="name" tick={{fontSize:9, fill:"#6b7280"}} angle={-30} textAnchor="end" height={50}/>
                 <YAxis tick={{fontSize:9, fill:"#6b7280"}} allowDecimals={false} width={32}/>
                 <Tooltip contentStyle={{background:"#0d1117", border:"1px solid #30363d", color:"#f0f6fc", fontSize:10}}/>
-                <Bar dataKey="value" name="Offline ANPR" fill="#a855f7" radius={[4,4,0,0]}/>
+                <Bar dataKey="value" name="Offline ANPR" fill="#a855f7" radius={[4,4,0,0]} cursor="pointer" onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }}/>
               </BarChart>
             </ResponsiveContainer>
           </div>
