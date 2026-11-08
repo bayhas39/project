@@ -2877,7 +2877,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
   const enterFs = () => { const el = document.documentElement; if (el.requestFullscreen) el.requestFullscreen().catch(()=>{}); };
   const exitFs = () => { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(()=>{}); };
 
-  const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>10?s.name.slice(0,10)+"..":s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,8);
+  const bySiteOffline = sites.filter(s=>(s.offlineCameras||0)>0).map(s=>({name:s.name.length>10?s.name.slice(0,10)+"..":s.name, value:s.offlineCameras||0, site:s})).sort((a,b)=>b.value-a.value).slice(0,5);
 
   return (
     <div className="fixed inset-0 z-50 bg-[#0d1117] flex flex-col p-4 gap-4">
