@@ -2901,7 +2901,7 @@ function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAc
           <button onClick={()=>{ exitFs(); setPage("sites"); }} className="px-4 py-2 rounded-md bg-[#21262d] text-[#c9d1d9] border text-xs font-bold hover:bg-[#30363d]" style={{borderColor:"#30363d"}}>Exit</button>
         </div>
       </div>
-      <div className="flex-1 grid grid-cols-3 gap-4 min-h-0 p-4">
+      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-0 p-4 auto-rows-fr">
         {/* Box 1: Total Sites with Offline Cameras Bar Chart */}
         <div className="bg-[#0d1117] border rounded-2xl p-4 flex flex-col" style={{borderColor:"#30363d"}}>
           <div className="flex justify-between items-start mb-3">
