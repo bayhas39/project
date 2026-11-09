@@ -1524,7 +1524,7 @@ function ChartsPage({sites, setSites, incidents, setIncidents, accidents, setAcc
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
             <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
-              {topOfflineCamSites.map((x,i)=><Cell key={i} fill="#1f6feb" cursor="pointer" onClick={()=>setViewSite(x.site)}/>)}
+              {topOfflineCamSites.map((x,i)=><Cell key={i} fill="#1f6feb" cursor="pointer" onClick={()=>setViewSite(x.site)} onMouseDown={()=>setViewSite(x.site)}/>)}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
