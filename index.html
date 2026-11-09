@@ -1523,7 +1523,9 @@ function ChartsPage({sites, setSites, incidents, setIncidents, accidents, setAcc
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb" cursor="pointer" onClick={(data)=>{ const site = data && (data.site || (data.payload && data.payload.site)); if(site) setViewSite(site); }}/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb" cursor="pointer" onClick={(data)=>{ const site = data && (data.site || (data.payload && data.payload.site)); if(site) setViewSite(site); }}>
+              {topOfflineCamSites.map((x,i)=><Cell key={i} fill="#1f6feb" cursor="pointer" onClick={()=>setViewSite(x.site)}/>)}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Card>
