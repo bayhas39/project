@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DHRE Security Dashboard</title><!-- v7 -->
+    <title>DHRE Security Dashboard</title><!-- v8 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -2865,7 +2865,7 @@ function OwnerReportsPage({site, incidents, setIncidents, onBack}){
 /*                        FULLSCREEN PAGE                           */
 /* ================================================================ */
 function FullscreenPage({sites, incidents, accidents, stats, setIncidents, setAccidents, setPage}){
-  const totalSites = sites.length;
+  const totalSites = sites.length; /* v8-deploy */
   const totalCameras = sites.reduce((a,s)=>a+(s.totalCameras||0),0);
   const offlineCameras = sites.reduce((a,s)=>a+(s.offlineCameras||0),0);
   const sitesWithOfflineCam = sites.filter(s=>(s.offlineCameras||0)>0).length;
