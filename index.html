@@ -815,6 +815,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
     totalANPR:s.totalANPR||0, offlineANPR:s.offlineANPR||0,
     notWorkingANPR:s.notWorkingANPR||0, notWorkingGate:s.notWorkingGate||0, notWorkingIntercom:s.notWorkingIntercom||0,
     onlineACS:s.onlineACS||0, workingGate:s.workingGate||0, workingIntercom:s.workingIntercom||0,
+    site:s,
   })), [sites]);
 
   const attention = useMemo(()=>{
@@ -1460,6 +1461,7 @@ function PincodeAccessModal({sites, onClose}){
 /* ================================================================ */
 function ChartsPage({sites, incidents, accidents, stats, perSite, attention, problemTotals, setPage}){
   const [selectedInspector, setSelectedInspector] = useState(null);
+  const [viewSite, setViewSite] = useState(null);
   const totalProblems = Object.values(problemTotals).reduce((a,b)=>a+b,0);
   const completion = stats.total ? Math.round((stats.completed/stats.total)*100) : 0;
   const criticalCount = attention.filter(a=>a.severity==="Critical").length;
@@ -1521,9 +1523,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
-              {topOfflineCamSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
-            </Bar>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb" cursor="pointer" onClick={(data)=>{ if(data && data.site) setViewSite(data.site); }}/>
           </BarChart>
         </ResponsiveContainer>
       </Card>
@@ -1673,6 +1673,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
           </BarChart>
         </ResponsiveContainer>
       </Card>
+      {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}  
     </div>
   );
 }
