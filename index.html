@@ -1553,7 +1553,7 @@ function ChartsPage({sites, setSites, incidents, setIncidents, accidents, setAcc
               <YAxis tick={{fontSize:11}} allowDecimals={false}/>
               <Tooltip/>
               <Bar dataKey="offlineANPR" name="Offline ANPR" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
-                {top5AnprSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+                {top5AnprSites.map((x,i)=><Cell key={i} fill="#1f6feb" cursor="pointer" onClick={()=>setViewSite(x.site)}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -1566,7 +1566,7 @@ function ChartsPage({sites, setSites, incidents, setIncidents, accidents, setAcc
               <YAxis tick={{fontSize:11}} allowDecimals={false}/>
               <Tooltip/>
               <Bar dataKey="notWorkingGate" name="Gate barrier" radius={[8,8,0,0]} barSize={28} fill="#1f6feb">
-                {top5GateSites.map((x,i)=><Cell key={i} fill={PALETTE[i%PALETTE.length]}/>)}
+                {top5GateSites.map((x,i)=><Cell key={i} fill="#1f6feb" cursor="pointer" onClick={()=>setViewSite(x.site)}/>)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
