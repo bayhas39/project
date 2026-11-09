@@ -899,7 +899,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
         <main className="flex-1 px-4 lg:px-6 py-6 lg:py-8 overflow-auto">
           <div key={page} className="page-fade">
             {page==="sites"     && <SitesPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} stats={stats} setPage={setPage}/>}
-            {page==="charts"    && <ChartsPage sites={sites} incidents={incidents} accidents={accidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
+            {page==="charts"    && <ChartsPage sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} stats={stats} perSite={perSite} attention={attention} problemTotals={problemTotals} setPage={setPage}/>}
             {page==="amc"       && <AMCPage sites={sites} stats={stats} perSite={perSite} setPage={setPage}/>}
             {page==="accidents" && <AccidentsPage accidents={accidents} sites={sites} setAccidents={setAccidents} setPage={setPage}/>}
             {page==="reports"   && <ReportsPage sites={sites} incidents={incidents} setIncidents={setIncidents}/>}
@@ -1523,7 +1523,7 @@ function ChartsPage({sites, incidents, accidents, stats, perSite, attention, pro
             <XAxis dataKey="shortName" angle={-30} textAnchor="end" height={120} tick={{fontSize:9}} interval={0}/>
             <YAxis tick={{fontSize:11}} allowDecimals={false}/>
             <Tooltip/>
-            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb" cursor="pointer" onClick={(data)=>{ console.log('bar clicked', JSON.stringify(data)); const site = data && (data.site || (data.payload && data.payload.site) || (data.activePayload && data.activePayload[0] && data.activePayload[0].payload && data.activePayload[0].payload.site)); if(site) setViewSite(site); }}/>
+            <Bar dataKey="offlineCameras" name="Offline CCTV" radius={[8,8,0,0]} barSize={28} fill="#1f6feb" cursor="pointer" onClick={(data)=>{ const site = data && (data.site || (data.payload && data.payload.site)); if(site) setViewSite(site); }}/>
           </BarChart>
         </ResponsiveContainer>
       </Card>
