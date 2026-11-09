@@ -1459,7 +1459,7 @@ function PincodeAccessModal({sites, onClose}){
 /* ================================================================ */
 /*                          CHARTS PAGE                             */
 /* ================================================================ */
-function ChartsPage({sites, incidents, accidents, stats, perSite, attention, problemTotals, setPage}){
+function ChartsPage({sites, setSites, incidents, setIncidents, accidents, setAccidents, stats, perSite, attention, problemTotals, setPage}){
   const [selectedInspector, setSelectedInspector] = useState(null);
   const [viewSite, setViewSite] = useState(null);
   const totalProblems = Object.values(problemTotals).reduce((a,b)=>a+b,0);
