@@ -1075,7 +1075,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
       {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
       {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
-      {pinOpen && <PincodeAccessModal sites={sites} onClose={()=>setPinOpen(false)}/>}
+      {pinOpen && <PincodeAccessModal sites={sites} setSites={setSites} onClose={()=>setPinOpen(false)}/>}
     </div>
   );
 }
@@ -1358,7 +1358,7 @@ function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents
 }
 
 /* ------------- site add/edit modal ------------- */
-function SiteFormModal({site, sites, setSites, onClose}){
+function SiteFormModal({site, sites, setSites, onClose, readOnlyPin}){
   const isNew = !site.id;
   const [form, setForm] = useState(()=> isNew ? {
     name:"", location:"", type:"Construction", status:"Pending", date:new Date().toISOString().slice(0,10),
@@ -1415,9 +1415,9 @@ function SiteFormModal({site, sites, setSites, onClose}){
         {num("workingIntercom","Working Intercom")}
         <Field label="Pincode">
           <div className="flex gap-2">
-            <input value={form.pincode} onChange={e=>set("pincode", e.target.value.slice(0,4))} className={`${inputCls} font-mono2 tracking-[0.3em] w-32`}/>
-            <button onClick={()=>{ const p2=String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"); set("pincode", p2); toast.success(`New pincode ${p2}`); }}
-              className="px-4 rounded-xl bg-slate-100 text-sm font-bold hover:bg-slate-200 flex items-center gap-1.5"><IcRefresh size={14}/> Regenerate</button>
+            <input value={form.pincode} onChange={e=>set("pincode", e.target.value.slice(0,4))} className={`${inputCls} font-mono2 tracking-[0.3em] w-32`} readOnly={readOnlyPin} disabled={readOnlyPin}/>
+            {!readOnlyPin && <button onClick={()=>{ const p2=String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"); set("pincode", p2); toast.success(`New pincode ${p2}`); }}
+              className="px-4 rounded-xl bg-slate-100 text-sm font-bold hover:bg-slate-200 flex items-center gap-1.5"><IcRefresh size={14}/> Regenerate</button>}
           </div>
         </Field>
         <Field label="Not Working Intercom"><input type="number" min="0" value={form.notWorkingIntercom} onChange={e=>set("notWorkingIntercom", +e.target.value)} className={inputCls}/></Field>
@@ -1432,7 +1432,7 @@ function SiteFormModal({site, sites, setSites, onClose}){
 }
 
 /* ------------- pincode access modal ------------- */
-function PincodeAccessModal({sites, onClose}){
+function PincodeAccessModal({sites, setSites, onClose}){
   const [sel, setSel] = useState(sites[0]);
   const [pin, setPin] = useState(sites[0]?.pincode || "");
   return (
@@ -1452,6 +1452,7 @@ function PincodeAccessModal({sites, onClose}){
               <button onClick={()=>{ const p2=String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"); setPin(p2); toast.success(`New pincode ${p2}`); }}
                 className="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center gap-1.5"><IcRefresh size={12}/> Regenerate</button>
               <button onClick={()=>copy(pin, `Copied pincode ${pin}`)} className="px-3 py-1.5 rounded-full bg-white border text-xs font-bold" style={{borderColor:"#e2e8f0"}}>Copy code</button>
+              <button onClick={()=>{ if(sel){ setSites(list=>list.map(s=>s.id===sel.id?{...s, pincode:pin}:s)); toast.success(`Pincode saved for ${sel.name}`); } }} className="px-3 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"><IcCheck size={12}/> Save</button>
             </div>
           </div>
         </div>
@@ -2658,7 +2659,7 @@ function OwnerView({auth, sites, setSites, incidents, setIncidents, accidents, s
         </div>
       </main>
 
-      {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)}/>}
+      {editOpen && <SiteFormModal site={site} sites={sites} setSites={setSites} onClose={()=>setEditOpen(false)} readOnlyPin={true}/>}
       {newIncOpen && <IncidentFormModal sites={[site]} incidents={incidents} setIncidents={setIncidents} preSite={site} onClose={()=>setNewIncOpen(false)}/>}
       {newAccOpen && <AccidentFormModal site={site} accidents={accidents} setAccidents={setAccidents} onClose={()=>setNewAccOpen(false)}/>}
       {viewIncident && <Modal title="Incident Details" onClose={()=>setViewIncident(null)} wide>
