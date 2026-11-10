@@ -439,7 +439,33 @@ const Toaster = () => {
   );
 };
 const toast = { success:(m)=>pushToast(m,"success"), error:(m)=>pushToast(m,"error"), info:(m)=>pushToast(m,"info") };
-const copy = (text, msg) => { try{ navigator.clipboard.writeText(text); }catch(e){} toast.success(msg || "Copied"); };
+const copy = (text, msg) => {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {
+        // Fallback for when clipboard API fails
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch(e) {}
+        document.body.removeChild(ta);
+      });
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch(e) {}
+      document.body.removeChild(ta);
+    }
+  } catch(e) {}
+  toast.success(msg || "Copied");
+};
 
 const download = (filename, data) => {
   try{
