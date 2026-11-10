@@ -167,11 +167,10 @@ const IcCar      = (p)=> <I {...p} d={["M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.
 
 /* ---------------- constants ---------------- */
 const TYPES = [
-  { value:"Construction", label:"Construction", icon:IcHardHat,  color:"bg-amber-500" },
-  { value:"Property",     label:"Property",     icon:IcHome,     color:"bg-blue-500" },
-  { value:"Safety",       label:"Safety",       icon:IcShieldCk, color:"bg-emerald-500" },
-  { value:"Industrial",   label:"Industrial",   icon:IcFactory,  color:"bg-slate-700" },
-  { value:"Handover",     label:"Handover",     icon:IcRocket,   color:"bg-violet-500" },
+  { value:"Apartment",       label:"Apartment",       icon:IcHome,     color:"bg-blue-500" },
+  { value:"Villa Community", label:"Villa Community", icon:IcHome,     color:"bg-emerald-500" },
+  { value:"Central Park",    label:"Central Park",    icon:IcHome,     color:"bg-amber-500" },
+  { value:"Others",          label:"Others",          icon:IcHome,     color:"bg-slate-700" },
 ];
 const STATUS = [
   { value:"Pending",     label:"Pending",     color:"bg-amber-100 text-amber-700 border-amber-200",     dot:"bg-amber-500" },
@@ -1361,7 +1360,7 @@ function SiteDetailModal({site, incidents, accidents, setIncidents, setAccidents
 function SiteFormModal({site, sites, setSites, onClose, readOnlyPin}){
   const isNew = !site.id;
   const [form, setForm] = useState(()=> isNew ? {
-    name:"", location:"", type:"Construction", status:"Pending", date:new Date().toISOString().slice(0,10),
+    name:"", location:"", type:"Apartment", status:"Pending", date:new Date().toISOString().slice(0,10),
     inspector:"", notes:"", totalCameras:8, offlineCameras:0, totalANPR:2, offlineANPR:0,
     notWorkingANPR:0, notWorkingGate:0, notWorkingIntercom:0, onlineACS:0, workingGate:0, workingIntercom:0, siraCertified:false, siraExpiryDate:"", amcCertified:false,
     pincode:String(1000+Math.floor(Math.random()*9000)).padStart(4,"0"),
