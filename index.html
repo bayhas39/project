@@ -629,7 +629,10 @@ const [sites, setSites] = useState(()=> {
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
   if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
   const supSites = auth.role==="supervisor" && auth.siteIds ? sites.filter(s=>auth.siteIds.includes(s.id)) : sites;
-  return <AdminView auth={auth} sites={supSites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
+  const supSiteIds = auth.role==="supervisor" && auth.siteIds ? auth.siteIds : null;
+  const supIncidents = supSiteIds ? incidents.filter(i=>supSiteIds.includes(i.siteId) || supSites.some(s=>s.name===i.siteName)) : incidents;
+  const supAccidents = supSiteIds ? accidents.filter(a=>supSiteIds.includes(a.siteId) || supSites.some(s=>s.name===a.siteName)) : accidents;
+  return <AdminView auth={auth} sites={supSites} setSites={setSites} incidents={supIncidents} setIncidents={setIncidents} accidents={supAccidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
