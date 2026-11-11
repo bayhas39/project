@@ -628,7 +628,8 @@ const [sites, setSites] = useState(()=> {
   const shared = { remoteOn, setRemoteOn, syncMode, lastSync: syncInfo.ok ? syncInfo.at : "" };
   if(!auth) return <Login sites={sites} onAuth={setAuth}/>;
   if(auth.role==="owner") return <OwnerView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
-  return <AdminView auth={auth} sites={sites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
+  const supSites = auth.role==="supervisor" && auth.siteIds ? sites.filter(s=>auth.siteIds.includes(s.id)) : sites;
+  return <AdminView auth={auth} sites={supSites} setSites={setSites} incidents={incidents} setIncidents={setIncidents} accidents={accidents} setAccidents={setAccidents} onLogout={logout} {...shared}/>;
 }
 
 /* ================================================================ */
@@ -638,6 +639,7 @@ function Login({sites, onAuth}){
   const [tab, setTab] = useState("owner");
   const [u, setU] = useState(""); const [p, setP] = useState("");
   const [siteId, setSiteId] = useState(""); const [pin, setPin] = useState("");
+  const [supSites, setSupSites] = useState([]);
 
   const adminLogin = () => {
     const un=u.trim().toLowerCase(), pw=p.trim();
@@ -647,11 +649,11 @@ function Login({sites, onAuth}){
     } else toast.error("Use bayhas / bayhas123 (or admin / admin)");
   };
   const supervisorLogin = () => {
-    const un=u.trim().toLowerCase(), pw=p.trim();
-    if((un==="supervisor" && pw==="supervisor") || (un==="sup" && pw==="sup123")){
-      const a={ role:"supervisor", name: un==="supervisor" ? "Supervisor" : "Sup" };
-      LS.set("dhre-combined-auth", a); onAuth(a); toast.success(`Welcome ${a.name} — supervisor dashboard`);
-    } else toast.error("Use supervisor / supervisor (or sup / sup123)");
+    const pw=p.trim();
+    if(pw!=="supervisor" && pw!=="sup123"){ toast.error("Use password: supervisor (or sup123)"); return; }
+    if(supSites.length===0){ toast.error("Select at least one site"); return; }
+    const a={ role:"supervisor", name:"Supervisor", siteIds: supSites };
+    LS.set("dhre-combined-auth", a); onAuth(a); toast.success(`Welcome Supervisor — ${supSites.length} site(s)`);
   };
   const ownerLogin = () => {
     const site = sites.find(s=>s.id===siteId);
@@ -717,11 +719,20 @@ function Login({sites, onAuth}){
                     <h2 className="mt-2 font-extrabold">Supervisor — Supervision dashboard</h2>
                     <p className="text-sm text-slate-500">All sites • monitoring • reports • limited admin access</p>
                   </div>
-                  <Field label="Username *">
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcUser size={16}/></span>
-                      <input value={u} onChange={e=>setU(e.target.value)} placeholder="supervisor" className={`${inputCls} pl-10`}/>
+                  <Field label="Select Sites *">
+                    <div className="max-h-[200px] overflow-y-auto border rounded-xl p-2 space-y-1" style={{borderColor:"#e2e8f0"}}>
+                      {sites.map(s=>(
+                        <label key={s.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-slate-50 px-2 py-1 rounded">
+                          <input type="checkbox" checked={supSites.includes(s.id)} onChange={e=>{
+                            if(e.target.checked){ setSupSites(prev=>[...prev, s.id]); }
+                            else { setSupSites(prev=>prev.filter(id=>id!==s.id)); }
+                          }} className="w-4 h-4"/>
+                          <span className="truncate">{s.name}</span>
+                          <span className="ml-auto text-[10px] text-slate-400 font-mono2">{s.pincode}</span>
+                        </label>
+                      ))}
                     </div>
+                    <div className="text-[11px] text-slate-500 mt-1">{supSites.length} site(s) selected</div>
                   </Field>
                   <Field label="Password *">
                     <div className="relative">
@@ -729,7 +740,7 @@ function Login({sites, onAuth}){
                       <input type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="supervisor" className={`${inputCls} pl-10`}/>
                     </div>
                   </Field>
-                  <p className="text-[11px] text-slate-500 text-center">Demo: <b>supervisor / supervisor</b> (or <b>sup / sup123</b>)</p>
+                  <p className="text-[11px] text-slate-500 text-center">Demo password: <b>supervisor</b> (or <b>sup123</b>)</p>
                   <button onClick={supervisorLogin} className="w-full py-3 rounded-full bg-amber-500 text-white font-bold hover:bg-amber-600">Login → Supervisor Website</button>
                 </div>
               ) : (
