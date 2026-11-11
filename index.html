@@ -646,6 +646,13 @@ function Login({sites, onAuth}){
       LS.set("dhre-combined-auth", a); onAuth(a); toast.success(`Welcome ${a.name} — full dashboard`);
     } else toast.error("Use bayhas / bayhas123 (or admin / admin)");
   };
+  const supervisorLogin = () => {
+    const un=u.trim().toLowerCase(), pw=p.trim();
+    if((un==="supervisor" && pw==="supervisor") || (un==="sup" && pw==="sup123")){
+      const a={ role:"supervisor", name: un==="supervisor" ? "Supervisor" : "Sup" };
+      LS.set("dhre-combined-auth", a); onAuth(a); toast.success(`Welcome ${a.name} — supervisor dashboard`);
+    } else toast.error("Use supervisor / supervisor (or sup / sup123)");
+  };
   const ownerLogin = () => {
     const site = sites.find(s=>s.id===siteId);
     if(!site){ toast.error("Select your site first"); return; }
@@ -679,6 +686,7 @@ function Login({sites, onAuth}){
             <div className="flex p-1.5 gap-1 bg-slate-50 border-b" style={{borderColor:"#eef2f7"}}>
               <TabBtn id="owner" icon={IcUser} label="Owner Login"/>
               <TabBtn id="admin" icon={IcShieldCk} label="Admin Login"/>
+              <TabBtn id="supervisor" icon={IcUser} label="Supervisor Login"/>
             </div>
             <div className="p-6">
               {tab==="owner" ? (
@@ -701,6 +709,28 @@ function Login({sites, onAuth}){
                   </Field>
                   <button onClick={ownerLogin} className="w-full py-3 rounded-full bg-sky-600 text-white font-bold hover:bg-sky-700">Login → My Site Website</button>
                   <div className="text-xs text-center text-slate-500">You will be directed to <b>your site’s website</b> (one dashboard with everything for that site)</div>
+                </div>
+              ) : tab==="supervisor" ? (
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <div className="w-10 h-10 rounded-xl bg-amber-500 text-white grid place-items-center mx-auto"><IcUser size={18}/></div>
+                    <h2 className="mt-2 font-extrabold">Supervisor — Supervision dashboard</h2>
+                    <p className="text-sm text-slate-500">All sites • monitoring • reports • limited admin access</p>
+                  </div>
+                  <Field label="Username *">
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcUser size={16}/></span>
+                      <input value={u} onChange={e=>setU(e.target.value)} placeholder="supervisor" className={`${inputCls} pl-10`}/>
+                    </div>
+                  </Field>
+                  <Field label="Password *">
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"><IcKey size={16}/></span>
+                      <input type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="supervisor" className={`${inputCls} pl-10`}/>
+                    </div>
+                  </Field>
+                  <p className="text-[11px] text-slate-500 text-center">Demo: <b>supervisor / supervisor</b> (or <b>sup / sup123</b>)</p>
+                  <button onClick={supervisorLogin} className="w-full py-3 rounded-full bg-amber-500 text-white font-bold hover:bg-amber-600">Login → Supervisor Website</button>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -727,7 +757,7 @@ function Login({sites, onAuth}){
               )}
             </div>
           </div>
-          <p className="mt-4 text-xs text-slate-400 text-center">One login page → directs to different websites (Owner: one site • Admin: all sites)</p>
+          <p className="mt-4 text-xs text-slate-400 text-center">One login page → directs to different websites (Owner: one site • Admin: all sites • Supervisor: supervision)</p>
         </div>
       </div>
       <Toaster/>
