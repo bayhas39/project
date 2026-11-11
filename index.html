@@ -653,8 +653,14 @@ function Login({sites, onAuth}){
   };
   const supervisorLogin = () => {
     const pw=p.trim();
-    if(pw!=="supervisor" && pw!=="sup123"){ toast.error("Use password: supervisor (or sup123)"); return; }
     if(supSites.length===0){ toast.error("Select at least one site"); return; }
+    const selectedSiteObjs = sites.filter(s=>supSites.includes(s.id));
+    // Check that all selected sites have a supervisor password set
+    const noPw = selectedSiteObjs.filter(s=>!s.supervisorPassword);
+    if(noPw.length > 0){ toast.error(`Supervisor password not set for: ${noPw.map(s=>s.name).join(", ")}`); return; }
+    // Check that password matches for ALL selected sites
+    const mismatch = selectedSiteObjs.filter(s=>s.supervisorPassword !== pw);
+    if(mismatch.length > 0){ toast.error("Password does not match for selected sites"); return; }
     const a={ role:"supervisor", name:"Supervisor", siteIds: supSites };
     LS.set("dhre-combined-auth", a); onAuth(a); toast.success(`Welcome Supervisor — ${supSites.length} site(s)`);
   };
@@ -743,7 +749,7 @@ function Login({sites, onAuth}){
                       <input type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="supervisor" className={`${inputCls} pl-10`}/>
                     </div>
                   </Field>
-                  <p className="text-[11px] text-slate-500 text-center">Demo password: <b>supervisor</b> (or <b>sup123</b>)</p>
+                  <p className="text-[11px] text-slate-500 text-center">Password must match the supervisor password set in admin dashboard for all selected sites.</p>
                   <button onClick={supervisorLogin} className="w-full py-3 rounded-full bg-amber-500 text-white font-bold hover:bg-amber-600">Login → Supervisor Website</button>
                 </div>
               ) : (
@@ -1498,6 +1504,16 @@ function PincodeAccessModal({sites, setSites, onClose}){
               <button onClick={()=>{ if(sel){ setSites(list=>list.map(s=>s.id===sel.id?{...s, pincode:pin}:s)); toast.success(`Pincode saved for ${sel.name}`); } }} className="px-3 py-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"><IcCheck size={12}/> Save</button>
             </div>
           </div>
+        </div>
+        <div className="mt-4 bg-blue-50 rounded-xl border p-4" style={{borderColor:"#bfdbfe"}}>
+          <div className="text-[11px] font-bold tracking-widest uppercase text-blue-700 mb-2">Supervisor Password</div>
+          <Field label="Supervisor password for this site">
+            <input value={sel?.supervisorPassword||""} onChange={e=>{ const val=e.target.value; setSel(s=>s?{...s, supervisorPassword:val}:s); }} className={inputCls} placeholder="Set supervisor password"/>
+          </Field>
+          <div className="mt-2 flex gap-2">
+            <button onClick={()=>{ if(sel){ setSites(list=>list.map(s=>s.id===sel.id?{...s, supervisorPassword:sel.supervisorPassword||""}:s)); toast.success(`Supervisor password saved for ${sel.name}`); } }} className="px-3 py-1.5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center gap-1.5"><IcCheck size={12}/> Save Supervisor Password</button>
+          </div>
+          <p className="text-[11px] text-slate-500 mt-2">Supervisor can only access sites that have a supervisor password set. Password must match for all selected sites.</p>
         </div>
         <div>
           <Field label="Owner link">
