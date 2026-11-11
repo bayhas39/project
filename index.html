@@ -1102,6 +1102,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
         </div>
       )}
       {filtered.length===0 && view==="grid" && <div className="text-center text-sm text-slate-400 py-10">No sites match your filters</div>}
+      {auth?.role !== "supervisor" && (
 <div className="mt-6 bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
         <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
           <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-900 grid place-items-center"><IcKey size={15}/></div>
@@ -1120,11 +1121,12 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
           ))}
         </div>
       </div>
+      )}
 
-      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
+      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)} readOnlyPin={auth?.role==="supervisor"}/>}
       {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
-      {pinOpen && <PincodeAccessModal sites={sites} setSites={setSites} onClose={()=>setPinOpen(false)}/>}
+      {auth?.role !== "supervisor" && pinOpen && <PincodeAccessModal sites={sites} setSites={setSites} onClose={()=>setPinOpen(false)}/>}
     </div>
   );
 }
