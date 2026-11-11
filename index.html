@@ -983,7 +983,7 @@ function AdminView({auth, sites, setSites, incidents, setIncidents, accidents, s
           </p>
         </main>
       </div>
-      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)}/>}
+      {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)} readOnlyPin={auth.role==="supervisor"}/>}
       <Toaster/>
     </div>
   );
