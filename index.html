@@ -1122,7 +1122,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
       </div>
       )}
       {filtered.length===0 && view==="grid" && <div className="text-center text-sm text-slate-400 py-10">No sites match your filters</div>}
-      {auth?.role !== "supervisor" && (
+      {auth?.role !== "owner" && (
 <div className="mt-6 bg-white rounded-2xl border overflow-hidden" style={{borderColor:"#e2e8f0"}}>
         <div className="px-4 py-3 border-b flex items-center gap-3" style={{borderColor:"#eef2f7"}}>
           <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-900 grid place-items-center"><IcKey size={15}/></div>
@@ -1146,7 +1146,7 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
       {editSite!==null && <SiteFormModal site={editSite} sites={sites} setSites={setSites} onClose={()=>setEditSite(null)} readOnlyPin={auth?.role==="supervisor"}/>}
       {viewSite && <SiteDetailModal site={viewSite} incidents={incidents} accidents={accidents} setIncidents={setIncidents} setAccidents={setAccidents} setPage={setPage} onClose={()=>setViewSite(null)}/>}
       {reportFor && <IncidentFormModal sites={sites} incidents={incidents} setIncidents={setIncidents} preSite={reportFor} onClose={()=>setReportFor(null)}/>}
-      {auth?.role !== "supervisor" && pinOpen && <PincodeAccessModal sites={sites} setSites={setSites} onClose={()=>setPinOpen(false)}/>}
+      {auth?.role !== "owner" && pinOpen && <PincodeAccessModal sites={sites} setSites={setSites} auth={auth} onClose={()=>setPinOpen(false)}/>}
       {auth?.role === "admin" && supMgrOpen && <SupervisorManagerModal sites={sites} supervisors={supervisors} setSupervisors={setSupervisors} onClose={()=>setSupMgrOpen(false)}/>}
     </div>
   );
@@ -1505,7 +1505,7 @@ function SiteFormModal({site, sites, setSites, onClose, readOnlyPin}){
 }
 
 /* ------------- pincode access modal ------------- */
-function PincodeAccessModal({sites, setSites, onClose}){
+function PincodeAccessModal({sites, setSites, auth, onClose}){
   const [sel, setSel] = useState(sites[0]);
   const [pin, setPin] = useState(sites[0]?.pincode || "");
   const [supSites, setSupSites] = useState([]);
@@ -1531,6 +1531,7 @@ function PincodeAccessModal({sites, setSites, onClose}){
             </div>
           </div>
         </div>
+        {auth?.role !== "supervisor" && (
         <div className="mt-4 bg-blue-50 rounded-xl border p-4" style={{borderColor:"#bfdbfe"}}>
           <div className="text-[11px] font-bold tracking-widest uppercase text-blue-700 mb-2">Supervisor Password</div>
           <p className="text-[11px] text-slate-500 mb-3">Select sites and set a supervisor password for all of them. Supervisor can only access sites where the password matches.</p>
@@ -1557,6 +1558,7 @@ function PincodeAccessModal({sites, setSites, onClose}){
           </div>
           <p className="text-[11px] text-slate-500 mt-2">Supervisor can only access sites where the password matches. Password must be the same for all selected sites.</p>
         </div>
+        )}
         <div>
           <Field label="Owner link">
             <div className="flex gap-1">
