@@ -1033,9 +1033,11 @@ function SitesPage({sites, setSites, incidents, setIncidents, accidents, setAcci
               <button onClick={()=>setView("grid")} className={`w-8 h-8 grid place-items-center rounded-full ${view==="grid"?"bg-white shadow text-slate-900":"text-slate-500"}`}><IcGrid size={16}/></button>
               <button onClick={()=>setView("list")} className={`w-8 h-8 grid place-items-center rounded-full ${view==="list"?"bg-white shadow text-slate-900":"text-slate-500"}`}><IcList size={16}/></button>
             </div>
+            {auth?.role !== "supervisor" && (
             <button onClick={()=>setEditSite({})} className="px-4 py-2.5 rounded-full bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 flex items-center gap-1.5 whitespace-nowrap">
               <IcPlus size={14}/> Add Site
             </button>
+            )}
           </div>
         </div>
       </div>
@@ -1438,6 +1440,7 @@ function SiteFormModal({site, sites, setSites, onClose, readOnlyPin}){
   } : {...site, siraExpiryDate: site.siraExpiryDate||"", amcCertified: site.amcCertified||false, onlineACS: site.onlineACS||0, workingGate: site.workingGate||0, workingIntercom: site.workingIntercom||0});
   const set = (k, v) => setForm(f=>({...f, [k]: v}));
   const save = () => {
+    if(isNew && readOnlyPin){ toast.error("Supervisors cannot add new sites"); return; }
     if(!form.name.trim() || !form.location.trim()){ toast.error("Site name and location are required"); return; }
     if(form.siraEligible===false){ form.siraCertified = false; form.siraExpired = false; }
     if(form.siraCertified) form.siraExpired = false;
